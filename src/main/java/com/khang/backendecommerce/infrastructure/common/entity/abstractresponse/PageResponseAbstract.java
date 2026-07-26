@@ -1,4 +1,4 @@
-package com.khang.backendecommerce.common.response.abstractresponse;
+package com.khang.backendecommerce.infrastructure.common.response.abstractresponse;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
