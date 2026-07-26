@@ -1,4 +1,4 @@
-package com.khang.backendecommerce.infrastructure.common.response;
+package com.khang.backendecommerce.infrastructure.common.entity.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
