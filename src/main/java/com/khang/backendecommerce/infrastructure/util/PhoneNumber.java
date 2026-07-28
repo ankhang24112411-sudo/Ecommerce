@@ -1,4 +1,4 @@
-package com.khang.backendecommerce.infrastructure.util;
+package com.khang.backendecommerce.infrastructure.validator;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
