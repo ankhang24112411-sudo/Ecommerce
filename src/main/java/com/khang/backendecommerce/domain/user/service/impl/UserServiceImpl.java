@@ -53,5 +53,10 @@ public class UserServiceImpl implements UserService {
         return userRepo.findByEmail(email).orElseThrow(() -> new RessourceNotFoundException("Email not found"));
     }
 
+    @Override
+    public void saveUser(UserEntity user) {
+         userRepo.save(user);
+    }
+
 
 }

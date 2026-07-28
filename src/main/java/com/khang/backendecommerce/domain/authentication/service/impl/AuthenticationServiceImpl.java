@@ -1,5 +1,6 @@
 package com.khang.backendecommerce.domain.authentication.service.impl;
 
+import com.khang.backendecommerce.domain.authentication.dto.request.ResetPasswordDTO;
 import com.khang.backendecommerce.domain.authentication.dto.request.SignInRequest;
 import com.khang.backendecommerce.domain.authentication.dto.response.TokenResponse;
 import com.khang.backendecommerce.domain.authentication.entity.TokenEntity;
@@ -18,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import static org.springframework.http.HttpHeaders.REFERER;
 
@@ -33,6 +35,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final TokenService tokenService;
     private final UserService userService;
     private final JwtService jwtService;
+    private final PasswordEncoder passwordEncoder;
     @Override
     public TokenResponse authenticate(SignInRequest request) {
 
@@ -113,21 +116,20 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     public String resetPassword(String secretKey) {
         final String userName = jwtService.extractUsername(secretKey, TokenType.RESET_TOKEN);
         var user = userService.getByUsername(userName);
-        return "Reset";
+        return "Sent this key along with your new Password";
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
+    @Override
+    public String changePassword(ResetPasswordDTO request) {
+        final String userName = jwtService.extractUsername(request.getSecretKey(), TokenType.RESET_TOKEN);
+        var user = userService.getByUsername(userName);
+       if(!request.getConfirmPassword().equals(request.getPassword())){
+           throw new InvalidDataException("Password not matched");
+       }
+       user.setPassword(passwordEncoder.encode(request.getPassword()));
+       userService.saveUser(user);
+        return "Password changed successfully";
+    }
 
 
     private UserEntity validateToken(String token){

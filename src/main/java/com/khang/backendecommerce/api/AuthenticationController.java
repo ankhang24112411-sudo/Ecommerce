@@ -1,5 +1,6 @@
 package com.khang.backendecommerce.api;
 
+import com.khang.backendecommerce.domain.authentication.dto.request.ResetPasswordDTO;
 import com.khang.backendecommerce.domain.authentication.service.AuthenticationService;
 import com.khang.backendecommerce.domain.user.repository.UserRepository;
 import com.khang.backendecommerce.domain.authentication.dto.response.TokenResponse;
@@ -36,6 +37,7 @@ public class AuthenticationController {
     public ResponseEntity<String> logout (HttpServletRequest request){
         return new ResponseEntity<>( authenticationService.logout(request), HttpStatus.OK);
     }
+    //TODO call API
     @PostMapping("/forgot-password")
     public ResponseEntity<String> forgotPassword(@RequestBody String email){
         return new ResponseEntity<>(authenticationService.forgotPassword(email), HttpStatus.OK);
@@ -44,6 +46,9 @@ public class AuthenticationController {
     public ResponseEntity<String> resetPassword(@RequestBody String secretKey){
         return new ResponseEntity<>(authenticationService.resetPassword(secretKey), HttpStatus.OK);
     }
-
+    @PostMapping("/change-password")
+    public ResponseEntity<String> changePassword(@RequestBody ResetPasswordDTO request){
+        return new ResponseEntity<>(authenticationService.changePassword(request), HttpStatus.OK);
+    }
 
 }

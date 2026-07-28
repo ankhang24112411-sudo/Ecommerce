@@ -10,4 +10,5 @@ public interface UserService {
     UserEntity getByUsername(String username);
     UserEntity getByEmail(String email);
 
+    void saveUser(UserEntity user);
 }
