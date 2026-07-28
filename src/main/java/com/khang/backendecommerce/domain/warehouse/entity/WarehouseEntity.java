@@ -1,4 +1,4 @@
-package com.khang.backendecommerce.domain.catalog.warehouse.entity;
+package com.khang.backendecommerce.domain.warehouse.entity;
 
 import com.khang.backendecommerce.infrastructure.common.entity.abstractentity.AbstractEntity;
 import com.khang.backendecommerce.domain.location.entity.StateEntity;

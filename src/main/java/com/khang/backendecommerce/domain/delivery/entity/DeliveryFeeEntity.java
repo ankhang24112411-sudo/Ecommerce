@@ -16,7 +16,7 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @Entity
 @Table(name ="tbl_delivery_fee")
-public class DeliveryFee extends AbstractEntity<String> implements Serializable {
+public class DeliveryFeeEntity extends AbstractEntity<String> implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "company_id")
     private DeliveryCompanyEntity companyId ;
@@ -29,6 +29,6 @@ public class DeliveryFee extends AbstractEntity<String> implements Serializable 
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "delivery_route_id")
-    private DeliveryRoute deliveryRouteId ;
+    private DeliveryRouteEntity deliveryRouteId ;
 
 }

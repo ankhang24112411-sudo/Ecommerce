@@ -1,7 +1,7 @@
 package com.khang.backendecommerce.infrastructure.exception;
 
-public class ResourceNotFoundException extends RuntimeException {
-    public ResourceNotFoundException(String message){
+public class RessourceNotFoundException extends RuntimeException {
+    public RessourceNotFoundException(String message){
         super(message);
     }
 }

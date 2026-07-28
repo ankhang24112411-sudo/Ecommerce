@@ -1,4 +1,4 @@
-package com.khang.backendecommerce.infrastructure.validator;
+package com.khang.backendecommerce.infrastructure.util;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;

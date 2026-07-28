@@ -1,7 +1,6 @@
-package com.khang.backendecommerce.domain.catalog.product.entity;
+package com.khang.backendecommerce.domain.product.entity;
 
-import com.khang.backendecommerce.domain.catalog.category.entity.CategoryEntity;
-import com.khang.backendecommerce.domain.catalog.inventory.entity.InventoryEntity;
+import com.khang.backendecommerce.domain.category.entity.CategoryEntity;
 import com.khang.backendecommerce.infrastructure.common.entity.abstractentity.AbstractEntity;
 import com.khang.backendecommerce.domain.store.entity.StoreEntity;
 import jakarta.persistence.*;

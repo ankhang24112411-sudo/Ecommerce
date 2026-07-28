@@ -1,4 +1,5 @@
-package com.khang.backendecommerce.infrastructure.validator;
+package com.khang.backendecommerce.infrastructure.util;
 
-public class TokenType {
+public enum TokenType {
+    ACCESS_TOKEN, REFRESH_TOKEN, RESET_TOKEN
 }

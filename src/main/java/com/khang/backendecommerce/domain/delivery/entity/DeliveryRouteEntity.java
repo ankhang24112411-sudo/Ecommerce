@@ -15,20 +15,20 @@ import java.io.Serializable;
 @AllArgsConstructor
 @Entity
 @Table(name ="tbl_delivery_route")
-public class DeliveryRoute extends AbstractEntity<String> implements Serializable {
+public class DeliveryRouteEntity extends AbstractEntity<String> implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "state_from_id")
-    private StateEntity stateFromId ;
+    private StateEntity stateFrom ;
 
     @Column(name = "state_from_name")
-    private String stateFrom ;
+    private String stateFromName ;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "state_to_id")
-    private String stateToId ;
+    private StateEntity stateTo ;
 
     @Column(name = "state_to_name")
-    private String stateTo ;
+    private String stateToName ;
 
 
 }

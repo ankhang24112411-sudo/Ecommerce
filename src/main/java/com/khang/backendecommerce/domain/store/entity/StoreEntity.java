@@ -1,9 +1,8 @@
-package com.khang.backendecommerce.store.entity;
+package com.khang.backendecommerce.domain.store.entity;
 
-import com.khang.backendecommerce.catalog.inventory.entity.InventoryEntity;
-import com.khang.backendecommerce.common.entity.abstractentity.AbstractEntity;
-import com.khang.backendecommerce.location.entity.StateEntity;
-import com.khang.backendecommerce.user.dto.UserEntity;
+import com.khang.backendecommerce.infrastructure.common.entity.abstractentity.AbstractEntity;
+import com.khang.backendecommerce.domain.location.entity.StateEntity;
+import com.khang.backendecommerce.domain.user.entity.UserEntity;
 import jakarta.persistence.*;
 import lombok.*;
 

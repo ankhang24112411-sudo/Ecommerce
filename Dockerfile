@@ -1,4 +1,9 @@
-FROM ubuntu:latest
-LABEL authors="An Khang Nguyen"
+FROM eclipse-temurin:17-jdk
 
-ENTRYPOINT ["top", "-b"]
+ARG JAR_FILE=target/*.jar
+
+ADD ${JAR_FILE} backend-service.jar
+
+ENTRYPOINT ["java", "-jar", "backend-service.jar"]
+
+EXPOSE 80

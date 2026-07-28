@@ -18,7 +18,7 @@ import java.io.Serializable;
 @Entity
 @Table(name ="tbl_delivery_company")
 
-public class DeliveryCompany extends AbstractEntity<String> implements Serializable {
+public class DeliveryCompanyEntity extends AbstractEntity<String> implements Serializable {
     @Column(name = "name")
     private String name ;
 

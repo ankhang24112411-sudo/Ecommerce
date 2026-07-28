@@ -1,0 +1,46 @@
+
+services:
+
+  postgres:
+    image: postgis/postgis:18-3.6
+    container_name: postgres-ecommerce
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ecommerce_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+
+
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql
+  api-service:
+    container_name: api-ecommerce-1
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    ports:
+      - '8080:80'
+    networks:
+      - backend
+
+  redis:
+    image: redis:6.2-alpine
+    container_name: redis-ecommerce
+    hostname: redis
+    ports:
+      - '6379:6379'
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+      - REDIS_DISABLE_COMMANDS=FLUSHDB;FLUSHALL
+    networks:
+      - backend
+
+
+networks:
+  backend:
+    driver: bridge
+
+volumes:
+  postgres_data:

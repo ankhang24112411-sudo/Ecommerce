@@ -1,26 +1,57 @@
-package com.khang.backendecommerce.domain.user.service;
+package com.khang.backendecommerce.domain.user.service.impl;
 
 import com.khang.backendecommerce.domain.user.dto.UserCreationRequest;
+import com.khang.backendecommerce.domain.user.entity.UserEntity;
+import com.khang.backendecommerce.domain.user.mapper.UserMapper;
 import com.khang.backendecommerce.domain.user.repository.UserRepository;
+import com.khang.backendecommerce.domain.user.service.UserService;
+import com.khang.backendecommerce.infrastructure.exception.RessourceAlreadyExistException;
+import com.khang.backendecommerce.infrastructure.exception.RessourceNotFoundException;
+import com.khang.backendecommerce.infrastructure.util.ValidationUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+
 @Slf4j(topic = "USER - SERVICE")
-public class UserServiceImpl implements UserService{
+public class UserServiceImpl implements UserService {
     private final UserRepository userRepo;
+    private final UserMapper userMapper;
+    // Không inject từ Spring
+    private final PasswordEncoder passwordEncoder ;
+
     @Override
     public UserDetailsService userDetailsService() {
-        return username ->  userRepo.findByEmail(username).orElseThrow(() ->  new UsernameNotFoundException("Username not found"));
+        return username ->  userRepo.findByUsername(username).orElseThrow(() ->  new UsernameNotFoundException("Username not found"));
 
     }
 
     @Override
-    public long addUser(UserCreationRequest request) {
-        return 0;
+    public String addUser(UserCreationRequest request) {
+        log.info("Username nhận được: " + request.getUsername());
+      ValidationUtils.throwIf(userRepo.existsByUsername(request.getUsername()),() -> new RessourceAlreadyExistException("Username was existed , please choose a new one"));
+      ValidationUtils.throwIf(userRepo.existsByEmail(request.getEmail()),() -> new RessourceAlreadyExistException("Email was existed , please choose a new one"));
+     UserEntity user = userMapper.toUser(request);
+     user.setPassword(passwordEncoder.encode(request.getPassword()));
+     user.setCreatedBy(user.getId());
+     userRepo.save(user);
+        return "User account";
     }
+
+    @Override
+    public UserEntity getByUsername(String username) {
+        return userRepo.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+    }
+
+    @Override
+    public UserEntity getByEmail(String email) {
+        return userRepo.findByEmail(email).orElseThrow(() -> new RessourceNotFoundException("Email not found"));
+    }
+
+
 }

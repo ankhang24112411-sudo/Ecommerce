@@ -1,4 +1,4 @@
-package com.khang.backendecommerce.common.enums;
+package com.khang.backendecommerce.infrastructure.common.enums;
 
 public enum InventoryStatus {
     IN_STOCK,

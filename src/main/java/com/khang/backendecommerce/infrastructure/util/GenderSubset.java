@@ -1,4 +1,4 @@
-package com.khang.backendecommerce.infrastructure.validator;
+package com.khang.backendecommerce.infrastructure.util;
 
 import com.khang.backendecommerce.infrastructure.common.enums.Gender;
 import jakarta.validation.Constraint;

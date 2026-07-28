@@ -1,0 +1,44 @@
+spring:
+  config:
+    activate:
+      on-profile: dev
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+  devtools:
+    add-properties: true
+  datasource:
+    url: ${POSTGRES_URL:jdbc:postgresql://localhost:5432/ecommerce_db}
+    username: postgres
+    password: password
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+  redis:
+    host: 127.0.0.1
+    port: 6379
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+openapi:
+  service:
+    api-docs: backend-service
+    serverUrl: http://localhost:${server.port}
+    serverName: Backend Ecommerce
+    title: API Document
+    version: 1.0.0
+
+jwt:
+  expiryHour: 1
+  expiryDay: 14
+#  accessKey: W67o+i+V3zqPWoXxz+ozJBIVdFjr8u7Gp0v8m+6ZGlU=
+  refreshKey: 4BwG64r1O71QNwN2ct6oa7ggZtKq7xcxFMjuyxfx+LI=
+  accessKey: 2FJ9hw+7jkLezI4zqzpIJmlkVL2zJlI1AtriAIoSjYU=

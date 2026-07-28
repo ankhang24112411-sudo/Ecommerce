@@ -1,6 +1,6 @@
 package com.khang.backendecommerce.domain.discount.entity;
 
-import com.khang.backendecommerce.domain.user.entity.UserEntity;
+import com.khang.backendecommerce.domain.cart.entity.CartEntity;
 import com.khang.backendecommerce.infrastructure.common.entity.abstractentity.AbstractEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -16,8 +16,16 @@ import java.io.Serializable;
 @AllArgsConstructor
 @Entity
 @Table(name ="tbl_order")
-public class DiscountCart  extends AbstractEntity<String> implements Serializable {
+public class DiscountCartEntity extends AbstractEntity<String> implements Serializable {
+
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "state_id")
-    private UserEntity state ;
+    @JoinColumn(name = "cart_id")
+    private CartEntity cart ;
+
+    @Column(name ="discount_quantity")
+    private Integer discountQuantity;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "discount_id")
+    private DiscountCustomerEntity discountCustomer ;
 }

@@ -1,6 +1,6 @@
 package com.khang.backendecommerce.domain.cart.entity;
 
-import com.khang.backendecommerce.domain.catalog.product.entity.ProductEntity;
+import com.khang.backendecommerce.domain.product.entity.ProductEntity;
 import com.khang.backendecommerce.infrastructure.common.entity.abstractentity.AbstractEntity;
 import com.khang.backendecommerce.infrastructure.common.enums.InventoryStatus;
 import jakarta.persistence.*;
@@ -20,14 +20,14 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @Entity
 @Table(name ="tbl_cart_item")
-public class CartItem extends AbstractEntity<String> implements Serializable {
+public class CartItemEntity extends AbstractEntity<String> implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cart_id")
-    private CartEntity cartId;
+    private CartEntity cart;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
-    private ProductEntity productId;
+    private ProductEntity product;
 
     @Column(name = "quantity")
     private Integer quantity;

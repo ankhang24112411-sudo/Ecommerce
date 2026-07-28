@@ -1,7 +1,7 @@
-package com.khang.backendecommerce.domain.catalog.inventory.entity;
+package com.khang.backendecommerce.domain.inventory.entity;
 
-import com.khang.backendecommerce.domain.catalog.product.entity.ProductEntity;
-import com.khang.backendecommerce.domain.catalog.warehouse.entity.WarehouseEntity;
+import com.khang.backendecommerce.domain.product.entity.ProductEntity;
+import com.khang.backendecommerce.domain.warehouse.entity.WarehouseEntity;
 import com.khang.backendecommerce.infrastructure.common.entity.abstractentity.AbstractEntity;
 import com.khang.backendecommerce.infrastructure.common.enums.InventoryStatus;
 import jakarta.persistence.*;

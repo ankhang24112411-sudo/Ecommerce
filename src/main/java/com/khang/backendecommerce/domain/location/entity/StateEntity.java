@@ -1,6 +1,6 @@
-package com.khang.backendecommerce.location.entity;
+package com.khang.backendecommerce.domain.location.entity;
 
-import com.khang.backendecommerce.common.entity.abstractentity.AbstractEntity;
+import com.khang.backendecommerce.infrastructure.common.entity.abstractentity.AbstractEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.*;

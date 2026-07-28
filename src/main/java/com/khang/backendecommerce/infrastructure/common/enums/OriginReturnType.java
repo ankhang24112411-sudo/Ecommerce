@@ -1,4 +1,6 @@
 package com.khang.backendecommerce.infrastructure.common.enums;
 
-public enum OrginReturnType {
+public enum OriginReturnType {
+    CUSTOMER_REQUEST,
+    FAILED_DELIVERY
 }

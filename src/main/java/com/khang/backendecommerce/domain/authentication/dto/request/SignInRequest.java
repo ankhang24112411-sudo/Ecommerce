@@ -1,11 +1,12 @@
-package com.khang.backendecommerce.infrastructure.request;
+package com.khang.backendecommerce.domain.authentication.dto.request;
 
 import com.khang.backendecommerce.infrastructure.common.enums.Platform;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import lombok.Getter;
 
 import java.io.Serializable;
 
+@Getter
 public class SignInRequest implements Serializable {
 
     @NotBlank(message = "username must be not null")

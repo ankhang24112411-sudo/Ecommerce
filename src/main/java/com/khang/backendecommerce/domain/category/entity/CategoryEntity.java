@@ -1,4 +1,4 @@
-package com.khang.backendecommerce.domain.catalog.category.entity;
+package com.khang.backendecommerce.domain.category.entity;
 
 import com.khang.backendecommerce.infrastructure.common.entity.abstractentity.AbstractEntity;
 import jakarta.persistence.Column;

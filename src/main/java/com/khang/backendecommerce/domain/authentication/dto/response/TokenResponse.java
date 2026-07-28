@@ -1,11 +1,12 @@
-package com.khang.backendecommerce.infrastructure.common.entity.response;
+package com.khang.backendecommerce.domain.authentication.dto.response;
 
-import jakarta.validation.constraints.NotBlank;
+import lombok.Builder;
 import lombok.Getter;
 
 import java.io.Serializable;
 
 @Getter
+@Builder
 public class TokenResponse implements Serializable {
     private String accessToken;
     private String refreshToken;

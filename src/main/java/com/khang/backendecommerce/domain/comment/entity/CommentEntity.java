@@ -1,12 +1,11 @@
-package com.khang.backendecommerce.domain.catalog.comment.entity;
+package com.khang.backendecommerce.domain.comment.entity;
 
-import com.khang.backendecommerce.domain.catalog.product.entity.ProductEntity;
+import com.khang.backendecommerce.domain.product.entity.ProductEntity;
 import com.khang.backendecommerce.domain.order.entity.OrderItem;
 import com.khang.backendecommerce.domain.store.entity.StoreEntity;
 import com.khang.backendecommerce.domain.user.entity.UserEntity;
 import com.khang.backendecommerce.infrastructure.common.entity.abstractentity.AbstractEntity;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Max;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

@@ -1,7 +1,5 @@
-package com.khang.backendecommerce.infrastructure.validator;
+package com.khang.backendecommerce.infrastructure.util;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import lombok.experimental.UtilityClass;
 
 import java.util.function.Predicate;

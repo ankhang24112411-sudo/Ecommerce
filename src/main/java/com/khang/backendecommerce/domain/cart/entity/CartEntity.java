@@ -1,8 +1,8 @@
-package com.khang.backendecommerce.cart.entity;
+package com.khang.backendecommerce.domain.cart.entity;
 
-import com.khang.backendecommerce.common.entity.abstractentity.AbstractEntity;
-import com.khang.backendecommerce.delivery.entity.DeliveryFee;
-import com.khang.backendecommerce.user.dto.UserEntity;
+import com.khang.backendecommerce.infrastructure.common.entity.abstractentity.AbstractEntity;
+import com.khang.backendecommerce.domain.delivery.entity.DeliveryFeeEntity;
+import com.khang.backendecommerce.domain.user.entity.UserEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,6 +11,8 @@ import lombok.Setter;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -20,25 +22,24 @@ import java.math.BigDecimal;
 @Table(name ="tbl_cart")
 public class CartEntity extends AbstractEntity<String> implements Serializable {
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "discount_cart_id")
-    private String discountCartId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private UserEntity userId;
+    private UserEntity user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private DeliveryFee deliveryFeeId;
+    @JoinColumn(name = "delivery_fee_id")
+    private DeliveryFeeEntity deliveryFeeEntity;
 
-    @Column(name ="subtotal")
-    private BigDecimal subtotal;
+    @Column(name ="subtotal" , precision = 12 , scale = 2)
+    private BigDecimal subtotal = BigDecimal.ZERO;
 
-    @Column(name = "delivery_amount")
-    private BigDecimal deliveryAmount;
+    @Column(name = "delivery_amount" , precision = 12 , scale = 2 )
+    private BigDecimal deliveryAmount = BigDecimal.ZERO;
 
-    @Column(name = "total_amount")
-    private BigDecimal totalAmount;
+    @Column(name = "total_amount" , precision = 12 , scale = 2)
+    private BigDecimal totalAmount = BigDecimal.ZERO;
 
+    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL,orphanRemoval = true)
+    private List<CartItemEntity> cartItemList = new ArrayList<>();
 }

@@ -1,14 +1,13 @@
-package com.khang.backendecommerce.common.entity.abstractentity;
+package com.khang.backendecommerce.infrastructure.common.entity.abstractentity;
 
-import com.khang.backendecommerce.user.dto.UserEntity;
+import com.khang.backendecommerce.domain.user.entity.UserEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.CollectionIdJdbcTypeCode;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.Temporal;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.Instant;
 
@@ -18,26 +17,27 @@ import java.time.Instant;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class AbstractEntity<T> {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private T id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "id", nullable = false, updatable = false, length = 36)
+    private String id;
 
-    @Column(name = "created_at", updatable = false)
+    @Column(name = "created_at", updatable = false , nullable = false)
     @CreationTimestamp
     private Instant createdAt;
 
-    @Column(name = "updated_at", updatable = false)
-    @CreationTimestamp
+    @Column(name = "updated_at",  nullable = false)
+    @UpdateTimestamp
     private Instant updatedAt;
 
-    @Column(name = "deleted" , updatable = false)
+    @Column(name = "deleted" )
     private Short deleted;
 
-    @OneToOne
-    @JoinColumn(name = "created_by")
-    private UserEntity createdBy;
+    @Column(name = "created_by")
+    private String createdBy;
 
-    @OneToOne
-    @JoinColumn(name = "updated_by")
-    private UserEntity updatedBy;
+    @Column(name = "updated_by")
+    private String updatedBy;
+
+
 
 }
