@@ -1,5 +1,6 @@
 package com.khang.backendecommerce.api;
 
+import com.khang.backendecommerce.domain.cart.dto.request.CartItemQuantityUpdate;
 import com.khang.backendecommerce.domain.cart.dto.response.CartItemResponse;
 import com.khang.backendecommerce.domain.cart.service.CartService;
 import com.khang.backendecommerce.infrastructure.common.dto.response.ResponseData;
@@ -28,6 +29,6 @@ public class CartController {
     @GetMapping("/mycart/{itemId}")
     public ResponseEntity<CartItemResponse> updateCartItemQuantity(@PathVariable String itemId,
                                                                    @RequestBody CartItemQuantityUpdate request){
-        return new ResponseEntity<>(cartService.getAllCartItems() , HttpStatus.OK);
+        return new ResponseEntity<>(cartService.updateCartItemQuantity(itemId, request.getQuantity()) , HttpStatus.OK);
     }
 }

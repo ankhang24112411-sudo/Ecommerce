@@ -24,7 +24,7 @@ public class InventoryEntity extends AbstractEntity<String> implements Serializa
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
-    private ProductEntity productId ;
+    private ProductEntity product ;
 
     @Column(name = "sku")
     private String sku;
@@ -34,10 +34,10 @@ public class InventoryEntity extends AbstractEntity<String> implements Serializa
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "warehouse_id")
-    private WarehouseEntity warehouseId ;
+    private WarehouseEntity warehouse ;
 
     @Column(name = "available_quantity")
-    private String quantity;
+    private Integer quantity;
 
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)

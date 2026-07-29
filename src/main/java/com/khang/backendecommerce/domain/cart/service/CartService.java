@@ -6,4 +6,6 @@ import java.util.List;
 
 public interface CartService {
    List<CartItemResponse> getAllCartItems();
+
+   CartItemResponse updateCartItemQuantity(String itemId, Integer quantity);
 }
