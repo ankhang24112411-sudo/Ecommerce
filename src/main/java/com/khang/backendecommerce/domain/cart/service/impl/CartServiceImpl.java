@@ -18,8 +18,6 @@ public class CartServiceImpl implements CartService {
     private final CartRepository cartRepo;
     @Override
     public List<CartItemResponse> getAllCartItems() {
-        UserEntity user = currentUserProvider.getCurrentUser();
-
-        return List.of();
+        return cartRepo.getAllCartItems(currentUserProvider.getCurrentUserId());
     }
 }

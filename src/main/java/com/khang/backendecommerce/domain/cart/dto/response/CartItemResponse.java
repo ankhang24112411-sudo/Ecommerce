@@ -14,5 +14,14 @@ public class CartItemResponse {
     private BigDecimal subtotal;
     private Integer quantity;
     private InventoryStatus inventoryStatus;
+    public CartItemResponse(String image, String name, BigDecimal subtotal, Integer quantity, String inventoryStatus) {
+        this.image = image;
+        this.name = name;
+        this.subtotal = subtotal;
+        this.quantity = quantity;
+        this.inventoryStatus = InventoryStatus.valueOf(inventoryStatus);
+    }
+
+
 
 }

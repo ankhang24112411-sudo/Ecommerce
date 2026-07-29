@@ -9,9 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -27,5 +25,9 @@ public class CartController {
       public ResponseEntity<List<CartItemResponse>> getAllCartItems(){
           return new ResponseEntity<>(cartService.getAllCartItems() , HttpStatus.OK);
       }
-
+    @GetMapping("/mycart/{itemId}")
+    public ResponseEntity<CartItemResponse> updateCartItemQuantity(@PathVariable String itemId,
+                                                                   @RequestBody CartItemQuantityUpdate request){
+        return new ResponseEntity<>(cartService.getAllCartItems() , HttpStatus.OK);
+    }
 }
