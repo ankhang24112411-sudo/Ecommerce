@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -23,8 +24,10 @@ import java.io.IOException;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 @Component
-@Slf4j
+@Slf4j(topic = "CUSTOMIZE - FILTER")
+@EnableMethodSecurity(prePostEnabled = true)
 @RequiredArgsConstructor
+
 public class PreFilter extends OncePerRequestFilter {
 
     private static final String BEARER_PREFIX = "Bearer ";
