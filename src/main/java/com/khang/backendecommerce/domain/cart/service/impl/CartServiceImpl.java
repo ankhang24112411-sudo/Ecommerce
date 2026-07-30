@@ -39,6 +39,7 @@ public class CartServiceImpl implements CartService {
     private final InventoryRepository inventoryRepo;
     private final CartMapper cartMapper;
     private final InventoryService inventoryService;
+    private final ProductService productService;
     @Override
     public List<CartItemResponse> getAllCartItems() {
         return cartRepo.getAllCartItems(currentUserProvider.getCurrentUserId());
@@ -81,7 +82,10 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public OrderSummaryResponse createBuyNow(UserEntity user, DiscountCustomerEntity discount, String productId) {
-        CartEntity cart = ca
+        CartEntity cart = cartRepo.findByUserId(user.getId());
+        if(cart == null ){
+//            return createNewCart(user, )
+        }
         return null;
     }
 

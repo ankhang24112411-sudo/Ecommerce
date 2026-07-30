@@ -25,6 +25,8 @@ where tc.user_id = :userId
 """ , nativeQuery = true)
     List<CartItemResponse> getAllCartItems(@Param("userId") String userId);
 
+    CartEntity findByUserId(String id);
+
 
 //@Query(value = """
 //
