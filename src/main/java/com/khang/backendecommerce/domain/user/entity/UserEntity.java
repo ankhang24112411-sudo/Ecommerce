@@ -1,5 +1,6 @@
 package com.khang.backendecommerce.domain.user.entity;
 
+import com.khang.backendecommerce.domain.cart.entity.CartEntity;
 import com.khang.backendecommerce.infrastructure.common.entity.abstractentity.AbstractEntity;
 import com.khang.backendecommerce.infrastructure.common.enums.Gender;
 import com.khang.backendecommerce.domain.location.entity.StateEntity;
@@ -57,6 +58,9 @@ public class UserEntity extends AbstractEntity<String> implements UserDetails,Se
 
     @Column (name = "password")
     private String password;
+
+    @OneToOne(mappedBy = "user")
+    private CartEntity cart;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "state_id")

@@ -14,6 +14,7 @@ import org.hibernate.type.SqlTypes;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -31,10 +32,10 @@ public class DiscountEntity extends AbstractEntity<String> implements Serializab
     private DiscountType discountType;
 
     @Column(name ="valid_from")
-    private  valid_from;
+    private Instant validFrom;
 
     @Column(name ="valid_to")
-    private Instant valid_to;
+    private Instant validTo;
 
     @Column(name ="discount_value")
     private BigDecimal discountValue = BigDecimal.ZERO;

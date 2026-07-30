@@ -1,5 +1,7 @@
 package com.khang.backendecommerce.domain.ordersummary.service.impl;
 
+import com.khang.backendecommerce.domain.cart.service.CartService;
+import com.khang.backendecommerce.domain.discount.entity.DiscountCustomerEntity;
 import com.khang.backendecommerce.domain.discount.service.DiscountService;
 import com.khang.backendecommerce.domain.ordersummary.dto.request.OrderSummaryRequest;
 import com.khang.backendecommerce.domain.ordersummary.dto.response.OrderSummaryResponse;
@@ -16,15 +18,17 @@ import org.springframework.stereotype.Service;
 public class OrderSummaryServiceImpl implements OrderSummaryService {
     private final CurrentUserProvider currentUserProvider;
     private final DiscountService discountService;
+    private final CartService cartService;
     @Override
     public OrderSummaryResponse createOrderSummaryRequest(OrderSummaryRequest orderSummaryRequest) {
+        DiscountCustomerEntity discount;
         UserEntity user = currentUserProvider.getCurrentUser();
         if(orderSummaryRequest.getDiscountName() != null){
-           discountService.checkDiscountValidationFromUser(user.getId(), orderSummaryRequest.getDiscountName());
+          discount = discountService.checkDiscountValidationFromUser(user.getId(), orderSummaryRequest.getDiscountName());
         }
         final var orderSource = orderSummaryRequest.getOrderSummarySource();
         switch (orderSource){
-//            case BUY_NOW ->
+            case BUY_NOW -> cartService.createBuyNow(user,discount,orderSummaryRequest.getProductId());
         }
         return null;
     }

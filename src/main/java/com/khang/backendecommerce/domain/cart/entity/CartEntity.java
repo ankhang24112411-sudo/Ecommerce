@@ -23,7 +23,7 @@ import java.util.List;
 public class CartEntity extends AbstractEntity<String> implements Serializable {
 
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private UserEntity user;
 

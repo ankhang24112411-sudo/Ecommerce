@@ -8,9 +8,11 @@ import com.khang.backendecommerce.domain.cart.projection.CartMapper;
 import com.khang.backendecommerce.domain.cart.repo.CartItemRepository;
 import com.khang.backendecommerce.domain.cart.repo.CartRepository;
 import com.khang.backendecommerce.domain.cart.service.CartService;
+import com.khang.backendecommerce.domain.discount.entity.DiscountCustomerEntity;
 import com.khang.backendecommerce.domain.inventory.entity.InventoryEntity;
 import com.khang.backendecommerce.domain.inventory.repo.InventoryRepository;
 import com.khang.backendecommerce.domain.inventory.service.InventoryService;
+import com.khang.backendecommerce.domain.ordersummary.dto.response.OrderSummaryResponse;
 import com.khang.backendecommerce.domain.product.entity.ProductEntity;
 import com.khang.backendecommerce.domain.user.entity.UserEntity;
 import com.khang.backendecommerce.infrastructure.configuration.CurrentUserProvider;
@@ -75,6 +77,12 @@ public class CartServiceImpl implements CartService {
         CartItemEntity cartItem = cartItemRepo.findById(itemId).orElseThrow(() -> new RessourceNotFoundException("Cannot find your cart item"));
         cartItemRepo.delete(cartItem);
         return "Delete CartItem successful";
+    }
+
+    @Override
+    public OrderSummaryResponse createBuyNow(UserEntity user, DiscountCustomerEntity discount, String productId) {
+        CartEntity cart = ca
+        return null;
     }
 
 
