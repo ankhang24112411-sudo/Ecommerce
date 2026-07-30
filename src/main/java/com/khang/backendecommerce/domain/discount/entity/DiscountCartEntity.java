@@ -10,22 +10,22 @@ import lombok.Setter;
 
 import java.io.Serializable;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Entity
-@Table(name ="tbl_order")
-public class DiscountCartEntity extends AbstractEntity<String> implements Serializable {
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "cart_id")
-    private CartEntity cart ;
-
-    @Column(name ="discount_quantity")
-    private Integer discountQuantity;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "discount_id")
-    private DiscountCustomerEntity discountCustomer ;
-}
+//@Getter
+//@Setter
+//@NoArgsConstructor
+//@AllArgsConstructor
+//@Entity
+//@Table(name ="tbl_order")
+//public class DiscountCartEntity extends AbstractEntity<String> implements Serializable {
+//
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "cart_id")
+//    private CartEntity cart ;
+//
+//    @Column(name ="discount_quantity")
+//    private Integer discountQuantity;
+//
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "discount_id")
+//    private DiscountCustomerEntity discountCustomer ;
+//}

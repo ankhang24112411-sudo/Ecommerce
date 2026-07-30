@@ -1,5 +1,6 @@
 package com.khang.backendecommerce.domain.cart.entity;
 
+import com.khang.backendecommerce.domain.discount.entity.DiscountCustomerEntity;
 import com.khang.backendecommerce.infrastructure.common.entity.abstractentity.AbstractEntity;
 import com.khang.backendecommerce.domain.delivery.entity.DeliveryFeeEntity;
 import com.khang.backendecommerce.domain.user.entity.UserEntity;
@@ -30,12 +31,14 @@ public class CartEntity extends AbstractEntity<String> implements Serializable {
     @Column(name ="subtotal" , precision = 12 , scale = 2)
     private BigDecimal subtotal = BigDecimal.ZERO;
 
-    @Column(name = "delivery_amount" , precision = 12 , scale = 2 )
-    private BigDecimal deliveryAmount = BigDecimal.ZERO;
+//    @Column(name = "delivery_amount" , precision = 12 , scale = 2 )
+//    private BigDecimal deliveryAmount = BigDecimal.ZERO;
 
     @Column(name = "total_amount" , precision = 12 , scale = 2)
     private BigDecimal totalAmount = BigDecimal.ZERO;
-
+        @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "discount_id")
+    private DiscountCustomerEntity discount ;
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL,orphanRemoval = true)
     private List<CartItemEntity> cartItemList = new ArrayList<>();
 

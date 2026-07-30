@@ -25,6 +25,7 @@ public class OrderSummaryServiceImpl implements OrderSummaryService {
         UserEntity user = currentUserProvider.getCurrentUser();
         if(orderSummaryRequest.getDiscountName() != null){
           discount = discountService.checkDiscountValidationFromUser(user.getId(), orderSummaryRequest.getDiscountName());
+
         }
         final var orderSource = orderSummaryRequest.getOrderSummarySource();
         switch (orderSource){

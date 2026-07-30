@@ -12,26 +12,26 @@ import lombok.Setter;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Entity
-@Table(name ="tbl_discount_customer")
-public class DiscountOrderEntity extends AbstractEntity<String> implements Serializable {
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "order_id")
-    private OrderEntity order ;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "discount_id")
-    private DiscountCustomerEntity discountCustomer ;
-
-    @Column(name ="discount_quantity")
-    private Integer discountQuantity;
-
-    @Column(name ="discount_value" ,  precision = 12 , scale = 2)
-    private BigDecimal discountValue = BigDecimal.ZERO;
-
-
-}
+//@Getter
+//@Setter
+//@NoArgsConstructor
+//@AllArgsConstructor
+//@Entity
+//@Table(name ="tbl_discount_customer")
+//public class DiscountOrderEntity extends AbstractEntity<String> implements Serializable {
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "order_id")
+//    private OrderEntity order ;
+//
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "discount_id")
+//    private DiscountCustomerEntity discountCustomer ;
+//
+//    @Column(name ="discount_quantity")
+//    private Integer discountQuantity;
+//
+//    @Column(name ="discount_value" ,  precision = 12 , scale = 2)
+//    private BigDecimal discountValue = BigDecimal.ZERO;
+//
+//
+//}
