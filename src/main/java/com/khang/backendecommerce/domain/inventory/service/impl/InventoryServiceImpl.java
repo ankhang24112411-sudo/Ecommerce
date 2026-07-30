@@ -29,10 +29,13 @@ public class InventoryServiceImpl implements InventoryService {
 
     @Override
     public InventoryEntity findProductAvailability(ProductEntity product, int quantity) {
+        if(product.getDeleted() == 1){
+            throw new BusinessException(ErrorCode.PRODUCT_NOT_AVAILABLE);
+        }
         InventoryEntity inventory = checkProductExistingInventory(product.getId());
         if(inventory.getQuantity() - quantity < 0){
               throw new BusinessException(ErrorCode.INSUFFICIENT_STOCK);
         }
-        return null;
+        return inventory;
     }
 }

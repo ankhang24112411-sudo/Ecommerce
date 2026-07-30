@@ -18,6 +18,7 @@ import com.khang.backendecommerce.domain.product.entity.ProductEntity;
 import com.khang.backendecommerce.domain.product.repository.ProductRepository;
 import com.khang.backendecommerce.domain.product.service.ProductService;
 import com.khang.backendecommerce.domain.user.entity.UserEntity;
+import com.khang.backendecommerce.infrastructure.common.enums.DiscountType;
 import com.khang.backendecommerce.infrastructure.common.enums.InventoryStatus;
 import com.khang.backendecommerce.infrastructure.configuration.CurrentUserProvider;
 import com.khang.backendecommerce.infrastructure.exception.InvalidDataException;
@@ -95,24 +96,59 @@ public class CartServiceImpl implements CartService {
         if(cart == null ){
 //            return createNewCart(user, )
             cart = createNewCart(user,product, AppConst.BUY_NOW_QUANTITY);
+            return convertToOrderSummaryResponse(cart ,discount );
         }
+
         return null;
     }
+    private OrderSummaryResponse convertToOrderSummaryResponse(CartEntity entity,DiscountCustomerEntity discount ){
+        BigDecimal totalDiscountAmount = BigDecimal.ZERO;
+        BigDecimal totalAmount = BigDecimal.ZERO;
+         if(discount.getDiscount().getDiscountType() == DiscountType.FREE_SHIP ){
+             BigDecimal deliveryAmount = entity.getDeliveryAmount();
+             totalDiscountAmount = deliveryAmount.multiply(discount.getDiscountValue()).divide(BigDecimal.valueOf(100));
+             deliveryAmount = deliveryAmount.subtract(totalDiscountAmount);
+            return OrderSummaryResponse.builder()
+                    .subtotal(entity.getSubtotal())
+                    .discountAmount(totalDiscountAmount)
+                    .deliveryAmount()
+                    .totalAmount(entity.getTotalAmount().subtract(entity.getDeliveryAmount()))
+                    .build();
+         }
 
+    }
     private CartEntity createNewCart(UserEntity user,ProductEntity  product, int quantity) {
         InventoryEntity inventory = inventoryService.findProductAvailability(product, quantity);
         BigDecimal deliveryAmount = deliveryService.calculateProductDeliveryAmount(user, inventory);
-        return CartEntity.builder().subtotal().deliveryAmount().totalAmount().cartItemList().build();
+        BigDecimal subtotal = product.getPrice().multiply(BigDecimal.valueOf(quantity));
+        BigDecimal totalAmount = subtotal.add(deliveryAmount);
+
+      CartEntity cart =  CartEntity.builder()
+                .user(user)
+                .subtotal(subtotal)
+                .deliveryAmount(deliveryAmount)
+                .totalAmount(totalAmount)
+                .build();
+      CartItemEntity itemEntity = CartItemEntity.builder()
+              .cart(cart)
+              .product(product)
+              .quantity(quantity)
+              .subtotal(subtotal)
+              .inventoryStatus(inventory.getInventoryStatus())
+              .build();
+      cart.addCartItem(itemEntity);
+      cartRepo.save(cart);
+        return cart;
     }
 
 
-    public void checkNullQuantityCartItem(CartItemEntity cartItem, int quantityUpdate){
+    private void checkNullQuantityCartItem(CartItemEntity cartItem, int quantityUpdate){
         if(quantityUpdate < 0 && cartItem.getQuantity() - quantityUpdate <= 0){
             cartItemRepo.delete(cartItem);
         }
     }
 
-    public CartItemEntity checkCartItemFromUser(String cartItemId,CurrentUserProvider currentUserProvider){
+    private CartItemEntity checkCartItemFromUser(String cartItemId,CurrentUserProvider currentUserProvider){
         String userId = currentUserProvider.getCurrentUserId();
         return cartItemRepo.findByIdAndCart_User_Id(cartItemId , userId).orElseThrow(() -> new RessourceNotFoundException("Cart item not exists"));
     }

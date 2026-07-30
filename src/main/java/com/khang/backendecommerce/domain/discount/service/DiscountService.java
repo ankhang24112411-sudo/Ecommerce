@@ -7,5 +7,5 @@ import java.time.Instant;
 
 public interface DiscountService {
    DiscountCustomerEntity checkDiscountValidationFromUser(String userId , String voucherCode);
-   void checkDateDiscount(Instant validTo);
+   void checkDateDiscount(DiscountEntity discount);
 }
