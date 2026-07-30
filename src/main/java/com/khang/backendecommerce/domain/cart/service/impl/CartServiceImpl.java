@@ -48,8 +48,8 @@ public class CartServiceImpl implements CartService {
 
         final  CartItemEntity cartItem =   checkCartItemFromUser(cartItemId , currentUserProvider);
         checkNullQuantity(cartItem, quantityUpdate);
-        ProductEntity product = cartItem.getProduct();
-        InventoryEntity inventory = inventoryService.checkProductExistingInventory(product.getId());
+     final   ProductEntity product = cartItem.getProduct();
+     final   InventoryEntity inventory = inventoryService.checkProductExistingInventory(product.getId());
 
         if (quantityUpdate > 0 && inventory.getQuantity() - quantityUpdate <= 0) {
             throw new InvalidDataException("Quantity is not valid and the product will out of stock soon");

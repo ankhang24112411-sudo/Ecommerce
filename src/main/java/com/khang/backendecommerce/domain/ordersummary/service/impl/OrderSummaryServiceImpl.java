@@ -1,5 +1,6 @@
 package com.khang.backendecommerce.domain.ordersummary.service.impl;
 
+import com.khang.backendecommerce.domain.discount.service.DiscountService;
 import com.khang.backendecommerce.domain.ordersummary.dto.request.OrderSummaryRequest;
 import com.khang.backendecommerce.domain.ordersummary.dto.response.OrderSummaryResponse;
 import com.khang.backendecommerce.domain.ordersummary.service.OrderSummaryService;
@@ -14,10 +15,17 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class OrderSummaryServiceImpl implements OrderSummaryService {
     private final CurrentUserProvider currentUserProvider;
-
+    private final DiscountService discountService;
     @Override
     public OrderSummaryResponse createOrderSummaryRequest(OrderSummaryRequest orderSummaryRequest) {
-        UserEntity user =
+        UserEntity user = currentUserProvider.getCurrentUser();
+        if(orderSummaryRequest.getVoucherCode() != null){
+           discountService.checkDiscountValidationFromUser(user.getId(), orderSummaryRequest.getVoucherCode());
+        }
+        final var orderSource = orderSummaryRequest.getOrderSummarySource();
+        switch (orderSource){
+            case BUY_NOW ->
+        }
         return null;
     }
 
