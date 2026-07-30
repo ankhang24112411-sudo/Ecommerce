@@ -29,7 +29,7 @@ public class WarehouseEntity extends AbstractEntity<String> implements Serializa
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "state_id")
-    private StateEntity stateId;
+    private StateEntity state;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "store_id")

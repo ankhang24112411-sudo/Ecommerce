@@ -5,6 +5,8 @@ import com.khang.backendecommerce.domain.inventory.entity.InventoryEntity;
 import com.khang.backendecommerce.domain.inventory.repo.InventoryRepository;
 import com.khang.backendecommerce.domain.inventory.service.InventoryService;
 import com.khang.backendecommerce.domain.product.entity.ProductEntity;
+import com.khang.backendecommerce.infrastructure.common.enums.ErrorCode;
+import com.khang.backendecommerce.infrastructure.exception.BusinessException;
 import com.khang.backendecommerce.infrastructure.exception.InvalidDataException;
 import com.khang.backendecommerce.infrastructure.exception.RessourceNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -23,5 +25,14 @@ public class InventoryServiceImpl implements InventoryService {
     public InventoryEntity checkProductExistingInventory(String productId ){
         return inventoryRepo.findByProduct_Id(productId).orElseThrow(() -> new RessourceNotFoundException("Product not found"));
 
+    }
+
+    @Override
+    public InventoryEntity findProductAvailability(ProductEntity product, int quantity) {
+        InventoryEntity inventory = checkProductExistingInventory(product.getId());
+        if(inventory.getQuantity() - quantity < 0){
+              throw new BusinessException(ErrorCode.INSUFFICIENT_STOCK);
+        }
+        return null;
     }
 }

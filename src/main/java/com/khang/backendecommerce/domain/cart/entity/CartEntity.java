@@ -4,10 +4,7 @@ import com.khang.backendecommerce.infrastructure.common.entity.abstractentity.Ab
 import com.khang.backendecommerce.domain.delivery.entity.DeliveryFeeEntity;
 import com.khang.backendecommerce.domain.user.entity.UserEntity;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -19,6 +16,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@Builder
 @Table(name ="tbl_cart")
 public class CartEntity extends AbstractEntity<String> implements Serializable {
 
@@ -27,9 +25,7 @@ public class CartEntity extends AbstractEntity<String> implements Serializable {
     @JoinColumn(name = "user_id")
     private UserEntity user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "delivery_fee_id")
-    private DeliveryFeeEntity deliveryFeeEntity;
+
 
     @Column(name ="subtotal" , precision = 12 , scale = 2)
     private BigDecimal subtotal = BigDecimal.ZERO;
@@ -42,4 +38,9 @@ public class CartEntity extends AbstractEntity<String> implements Serializable {
 
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL,orphanRemoval = true)
     private List<CartItemEntity> cartItemList = new ArrayList<>();
+
+    public void addCartItem(CartItemEntity cartItem){
+        cartItemList.add(cartItem);
+        cartItem.setCart(this);
+    }
 }

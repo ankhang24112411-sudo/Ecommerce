@@ -21,7 +21,7 @@ public class OrderSummaryServiceImpl implements OrderSummaryService {
     private final CartService cartService;
     @Override
     public OrderSummaryResponse createOrderSummaryRequest(OrderSummaryRequest orderSummaryRequest) {
-        DiscountCustomerEntity discount;
+        DiscountCustomerEntity discount = null;
         UserEntity user = currentUserProvider.getCurrentUser();
         if(orderSummaryRequest.getDiscountName() != null){
           discount = discountService.checkDiscountValidationFromUser(user.getId(), orderSummaryRequest.getDiscountName());

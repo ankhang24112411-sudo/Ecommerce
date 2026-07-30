@@ -8,13 +8,17 @@ import com.khang.backendecommerce.domain.cart.projection.CartMapper;
 import com.khang.backendecommerce.domain.cart.repo.CartItemRepository;
 import com.khang.backendecommerce.domain.cart.repo.CartRepository;
 import com.khang.backendecommerce.domain.cart.service.CartService;
+import com.khang.backendecommerce.domain.delivery.service.DeliveryService;
 import com.khang.backendecommerce.domain.discount.entity.DiscountCustomerEntity;
 import com.khang.backendecommerce.domain.inventory.entity.InventoryEntity;
 import com.khang.backendecommerce.domain.inventory.repo.InventoryRepository;
 import com.khang.backendecommerce.domain.inventory.service.InventoryService;
 import com.khang.backendecommerce.domain.ordersummary.dto.response.OrderSummaryResponse;
 import com.khang.backendecommerce.domain.product.entity.ProductEntity;
+import com.khang.backendecommerce.domain.product.repository.ProductRepository;
+import com.khang.backendecommerce.domain.product.service.ProductService;
 import com.khang.backendecommerce.domain.user.entity.UserEntity;
+import com.khang.backendecommerce.infrastructure.common.enums.InventoryStatus;
 import com.khang.backendecommerce.infrastructure.configuration.CurrentUserProvider;
 import com.khang.backendecommerce.infrastructure.exception.InvalidDataException;
 import com.khang.backendecommerce.infrastructure.exception.RessourceNotFoundException;
@@ -36,10 +40,10 @@ public class CartServiceImpl implements CartService {
     private final  CurrentUserProvider currentUserProvider;
     private final CartRepository cartRepo;
     private final CartItemRepository cartItemRepo;
-    private final InventoryRepository inventoryRepo;
     private final CartMapper cartMapper;
     private final InventoryService inventoryService;
     private final ProductService productService;
+    private final DeliveryService deliveryService;
     @Override
     public List<CartItemResponse> getAllCartItems() {
         return cartRepo.getAllCartItems(currentUserProvider.getCurrentUserId());
@@ -49,12 +53,14 @@ public class CartServiceImpl implements CartService {
     @Transactional(rollbackFor = Exception.class)
     public CartItemPriceResponse updateCartItemQuantity(String cartItemId, Integer quantityUpdate) {
 
-        final  CartItemEntity cartItem =   checkCartItemFromUser(cartItemId , currentUserProvider);
-        checkNullQuantity(cartItem, quantityUpdate);
-     final   ProductEntity product = cartItem.getProduct();
-     final   InventoryEntity inventory = inventoryService.checkProductExistingInventory(product.getId());
+        final CartItemEntity cartItem =   checkCartItemFromUser(cartItemId , currentUserProvider);
+        checkNullQuantityCartItem(cartItem, quantityUpdate);
+        final ProductEntity product = cartItem.getProduct();
+        productService.isProductActive(product);
 
-        if (quantityUpdate > 0 && inventory.getQuantity() - quantityUpdate <= 0) {
+        final  InventoryEntity inventory = inventoryService.checkProductExistingInventory(product.getId());
+
+        if ((quantityUpdate > 0 && inventory.getQuantity() - quantityUpdate < 0) || inventory.getInventoryStatus() == inventory.getInventoryStatus()){
             throw new InvalidDataException("Quantity is not valid and the product will out of stock soon");
         }
 
@@ -82,15 +88,25 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public OrderSummaryResponse createBuyNow(UserEntity user, DiscountCustomerEntity discount, String productId) {
+        ProductEntity product = productService.findProductById(productId);
+        productService.isProductActive(product);
         CartEntity cart = cartRepo.findByUserId(user.getId());
+
         if(cart == null ){
 //            return createNewCart(user, )
+            cart = createNewCart(user,product, AppConst.BUY_NOW_QUANTITY);
         }
         return null;
     }
 
+    private CartEntity createNewCart(UserEntity user,ProductEntity  product, int quantity) {
+        InventoryEntity inventory = inventoryService.findProductAvailability(product, quantity);
+        BigDecimal deliveryAmount = deliveryService.calculateProductDeliveryAmount(user, inventory);
+        return CartEntity.builder().subtotal().deliveryAmount().totalAmount().cartItemList().build();
+    }
 
-    public void checkNullQuantity(CartItemEntity cartItem, int quantityUpdate){
+
+    public void checkNullQuantityCartItem(CartItemEntity cartItem, int quantityUpdate){
         if(quantityUpdate < 0 && cartItem.getQuantity() - quantityUpdate <= 0){
             cartItemRepo.delete(cartItem);
         }
