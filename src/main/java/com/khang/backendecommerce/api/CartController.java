@@ -1,10 +1,12 @@
 package com.khang.backendecommerce.api;
 
+import com.khang.backendecommerce.domain.cart.dto.request.CartItemPriceResponse;
 import com.khang.backendecommerce.domain.cart.dto.request.CartItemQuantityUpdate;
 import com.khang.backendecommerce.domain.cart.dto.response.CartItemResponse;
 import com.khang.backendecommerce.domain.cart.service.CartService;
 import com.khang.backendecommerce.infrastructure.common.dto.response.ResponseData;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -22,13 +24,17 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CartController {
     private final CartService cartService;
-    @GetMapping("/mycart")
+    @GetMapping("/")
       public ResponseEntity<List<CartItemResponse>> getAllCartItems(){
           return new ResponseEntity<>(cartService.getAllCartItems() , HttpStatus.OK);
       }
-    @GetMapping("/mycart/{itemId}")
-    public ResponseEntity<CartItemResponse> updateCartItemQuantity(@PathVariable String itemId,
-                                                                   @RequestBody CartItemQuantityUpdate request){
+    @PatchMapping("/{itemId}/quantity")
+    public ResponseEntity<CartItemPriceResponse> updateCartItemQuantity(@PathVariable @NonNull String itemId,
+                                                                        @RequestBody CartItemQuantityUpdate request){
         return new ResponseEntity<>(cartService.updateCartItemQuantity(itemId, request.getQuantity()) , HttpStatus.OK);
+    }
+    @DeleteMapping("/{itemId}/delete")
+    public ResponseEntity<String> deleteCartItem(@PathVariable @NonNull String itemId){
+        return new ResponseEntity<>(cartService.deleteCartItems(itemId) , HttpStatus.OK);
     }
 }

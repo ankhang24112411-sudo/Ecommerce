@@ -1,5 +1,6 @@
 package com.khang.backendecommerce.domain.cart.service;
 
+import com.khang.backendecommerce.domain.cart.dto.request.CartItemPriceResponse;
 import com.khang.backendecommerce.domain.cart.dto.response.CartItemResponse;
 
 import java.util.List;
@@ -7,5 +8,7 @@ import java.util.List;
 public interface CartService {
    List<CartItemResponse> getAllCartItems();
 
-   CartItemResponse updateCartItemQuantity(String itemId, Integer quantity);
+   CartItemPriceResponse updateCartItemQuantity(String itemId, Integer quantity);
+
+   String deleteCartItems(String itemId);
 }

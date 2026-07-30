@@ -1,8 +1,10 @@
 package com.khang.backendecommerce.domain.cart.service.impl;
 
+import com.khang.backendecommerce.domain.cart.dto.request.CartItemPriceResponse;
 import com.khang.backendecommerce.domain.cart.dto.response.CartItemResponse;
 import com.khang.backendecommerce.domain.cart.entity.CartEntity;
 import com.khang.backendecommerce.domain.cart.entity.CartItemEntity;
+import com.khang.backendecommerce.domain.cart.projection.CartMapper;
 import com.khang.backendecommerce.domain.cart.repo.CartItemRepository;
 import com.khang.backendecommerce.domain.cart.repo.CartRepository;
 import com.khang.backendecommerce.domain.cart.service.CartService;
@@ -32,6 +34,8 @@ public class CartServiceImpl implements CartService {
     private final CartRepository cartRepo;
     private final CartItemRepository cartItemRepo;
     private final InventoryRepository inventoryRepo;
+    private final CartMapper cartMapper;
+
     @Override
     public List<CartItemResponse> getAllCartItems() {
         return cartRepo.getAllCartItems(currentUserProvider.getCurrentUserId());
@@ -39,11 +43,11 @@ public class CartServiceImpl implements CartService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public CartItemResponse updateCartItemQuantity(String cartItemId, Integer quantityUpdate) {
-
+    public CartItemPriceResponse updateCartItemQuantity(String cartItemId, Integer quantityUpdate) {
       final  CartItemEntity cartItem =   cartItemValidation(cartItemId , currentUserProvider);
       checkNullQuantity(cartItem, quantityUpdate);
-      checkAvailableAndLimitQuantity(cartItem, quantityUpdate);
+      checkLimitQuantity(cartItem, quantityUpdate);
+
       final  Integer oldQuantity =  cartItem.getQuantity();
       cartItem.setQuantity(oldQuantity + quantityUpdate);
 
@@ -53,23 +57,24 @@ public class CartServiceImpl implements CartService {
       cartItemRepo.save(cartItem);
 
 
-        return null;
+        return cartMapper.toCartItemPriceResponse(cartItem);
+    }
+
+    @Override
+    public String deleteCartItems(String itemId) {
+        cartItemValidation(itemId , currentUserProvider);
+        CartItemEntity cartItem = cartItemRepo.findById(itemId).orElseThrow(() -> new RessourceNotFoundException("Cannot find your cart item"));
+        cartItemRepo.delete(cartItem);
+        return "Delete CartItem successful";
     }
 
 
-
-
-
-
-
-
-    public CartItemPriceResponse toCartItemResponse(String )
     public void checkNullQuantity(CartItemEntity cartItem, int quantityUpdate){
         if(quantityUpdate < 0 && cartItem.getQuantity() - quantityUpdate <= 0){
             cartItemRepo.delete(cartItem);
         }
     }
-    public void checkAvailableAndLimitQuantity (CartItemEntity cartItem , Integer quantityUpdate){
+    public void checkLimitQuantity (CartItemEntity cartItem, Integer quantityUpdate){
         if(quantityUpdate > 0 && quantityUpdate > AppConst.MAX_QUANTITY_PER_ITEM){
             throw new InvalidDataException("Limit for update quantity for an item is 99");
         }
