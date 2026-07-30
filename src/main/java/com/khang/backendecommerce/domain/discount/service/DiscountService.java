@@ -1,5 +1,6 @@
 package com.khang.backendecommerce.domain.discount.service;
 
 public interface DiscountService {
-   void  checkDiscountValidationFromUser(String userId , String vourcherCode);
+   void  checkDiscountValidationFromUser(String userId , String voucherCode);
+   void checkDateDiscount(String voucherCode);
 }

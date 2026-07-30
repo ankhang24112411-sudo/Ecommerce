@@ -31,7 +31,7 @@ public class DiscountEntity extends AbstractEntity<String> implements Serializab
     private DiscountType discountType;
 
     @Column(name ="valid_from")
-    private Instant valid_from;
+    private  valid_from;
 
     @Column(name ="valid_to")
     private Instant valid_to;

@@ -19,12 +19,12 @@ public class OrderSummaryServiceImpl implements OrderSummaryService {
     @Override
     public OrderSummaryResponse createOrderSummaryRequest(OrderSummaryRequest orderSummaryRequest) {
         UserEntity user = currentUserProvider.getCurrentUser();
-        if(orderSummaryRequest.getVoucherCode() != null){
-           discountService.checkDiscountValidationFromUser(user.getId(), orderSummaryRequest.getVoucherCode());
+        if(orderSummaryRequest.getDiscountName() != null){
+           discountService.checkDiscountValidationFromUser(user.getId(), orderSummaryRequest.getDiscountName());
         }
         final var orderSource = orderSummaryRequest.getOrderSummarySource();
         switch (orderSource){
-            case BUY_NOW ->
+//            case BUY_NOW ->
         }
         return null;
     }

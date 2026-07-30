@@ -12,5 +12,5 @@ public class OrderSummaryRequest {
     OrderSummarySource orderSummarySource;
     List<String> orderItems;
     String productId;
-    String voucherCode;
+    String discountName;
 }
