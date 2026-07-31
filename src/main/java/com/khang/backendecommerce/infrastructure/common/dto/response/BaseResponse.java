@@ -28,6 +28,10 @@ public class BaseResponse<T> {
         this.meta.code = code;
         this.meta.message = message;
     }
+    public BaseResponse(T data, String message) {
+        this.data = data;
+        this.meta.message = message;
+    }
     public BaseResponse(int code, T data, String message) {
         this.data = data;
         this.meta.code = code;

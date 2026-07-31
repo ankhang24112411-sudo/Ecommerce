@@ -14,7 +14,7 @@ import com.khang.backendecommerce.domain.product.entity.ProductEntity;
 import com.khang.backendecommerce.domain.user.entity.UserEntity;
 import com.khang.backendecommerce.domain.warehouse.entity.WarehouseEntity;
 import com.khang.backendecommerce.infrastructure.common.enums.ErrorCode;
-import com.khang.backendecommerce.infrastructure.exception.BusinessException;
+import com.khang.backendecommerce.infrastructure.exception.ApplicationErrors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -45,12 +45,12 @@ public class DeliveryServiceImpl implements DeliveryService {
 
 
         DeliveryRouteEntity route = deliveryRouteRepo.findByStateFrom_IdAndStateTo_Id(warehouseStateId, userStateId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.DELIVERY_ROUTE_NOT_FOUND));
+                .orElseThrow(() -> ApplicationErrors.DELIVERY_ROUTE_NOT_FOUND);
         log.info("Delivery {} route is from {} to {}" ,route.getId(), route.getStateFromName() ,route.getStateToName());
 
 
         DeliveryFeeEntity deliveryFee =deliveryFeeRepo.findByDeliveryRoute_Id(route.getId())
-                .orElseThrow(() -> new BusinessException(ErrorCode.DELIVERY_FEE_NOT_FOUND));
+                .orElseThrow(() ->  ApplicationErrors.INVALID_DELIVERY_FEE);
         log.info("Delivery fee is : {} and company {}" , deliveryFee.getDeliveryRoute().getId() , deliveryFee.getCompanyId());
 
         return deliveryFee.getBaseFee();

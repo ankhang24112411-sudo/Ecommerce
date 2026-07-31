@@ -5,6 +5,7 @@ import com.khang.backendecommerce.domain.user.entity.UserEntity;
 import com.khang.backendecommerce.domain.user.mapper.UserMapper;
 import com.khang.backendecommerce.domain.user.repository.UserRepository;
 import com.khang.backendecommerce.domain.user.service.UserService;
+import com.khang.backendecommerce.infrastructure.exception.ApplicationErrors;
 import com.khang.backendecommerce.infrastructure.exception.RessourceAlreadyExistException;
 import com.khang.backendecommerce.infrastructure.exception.RessourceNotFoundException;
 import com.khang.backendecommerce.infrastructure.util.ValidationUtils;
@@ -34,8 +35,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public String addUser(UserCreationRequest request) {
         log.info("Username nhận được: " + request.getUsername());
-      ValidationUtils.throwIf(userRepo.existsByUsername(request.getUsername()),() -> new RessourceAlreadyExistException("Username was existed , please choose a new one"));
-      ValidationUtils.throwIf(userRepo.existsByEmail(request.getEmail()),() -> new RessourceAlreadyExistException("Email was existed , please choose a new one"));
+      ValidationUtils.throwIf(userRepo.existsByUsername(request.getUsername()),() -> ApplicationErrors.USER_NOT_FOUND);
+      ValidationUtils.throwIf(userRepo.existsByEmail(request.getEmail()),() -> ApplicationErrors.EMAIL);
      UserEntity user = userMapper.toUser(request);
      user.setPassword(passwordEncoder.encode(request.getPassword()));
      user.setCreatedBy(user.getId());

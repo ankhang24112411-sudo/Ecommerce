@@ -1421,4 +1421,23 @@ public class ApplicationErrors {
                     400,
                     "Return reason is invalid"
             );
+    public static ApplicationException INVENTORY_NOT_ENOUGH =
+            new ApplicationException(
+                    400904,
+                    400,
+                    "Not enough stock for product"
+            );
+    public static ApplicationException DISCOUNT_NOT_HAVE =
+            new ApplicationException(
+                    400905,
+                    400,
+                    "Not enough discount"
+            );
+    public static ApplicationException EMAIL_NOT_FOUND =
+            new ApplicationException(
+                    400906,
+                    400,
+                    "Not enough stock for product"
+            );
+
 }

@@ -28,6 +28,7 @@ import com.khang.backendecommerce.infrastructure.configuration.CurrentUserProvid
 import com.khang.backendecommerce.infrastructure.exception.ApplicationErrors;
 import com.khang.backendecommerce.infrastructure.util.AppConst;
 import com.khang.backendecommerce.infrastructure.util.ValidationUtils;
+import io.micrometer.common.util.StringUtils;
 import jakarta.persistence.Table;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -71,7 +72,7 @@ public class CartServiceImpl implements CartService {
 
         final InventoryEntity inventory = inventoryService.checkProductExistingInventory(product.getId());
         if ((quantityUpdate > 0 && inventory.getQuantity() - quantityUpdate < 0) || inventory.getInventoryStatus() == InventoryStatus.OUT_OF_STOCK) {
-            throw ApplicationErrors.INVENTO
+            throw ApplicationErrors.INVENTORY_NOT_ENOUGH;
         }
 
         final int newQuantity = cartItem.getQuantity() + quantityUpdate;
@@ -93,7 +94,7 @@ public class CartServiceImpl implements CartService {
     public String deleteCartItems(String itemId) {
         UserEntity user = currentUserProvider.getCurrentUser();
         CartEntity cart = findByUserId(user.getId());
-        if(cart == null){
+        if(cart == null ){
             throw ApplicationErrors.CART_NOT_FOUND;
         }
        CartItemEntity cartItem = checkCartItemFromUser(itemId, cart, user);
@@ -110,21 +111,27 @@ public class CartServiceImpl implements CartService {
         cart.setTotalAmount(cartSubTotal);
     }
     @Override
-    public OrderSummaryResponse createBuyNow(UserEntity user, DiscountCustomerEntity discount, String productId) {
+    public OrderSummaryResponse createBuyNow(UserEntity user, String discountName, String productId) {
         ProductEntity product = productService.findProductById(productId);
         productService.isProductActive(product);
         CartEntity cart = findByUserId(user.getId());
-
         if (cart == null) {
             cart = createNewCart(user, product, AppConst.BUY_NOW_QUANTITY);
-            if(discount != null){
-                cart.setDiscount(discount);
+            if(discountName != null) {
+                return convertToOrderSummaryResponse(user, discountName, cart);
             }
-            return convertToOrderSummaryResponse(user ,cart);
+            else {
+                return convertToOrderSummaryResponse(user, null, cart);
+            }
         }
        else {
             addProductToCart(cart, product , AppConst.BUY_NOW_QUANTITY);
-            return convertToOrderSummaryResponse(user , cart);
+
+            if(discountName != null){
+                return convertToOrderSummaryResponse(user, discountName , cart);
+
+            }
+            return convertToOrderSummaryResponse(user ,null, cart);
         }
     }
 
@@ -150,16 +157,12 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public OrderSummaryResponse convertToOrderSummaryResponse(UserEntity user ,CartEntity cart ) {
+    public OrderSummaryResponse convertToOrderSummaryResponse(UserEntity user, String discountName , CartEntity cart ) {
         BigDecimal subTotal = cart.getSubtotal();
         BigDecimal discountAmount = BigDecimal.ZERO;
         BigDecimal totalAmount = BigDecimal.ZERO;
         BigDecimal deliveryAmount = deliveryService.calculateCartDeliveryAmount(user , cart);
-
-
-       DiscountCustomerEntity discount = cart.getDiscount();
-
-        if(discount == null){
+        if(discountName == null){
             totalAmount = cart.getTotalAmount().add(deliveryAmount);
             return   OrderSummaryResponse.builder()
                     .subtotal(subTotal)
@@ -168,24 +171,30 @@ public class CartServiceImpl implements CartService {
                     .totalAmount(totalAmount)
                     .build();
         }
-        if (discount.getDiscount().getDiscountType() == DiscountType.FREE_SHIP) {
-            discountAmount =  discountService.discountFreeShipCalculation( discount,  deliveryAmount);
-            totalAmount = cart.getSubtotal().add(deliveryAmount).subtract(discountAmount);
-            return OrderSummaryResponse.builder()
-                    .subtotal(subTotal)
-                    .discountAmount(discountAmount)
-                    .deliveryAmount(deliveryAmount)
-                    .totalAmount(totalAmount)
-                    .build();
-        }
-           discountAmount = discountService.discountCalculation(discount,subTotal);
-           totalAmount = subTotal.subtract(deliveryAmount).add(deliveryAmount);
-        return OrderSummaryResponse.builder()
-                .subtotal(subTotal)
-                .discountAmount(discountAmount)
-                .deliveryAmount(deliveryAmount)
-                .totalAmount(totalAmount)
-                .build();
+
+
+
+       DiscountCustomerEntity discount = discountService.checkDiscountValidationFromUser(user.getId(), )
+
+
+//        if (discount.getDiscount().getDiscountType() == DiscountType.FREE_SHIP) {
+//            discountAmount =  discountService.discountFreeShipCalculation( discount,  deliveryAmount);
+//            totalAmount = cart.getSubtotal().add(deliveryAmount).subtract(discountAmount);
+//            return OrderSummaryResponse.builder()
+//                    .subtotal(subTotal)
+//                    .discountAmount(discountAmount)
+//                    .deliveryAmount(deliveryAmount)
+//                    .totalAmount(totalAmount)
+//                    .build();
+//        }
+//           discountAmount = discountService.discountCalculation(discount,subTotal);
+//           totalAmount = subTotal.subtract(deliveryAmount).add(deliveryAmount);
+//        return OrderSummaryResponse.builder()
+//                .subtotal(subTotal)
+//                .discountAmount(discountAmount)
+//                .deliveryAmount(deliveryAmount)
+//                .totalAmount(totalAmount)
+//                .build();
 
     }
 

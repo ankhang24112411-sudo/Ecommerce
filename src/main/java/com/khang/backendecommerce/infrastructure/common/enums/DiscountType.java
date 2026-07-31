@@ -4,5 +4,6 @@ public enum DiscountType {
     NEW_CUSTOMER,
     BIRTHDAY_DISCOUNT,
     ONE_YEAR_ANNIVERSARY,
-    FREE_SHIP
+    FREE_SHIP,
+    FIXED_DISCOUNT,
 }

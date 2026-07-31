@@ -24,25 +24,18 @@ public class OrderSummaryServiceImpl implements OrderSummaryService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public OrderSummaryResponse createOrderSummaryRequest(OrderSummaryRequest orderSummaryRequest) {
-        DiscountCustomerEntity discount = null;
-        String discountName = orderSummaryRequest.getDiscountName();
         UserEntity user = currentUserProvider.getCurrentUser();
-        if(discountName != null){
-          discount = discountService.checkDiscountValidationFromUser(user.getId(), discountName);
 
-        }
         final var orderSource = orderSummaryRequest.getOrderSummarySource();
        return  switch (orderSource){
             case BUY_NOW ->
 
-                 cartService.createBuyNow(user, discount, orderSummaryRequest.getProductId());
+                 cartService.createBuyNow(user, orderSummaryRequest.getDiscountName(), orderSummaryRequest.getProductId());
 
            case CART_SUM -> {
              CartEntity cart =  cartService.findByUserId(user.getId());
-             if(discount != null){
-                 cart.setDiscount(discount);
-             }
-               yield  cartService.convertToOrderSummaryResponse(user , cart);
+
+               yield  cartService.convertToOrderSummaryResponse(user , orderSummaryRequest.getDiscountName(), cart);
             }
         };
 

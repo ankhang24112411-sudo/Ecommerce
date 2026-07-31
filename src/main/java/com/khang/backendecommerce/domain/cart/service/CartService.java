@@ -16,9 +16,9 @@ public interface CartService {
 
    String deleteCartItems(String itemId);
 
-   OrderSummaryResponse createBuyNow(UserEntity user, DiscountCustomerEntity discount, String productId);
+   OrderSummaryResponse createBuyNow(UserEntity user, String discountName, String productId);
 
-    OrderSummaryResponse convertToOrderSummaryResponse(UserEntity user , CartEntity cart ) ;
+    OrderSummaryResponse convertToOrderSummaryResponse(UserEntity user, String discountName , CartEntity cart ) ;
 
    CartEntity findByUserId(String id);
    }

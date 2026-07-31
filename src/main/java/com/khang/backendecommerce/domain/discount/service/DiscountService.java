@@ -11,5 +11,5 @@ public interface DiscountService {
    void checkDateDiscount(DiscountEntity discount);
     BigDecimal discountFreeShipCalculation(DiscountCustomerEntity discount, BigDecimal deliveryAmount);
      BigDecimal discountCalculation(DiscountCustomerEntity discount,BigDecimal totalAmount );
-
+     BigDecimal calculateDiscount(DiscountCustomerEntity discount , BigDecimal totalAmount );
    }
