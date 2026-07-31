@@ -2,7 +2,6 @@ package com.khang.backendecommerce.api;
 
 import com.khang.backendecommerce.domain.user.dto.UserCreationRequest;
 import com.khang.backendecommerce.domain.user.service.UserService;
-import com.khang.backendecommerce.infrastructure.common.dto.response.ResponseData;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
