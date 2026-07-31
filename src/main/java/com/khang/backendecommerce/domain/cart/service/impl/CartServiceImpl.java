@@ -24,9 +24,8 @@ import com.khang.backendecommerce.infrastructure.common.enums.DiscountType;
 import com.khang.backendecommerce.infrastructure.common.enums.ErrorCode;
 import com.khang.backendecommerce.infrastructure.common.enums.InventoryStatus;
 import com.khang.backendecommerce.infrastructure.configuration.CurrentUserProvider;
-import com.khang.backendecommerce.infrastructure.exception.BusinessException;
-import com.khang.backendecommerce.infrastructure.exception.InvalidDataException;
-import com.khang.backendecommerce.infrastructure.exception.RessourceNotFoundException;
+
+import com.khang.backendecommerce.infrastructure.exception.ApplicationErrors;
 import com.khang.backendecommerce.infrastructure.util.AppConst;
 import com.khang.backendecommerce.infrastructure.util.ValidationUtils;
 import jakarta.persistence.Table;
@@ -72,13 +71,7 @@ public class CartServiceImpl implements CartService {
 
         final InventoryEntity inventory = inventoryService.checkProductExistingInventory(product.getId());
         if ((quantityUpdate > 0 && inventory.getQuantity() - quantityUpdate < 0) || inventory.getInventoryStatus() == InventoryStatus.OUT_OF_STOCK) {
-            throw new InvalidDataException("Quantity is not valid and the product will out of stock soon");
-        }
-
-        final Integer oldQuantity = cartItem.getQuantity();
-        if (oldQuantity + quantityUpdate > AppConst.MAX_QUANTITY_PER_ITEM) {
-            throw new InvalidDataException("Limit for update quantity for an item is 99");
-
+            throw ApplicationErrors.INVENTO
         }
 
         final int newQuantity = cartItem.getQuantity() + quantityUpdate;
@@ -101,7 +94,7 @@ public class CartServiceImpl implements CartService {
         UserEntity user = currentUserProvider.getCurrentUser();
         CartEntity cart = findByUserId(user.getId());
         if(cart == null){
-            throw new BusinessException(ErrorCode.CART_NOT_FOUND);
+            throw ApplicationErrors.CART_NOT_FOUND;
         }
        CartItemEntity cartItem = checkCartItemFromUser(itemId, cart, user);
         cart.removeCartItem(cartItem);
@@ -234,9 +227,10 @@ public class CartServiceImpl implements CartService {
     }
 
     private CartItemEntity checkCartItemFromUser(String cartItemId,CartEntity cart,UserEntity user){
-        ValidationUtils.throwIf(cartItemRepo.existsByIdAndCart_Id(cartItemId, cart.getId()),() -> new BusinessException(ErrorCode.ORDER_ITEM_NOT_FOUND) );
+        ValidationUtils.throwIf(cartItemRepo.existsByIdAndCart_Id(cartItemId, cart.getId()),() -> ApplicationErrors.CART_ITEM_NOT_FOUND );
         String userId = user.getId();
-        return cartItemRepo.findByIdAndCart_User_Id(cartItemId , userId).orElseThrow(() -> new RessourceNotFoundException("Cart item not exists"));
+        return cartItemRepo.findByIdAndCart_User_Id(cartItemId , userId).
+                orElseThrow(() ->  ApplicationErrors.CART_ITEM_NOT_FOUND);
     }
 
 }

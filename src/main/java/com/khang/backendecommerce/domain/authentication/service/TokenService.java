@@ -2,7 +2,7 @@ package com.khang.backendecommerce.domain.authentication.service;
 
 import com.khang.backendecommerce.domain.authentication.entity.TokenEntity;
 import com.khang.backendecommerce.domain.authentication.repo.TokenRepository;
-import com.khang.backendecommerce.infrastructure.exception.RessourceNotFoundException;
+import com.khang.backendecommerce.infrastructure.exception.ApplicationErrors;
 import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.Token;
 import org.springframework.stereotype.Service;
@@ -32,6 +32,7 @@ public class TokenService {
         tokenRepo.delete(token);
     }
     public TokenEntity getByUsername(String username){
-        return tokenRepo.findByUsername(username).orElseThrow(() -> new RessourceNotFoundException("Token is not existing"));
+        return tokenRepo.findByUsername(username)
+                .orElseThrow(() -> ApplicationErrors.TOKEN_NOT_FOUND);
     }
 }
