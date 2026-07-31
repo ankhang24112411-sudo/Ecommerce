@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 
 @Service
@@ -33,5 +34,12 @@ public class DiscountServiceImpl implements DiscountService {
         if (Instant.now().isAfter(discount.getValidTo()) || discount.getDiscountStatus() == DiscountStatus.INVALID || discount.getDiscountStatus() == DiscountStatus.OUT_OF_DATE) {
             throw new InvalidDataException("Discount is out of date , please choose another one");
         }
+    }
+    @Override
+    public BigDecimal discountFreeShipCalculation(DiscountCustomerEntity discount, BigDecimal deliveryAmount){
+      return  deliveryAmount.multiply(discount.getDiscountValue()).divide(BigDecimal.valueOf(100));
+    }
+    public BigDecimal discountCalculation(DiscountCustomerEntity discount,BigDecimal totalAmount ){
+        return totalAmount.multiply(discount.getDiscountValue()).divide(BigDecimal.valueOf(100));
     }
 }

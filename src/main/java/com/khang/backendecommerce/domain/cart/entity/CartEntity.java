@@ -31,11 +31,11 @@ public class CartEntity extends AbstractEntity<String> implements Serializable {
     @Column(name ="subtotal" , precision = 12 , scale = 2)
     private BigDecimal subtotal = BigDecimal.ZERO;
 
-//    @Column(name = "delivery_amount" , precision = 12 , scale = 2 )
-//    private BigDecimal deliveryAmount = BigDecimal.ZERO;
+
 
     @Column(name = "total_amount" , precision = 12 , scale = 2)
     private BigDecimal totalAmount = BigDecimal.ZERO;
+
         @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "discount_id")
     private DiscountCustomerEntity discount ;

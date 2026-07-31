@@ -1,5 +1,6 @@
 package com.khang.backendecommerce.domain.ordersummary.service.impl;
 
+import com.khang.backendecommerce.domain.cart.entity.CartEntity;
 import com.khang.backendecommerce.domain.cart.service.CartService;
 import com.khang.backendecommerce.domain.discount.entity.DiscountCustomerEntity;
 import com.khang.backendecommerce.domain.discount.service.DiscountService;
@@ -11,6 +12,7 @@ import com.khang.backendecommerce.infrastructure.configuration.CurrentUserProvid
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Slf4j(topic = "ORDER - SUMMARY - SERVICE")
@@ -20,6 +22,7 @@ public class OrderSummaryServiceImpl implements OrderSummaryService {
     private final DiscountService discountService;
     private final CartService cartService;
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public OrderSummaryResponse createOrderSummaryRequest(OrderSummaryRequest orderSummaryRequest) {
         DiscountCustomerEntity discount = null;
         UserEntity user = currentUserProvider.getCurrentUser();
@@ -28,10 +31,17 @@ public class OrderSummaryServiceImpl implements OrderSummaryService {
 
         }
         final var orderSource = orderSummaryRequest.getOrderSummarySource();
-        switch (orderSource){
-            case BUY_NOW -> cartService.createBuyNow(user,discount,orderSummaryRequest.getProductId());
-        }
-        return null;
+       return  switch (orderSource){
+            case BUY_NOW ->
+
+                 cartService.createBuyNow(user, discount, orderSummaryRequest.getProductId());
+
+           case CART_SUM -> {
+             CartEntity cart =  cartService.findByUserId(user.getId());
+               yield  cartService.convertToOrderSummaryResponse(user , cart);
+            }
+        };
+
     }
 
 }

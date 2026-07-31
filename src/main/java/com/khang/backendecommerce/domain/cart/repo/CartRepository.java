@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface CartRepository extends JpaRepository<CartEntity, String> {
@@ -25,7 +26,7 @@ where tc.user_id = :userId
 """ , nativeQuery = true)
     List<CartItemResponse> getAllCartItems(@Param("userId") String userId);
 
-    CartEntity findByUserId(String id);
+    Optional<CartEntity> findByUserId(String id);
 
 
 //@Query(value = """
