@@ -27,7 +27,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDetailsService userDetailsService() {
-        return username ->  userRepo.findByUsername(username).orElseThrow(() ->  new UsernameNotFoundException("Username not found"));
+        return username ->  userRepo.findByUsernameWithRoles(username).orElseThrow(() ->  new UsernameNotFoundException("Username not found"));
 
     }
 

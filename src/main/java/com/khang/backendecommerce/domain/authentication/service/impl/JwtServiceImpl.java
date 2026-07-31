@@ -33,7 +33,7 @@ public class JwtServiceImpl implements JwtService {
     @Value("${jwt.resetToken}")
     private String resetToken;
 
-    @Value("${jwt.refreshToken}")
+    @Value("${jwt.refreshKey}")
     private String refreshToken;
 
     @Override

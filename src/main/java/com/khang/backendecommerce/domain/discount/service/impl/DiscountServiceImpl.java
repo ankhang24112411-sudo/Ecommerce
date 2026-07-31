@@ -6,6 +6,8 @@ import com.khang.backendecommerce.domain.discount.repo.DiscountCustomerRepositor
 import com.khang.backendecommerce.domain.discount.repo.DiscountRepository;
 import com.khang.backendecommerce.domain.discount.service.DiscountService;
 import com.khang.backendecommerce.infrastructure.common.enums.DiscountStatus;
+import com.khang.backendecommerce.infrastructure.common.enums.ErrorCode;
+import com.khang.backendecommerce.infrastructure.exception.BusinessException;
 import com.khang.backendecommerce.infrastructure.exception.InvalidDataException;
 import com.khang.backendecommerce.infrastructure.exception.RessourceNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -25,8 +27,11 @@ public class DiscountServiceImpl implements DiscountService {
     public DiscountCustomerEntity checkDiscountValidationFromUser(String userId, String discountName) {
         DiscountEntity discount = discountRepository.findByDiscountName(discountName).orElseThrow(() -> new RessourceNotFoundException("Can not find Discount"));
         checkDateDiscount(discount);
-        return  discountCustomerRepo.findByCustomer_IdAndDiscount_DiscountName(userId, discountName).orElseThrow(() -> new RessourceNotFoundException("User does not own this discount"));
-
+        DiscountCustomerEntity discountCustomer =   discountCustomerRepo.findByCustomer_IdAndDiscount_DiscountName(userId, discountName).orElseThrow(() -> new RessourceNotFoundException("User does not own this discount"));
+        if(discountCustomer.getDiscountQuantity() <= 0){
+            throw new BusinessException(ErrorCode.DISCOUNT_NOT_STARTED);
+        }
+        return discountCustomer;
     }
 
     @Override

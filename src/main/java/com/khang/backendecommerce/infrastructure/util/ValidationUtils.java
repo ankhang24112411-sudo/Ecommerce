@@ -8,7 +8,7 @@ import java.util.function.Supplier;
 @UtilityClass
 public  class ValidationUtils {
    public void throwIf(boolean condition , Supplier<? extends RuntimeException> exception){
-       if(condition){
+       if(!condition){
            throw exception.get();
        }
    }

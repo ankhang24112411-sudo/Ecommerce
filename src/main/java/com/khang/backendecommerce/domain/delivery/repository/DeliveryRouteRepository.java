@@ -11,5 +11,4 @@ import java.util.Optional;
 public interface DeliveryRouteRepository extends JpaRepository<DeliveryRouteEntity,String> {
     Optional<DeliveryRouteEntity> findByStateFrom_IdAndStateTo_Id(String stateFromId, String stateToId);
 
-    Optional<DeliveryFeeEntity> findByDeliveryRouteId(String id);
 }

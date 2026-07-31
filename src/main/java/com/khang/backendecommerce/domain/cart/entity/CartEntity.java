@@ -46,4 +46,8 @@ public class CartEntity extends AbstractEntity<String> implements Serializable {
         cartItemList.add(cartItem);
         cartItem.setCart(this);
     }
+    public void removeCartItem(CartItemEntity cartItem){
+        cartItemList.remove(cartItem);
+        cartItem.setCart(null);
+    }
 }

@@ -16,6 +16,7 @@ import com.khang.backendecommerce.domain.warehouse.entity.WarehouseEntity;
 import com.khang.backendecommerce.infrastructure.common.enums.ErrorCode;
 import com.khang.backendecommerce.infrastructure.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -24,22 +25,34 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j(topic = "DELIVERY - SERVICE")
 public class DeliveryServiceImpl implements DeliveryService {
-    private final InventoryService inventoryService;
     private final DeliveryRouteRepository deliveryRouteRepo;
     private final DeliveryFeeRepository deliveryFeeRepo;
     private final InventoryRepository inventoryRepo;
-    private final DeliveryService deliveryService;
 
     @Override
     public BigDecimal calculateProductDeliveryAmount(UserEntity user, InventoryEntity inventory) {
+
+
         String userStateId = user.getState().getId();
         String warehouseStateId = inventory.getWarehouse().getState().getId();
+        if(userStateId.equals(warehouseStateId)){
+            return BigDecimal.ZERO;
+        }
+        log.info("warehouse state id :{}  " , warehouseStateId );
+        log.info("User state id :{} ", userStateId );
+
+
         DeliveryRouteEntity route = deliveryRouteRepo.findByStateFrom_IdAndStateTo_Id(warehouseStateId, userStateId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.DELIVERY_ROUTE_NOT_FOUND));
+        log.info("Delivery {} route is from {} to {}" ,route.getId(), route.getStateFromName() ,route.getStateToName());
 
-        DeliveryFeeEntity deliveryFee =deliveryRouteRepo.findByDeliveryRouteId(route.getId())
+
+        DeliveryFeeEntity deliveryFee =deliveryFeeRepo.findByDeliveryRoute_Id(route.getId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.DELIVERY_FEE_NOT_FOUND));
+        log.info("Delivery fee is : {} and company {}" , deliveryFee.getDeliveryRoute().getId() , deliveryFee.getCompanyId());
+
         return deliveryFee.getBaseFee();
     }
     @Override
@@ -49,7 +62,7 @@ public class DeliveryServiceImpl implements DeliveryService {
                 .map(ProductEntity::getId).toList();
         List<InventoryEntity> inventories = inventoryRepo.findAllByProduct_IdIn( productIds);
         return inventories.stream()
-                .map( inventoryEntity -> deliveryService.calculateProductDeliveryAmount(user, inventoryEntity))
+                .map( inventoryEntity -> calculateProductDeliveryAmount(user, inventoryEntity))
                 .reduce(BigDecimal.ZERO,BigDecimal::add);
     }
 }

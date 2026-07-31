@@ -29,6 +29,6 @@ public class DeliveryFeeEntity extends AbstractEntity<String> implements Seriali
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "delivery_route_id")
-    private DeliveryRouteEntity deliveryRouteId ;
+    private DeliveryRouteEntity deliveryRoute ;
 
 }

@@ -7,5 +7,5 @@ import java.util.Optional;
 
 public interface CartItemRepository extends JpaRepository<CartItemEntity,String> {
     Optional<CartItemEntity> findByIdAndCart_User_Id(String cartItemId , String userId);
-
+     boolean existsByIdAndCart_Id(String cartItemId , String cartId);
 }

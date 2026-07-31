@@ -31,17 +31,20 @@ import com.khang.backendecommerce.infrastructure.util.AppConst;
 import com.khang.backendecommerce.infrastructure.util.ValidationUtils;
 import jakarta.persistence.Table;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j(topic = "CART - SERVICE")
 public class CartServiceImpl implements CartService {
     private final CurrentUserProvider currentUserProvider;
     private final CartRepository cartRepo;
@@ -59,15 +62,16 @@ public class CartServiceImpl implements CartService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public CartItemPriceResponse updateCartItemQuantity(String cartItemId, Integer quantityUpdate) {
+        UserEntity user = currentUserProvider.getCurrentUser();
+        CartEntity cart = findByUserId(user.getId());
 
-        final CartItemEntity cartItem = checkCartItemFromUser(cartItemId, currentUserProvider);
+        final CartItemEntity cartItem = checkCartItemFromUser(cartItemId, cart, user);
         checkNullQuantityCartItem(cartItem, quantityUpdate);
         final ProductEntity product = cartItem.getProduct();
         productService.isProductActive(product);
 
         final InventoryEntity inventory = inventoryService.checkProductExistingInventory(product.getId());
-
-        if ((quantityUpdate > 0 && inventory.getQuantity() - quantityUpdate < 0) || inventory.getInventoryStatus() == inventory.getInventoryStatus()) {
+        if ((quantityUpdate > 0 && inventory.getQuantity() - quantityUpdate < 0) || inventory.getInventoryStatus() == InventoryStatus.OUT_OF_STOCK) {
             throw new InvalidDataException("Quantity is not valid and the product will out of stock soon");
         }
 
@@ -76,23 +80,42 @@ public class CartServiceImpl implements CartService {
             throw new InvalidDataException("Limit for update quantity for an item is 99");
 
         }
-        cartItem.setQuantity(oldQuantity + quantityUpdate);
+
         final int newQuantity = cartItem.getQuantity() + quantityUpdate;
-        BigDecimal newPrice = product.getPrice().multiply(BigDecimal.valueOf(newQuantity));
+        BigDecimal newPrice = product.getPrice()
+                .multiply(BigDecimal.valueOf(newQuantity));
+        cartItem.setQuantity(newQuantity);
         cartItem.setSubtotal(newPrice);
         cartItemRepo.save(cartItem);
+
+     calculateCartSubTotalAndSet(cart);
+
+        cartRepo.save(cart);
+
         return cartMapper.toCartItemPriceResponse(cartItem);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public String deleteCartItems(String itemId) {
-        checkCartItemFromUser(itemId, currentUserProvider);
-        CartItemEntity cartItem = cartItemRepo.findById(itemId).orElseThrow(() -> new RessourceNotFoundException("Cannot find your cart item"));
-        cartItemRepo.delete(cartItem);
+        UserEntity user = currentUserProvider.getCurrentUser();
+        CartEntity cart = findByUserId(user.getId());
+        if(cart == null){
+            throw new BusinessException(ErrorCode.CART_NOT_FOUND);
+        }
+       CartItemEntity cartItem = checkCartItemFromUser(itemId, cart, user);
+        cart.removeCartItem(cartItem);
+        calculateCartSubTotalAndSet(cart);
+
         return "Delete CartItem successful";
     }
-
+    private void calculateCartSubTotalAndSet(CartEntity cart){
+        BigDecimal cartSubTotal =  cart.getCartItemList().stream()
+                .map(CartItemEntity::getSubtotal)
+                .reduce(BigDecimal.ZERO,BigDecimal::add);
+        cart.setSubtotal(cartSubTotal);
+        cart.setTotalAmount(cartSubTotal);
+    }
     @Override
     public OrderSummaryResponse createBuyNow(UserEntity user, DiscountCustomerEntity discount, String productId) {
         ProductEntity product = productService.findProductById(productId);
@@ -109,22 +132,11 @@ public class CartServiceImpl implements CartService {
        else {
             addProductToCart(cart, product , AppConst.BUY_NOW_QUANTITY);
             return convertToOrderSummaryResponse(user , cart);
-//            if(cart.getDiscount() != null && discount != null){
-//                boolean sameDis = cart.getDiscount().getId().equals(discount.getDiscount().getId());
-//                if(!sameDis){
-//                    cart.setDiscount(discount);
-//                    return convertToOrderSummaryResponse(cart,cart.getDiscount());
-//
-//                }
-//            }else if (cart.getDiscount() == null && discount != null){
-//                return convertToOrderSummaryResponse(cart,discount);
-//
-//            }
         }
-
     }
 
     private void addProductToCart(CartEntity cart, ProductEntity product, int quantity) {
+        log.info("add Product to cart : {}" ,cart.getId());
         InventoryEntity inventory = inventoryService.findProductAvailability(product, quantity);
         BigDecimal subtotalNewCartItem = product.getPrice().multiply(BigDecimal.valueOf(quantity));
 
@@ -135,6 +147,7 @@ public class CartServiceImpl implements CartService {
                 .subtotal(subtotalNewCartItem)
                 .inventoryStatus(inventory.getInventoryStatus())
                 .build();
+        log.info("add  cartItem success with cart id : {}" , cartItem.getCart());
         cart.addCartItem(cartItem);
 
         BigDecimal oldCartSubtotal = cart.getSubtotal();
@@ -185,8 +198,7 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public CartEntity findByUserId(String id) {
-        return cartRepo.findByUserId(id).orElseThrow(() -> new BusinessException(ErrorCode.CART_NOT_FOUND));
-
+        return cartRepo.findByUser_Id(id);
     }
 
 
@@ -194,13 +206,14 @@ public class CartServiceImpl implements CartService {
         InventoryEntity inventory = inventoryService.findProductAvailability(product, quantity);
 //        BigDecimal deliveryAmount = deliveryService.calculateProductDeliveryAmount(user, inventory);
         BigDecimal subtotal = product.getPrice().multiply(BigDecimal.valueOf(quantity));
-//        BigDecimal totalAmount = subtotal.add(deliveryAmount);
 
       CartEntity cart =  CartEntity.builder()
                 .user(user)
                 .subtotal(subtotal)
                 .totalAmount(subtotal)
+                .cartItemList(new ArrayList<>())
                 .build();
+      log.info("New cart created : {} from User {}" , cart.getId() , cart.getUser().getId());
       CartItemEntity itemEntity = CartItemEntity.builder()
               .cart(cart)
               .product(product)
@@ -220,8 +233,10 @@ public class CartServiceImpl implements CartService {
         }
     }
 
-    private CartItemEntity checkCartItemFromUser(String cartItemId,CurrentUserProvider currentUserProvider){
-        String userId = currentUserProvider.getCurrentUserId();
+    private CartItemEntity checkCartItemFromUser(String cartItemId,CartEntity cart,UserEntity user){
+        ValidationUtils.throwIf(cartItemRepo.existsByIdAndCart_Id(cartItemId, cart.getId()),() -> new BusinessException(ErrorCode.ORDER_ITEM_NOT_FOUND) );
+        String userId = user.getId();
         return cartItemRepo.findByIdAndCart_User_Id(cartItemId , userId).orElseThrow(() -> new RessourceNotFoundException("Cart item not exists"));
     }
+
 }

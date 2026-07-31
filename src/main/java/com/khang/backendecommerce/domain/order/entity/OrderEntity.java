@@ -1,6 +1,5 @@
 package com.khang.backendecommerce.domain.order.entity;
 
-import com.khang.backendecommerce.domain.discount.entity.DiscountOrderEntity;
 import com.khang.backendecommerce.domain.user.entity.UserEntity;
 import com.khang.backendecommerce.infrastructure.common.entity.abstractentity.AbstractEntity;
 import com.khang.backendecommerce.infrastructure.common.enums.InventoryStatus;
