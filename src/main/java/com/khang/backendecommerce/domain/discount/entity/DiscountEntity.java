@@ -24,7 +24,7 @@ import java.time.LocalDateTime;
 @Table(name ="tbl_discount")
 public class DiscountEntity extends AbstractEntity<String> implements Serializable {
     @Column(name ="discount_name")
-    private Integer discountName;
+    private String discountName;
 
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)

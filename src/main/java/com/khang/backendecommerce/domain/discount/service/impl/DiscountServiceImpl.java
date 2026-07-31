@@ -1,5 +1,6 @@
 package com.khang.backendecommerce.domain.discount.service.impl;
 
+import com.khang.backendecommerce.domain.cart.entity.CartEntity;
 import com.khang.backendecommerce.domain.discount.discountpattern.DiscountStrategy;
 import com.khang.backendecommerce.domain.discount.discountpattern.impl.DiscountFactory;
 import com.khang.backendecommerce.domain.discount.entity.DiscountCustomerEntity;
@@ -18,6 +19,8 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.Objects;
+import java.util.Optional;
 
 @Service
 @Slf4j(topic = "DISCOUNT - SERVICE")
@@ -57,5 +60,12 @@ public class DiscountServiceImpl implements DiscountService {
         DiscountStrategy strategy = discountFactory.getStrategy(discount.getDiscount().getDiscountType());
         return strategy.calculate(totalAmount , discount1.getDiscountValue());
     }
-
+    @Override
+    public boolean isSameDiscount(CartEntity cart, String discountName) {
+        return Optional.ofNullable(cart.getDiscount())
+                .map(DiscountCustomerEntity::getDiscount)
+                .map(DiscountEntity::getDiscountName)
+                .filter(name -> Objects.equals(name, discountName))
+                .isPresent();
+    }
 }

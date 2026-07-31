@@ -37,10 +37,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -171,11 +168,19 @@ public class CartServiceImpl implements CartService {
                     .totalAmount(totalAmount)
                     .build();
         }
-
-
-
-       DiscountCustomerEntity discount = discountService.checkDiscountValidationFromUser(user.getId(), )
-
+        DiscountCustomerEntity discount = discountService.checkDiscountValidationFromUser(user.getId(), discountName);
+        boolean sameDiscount = discountService.isSameDiscount(cart,discountName);
+        if(!sameDiscount){
+           cart.setDiscount(discount);
+        }
+        discountAmount = discountService.calculateDiscount(discount , subTotal);
+        totalAmount = subTotal.add(deliveryAmount).subtract(discountAmount);
+         return  OrderSummaryResponse.builder()
+                    .subtotal(subTotal)
+                    .discountAmount(discountAmount)
+                    .deliveryAmount(deliveryAmount)
+                    .totalAmount(totalAmount)
+                    .build();
 
 //        if (discount.getDiscount().getDiscountType() == DiscountType.FREE_SHIP) {
 //            discountAmount =  discountService.discountFreeShipCalculation( discount,  deliveryAmount);
