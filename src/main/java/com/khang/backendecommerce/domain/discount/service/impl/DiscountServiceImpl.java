@@ -1,17 +1,16 @@
 package com.khang.backendecommerce.domain.discount.service.impl;
 
 import com.khang.backendecommerce.domain.cart.entity.CartEntity;
+import com.khang.backendecommerce.domain.discount.discountpattern.DiscountContext;
 import com.khang.backendecommerce.domain.discount.discountpattern.DiscountStrategy;
-import com.khang.backendecommerce.domain.discount.discountpattern.impl.DiscountFactory;
+import com.khang.backendecommerce.domain.discount.discountpattern.DiscountFactory;
 import com.khang.backendecommerce.domain.discount.entity.DiscountCustomerEntity;
 import com.khang.backendecommerce.domain.discount.entity.DiscountEntity;
 import com.khang.backendecommerce.domain.discount.repo.DiscountCustomerRepository;
 import com.khang.backendecommerce.domain.discount.repo.DiscountRepository;
 import com.khang.backendecommerce.domain.discount.service.DiscountService;
 import com.khang.backendecommerce.infrastructure.common.enums.DiscountStatus;
-import com.khang.backendecommerce.infrastructure.common.enums.ErrorCode;
 import com.khang.backendecommerce.infrastructure.exception.ApplicationErrors;
-import com.khang.backendecommerce.infrastructure.exception.ApplicationException;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -55,10 +54,10 @@ public class DiscountServiceImpl implements DiscountService {
     }
 
     @Override
-    public BigDecimal calculateDiscount(DiscountCustomerEntity discount, BigDecimal totalAmount) {
-        DiscountEntity discount1 = discount.getDiscount();
-        DiscountStrategy strategy = discountFactory.getStrategy(discount.getDiscount().getDiscountType());
-        return strategy.calculate(totalAmount , discount1.getDiscountValue());
+    public BigDecimal calculateDiscount(DiscountCustomerEntity discount, DiscountContext context ) {
+        DiscountEntity discountSource = discount.getDiscount();
+        DiscountStrategy strategy = discountFactory.getStrategy(discountSource.getDiscountType() );
+        return strategy.calculate(discountSource , context);
     }
     @Override
     public boolean isSameDiscount(CartEntity cart, String discountName) {

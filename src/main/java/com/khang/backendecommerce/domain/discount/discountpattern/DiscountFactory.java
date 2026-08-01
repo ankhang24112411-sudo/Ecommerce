@@ -1,6 +1,8 @@
-package com.khang.backendecommerce.domain.discount.discountpattern.impl;
+package com.khang.backendecommerce.domain.discount.discountpattern;
 
-import com.khang.backendecommerce.domain.discount.discountpattern.DiscountStrategy;
+import com.khang.backendecommerce.domain.discount.discountpattern.impl.FixedDiscountStrategy;
+import com.khang.backendecommerce.domain.discount.discountpattern.impl.FreeshipDiscountStrategy;
+import com.khang.backendecommerce.domain.discount.discountpattern.impl.PercentDiscountStrategy;
 import com.khang.backendecommerce.infrastructure.common.enums.DiscountType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

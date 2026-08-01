@@ -1,6 +1,7 @@
 package com.khang.backendecommerce.domain.discount.service;
 
 import com.khang.backendecommerce.domain.cart.entity.CartEntity;
+import com.khang.backendecommerce.domain.discount.discountpattern.DiscountContext;
 import com.khang.backendecommerce.domain.discount.entity.DiscountCustomerEntity;
 import com.khang.backendecommerce.domain.discount.entity.DiscountEntity;
 
@@ -12,6 +13,6 @@ public interface DiscountService {
    void checkDateDiscount(DiscountEntity discount);
     BigDecimal discountFreeShipCalculation(DiscountCustomerEntity discount, BigDecimal deliveryAmount);
      BigDecimal discountCalculation(DiscountCustomerEntity discount,BigDecimal totalAmount );
-     BigDecimal calculateDiscount(DiscountCustomerEntity discount , BigDecimal totalAmount );
+     BigDecimal calculateDiscount(DiscountCustomerEntity discount ,  DiscountContext context );
     boolean isSameDiscount(CartEntity cart, String discountName);
    }

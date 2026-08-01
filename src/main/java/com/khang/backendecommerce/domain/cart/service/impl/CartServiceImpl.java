@@ -9,6 +9,7 @@ import com.khang.backendecommerce.domain.cart.repo.CartItemRepository;
 import com.khang.backendecommerce.domain.cart.repo.CartRepository;
 import com.khang.backendecommerce.domain.cart.service.CartService;
 import com.khang.backendecommerce.domain.delivery.service.DeliveryService;
+import com.khang.backendecommerce.domain.discount.discountpattern.DiscountContext;
 import com.khang.backendecommerce.domain.discount.entity.DiscountCustomerEntity;
 import com.khang.backendecommerce.domain.discount.entity.DiscountEntity;
 import com.khang.backendecommerce.domain.discount.service.DiscountService;
@@ -173,7 +174,11 @@ public class CartServiceImpl implements CartService {
         if(!sameDiscount){
            cart.setDiscount(discount);
         }
-        discountAmount = discountService.calculateDiscount(discount , subTotal);
+        DiscountContext context = DiscountContext.builder()
+                .subtotal(subTotal)
+                .deliveryAmount(deliveryAmount)
+                .build();
+        discountAmount = discountService.calculateDiscount(discount , context);
         totalAmount = subTotal.add(deliveryAmount).subtract(discountAmount);
          return  OrderSummaryResponse.builder()
                     .subtotal(subTotal)
