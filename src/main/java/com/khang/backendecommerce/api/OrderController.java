@@ -1,8 +1,12 @@
 package com.khang.backendecommerce.api;
 
-import com.khang.backendecommerce.domain.authentication.dto.request.SignInRequest;
-import com.khang.backendecommerce.domain.authentication.dto.response.TokenResponse;
+import com.khang.backendecommerce.newstruc.domain.order.dto.OrderCommand;
+import com.khang.backendecommerce.newstruc.domain.order.dto.OrderRequest;
+import com.khang.backendecommerce.newstruc.domain.order.dto.OrderResponse;
+import com.khang.backendecommerce.newstruc.domain.order.facade.CheckoutFacade;
+import com.khang.backendecommerce.newstruc.domain.user.entity.UserEntity;
 import com.khang.backendecommerce.infrastructure.common.dto.response.BaseResponse;
+import com.khang.backendecommerce.infrastructure.configuration.CurrentUserProvider;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,12 +22,16 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/order")
 @Validated
 @Slf4j
-@Tag(name ="Authentication Controller")
+@Tag(name ="Order Controller")
 @RequiredArgsConstructor
 public class OrderController {
     private final CheckoutFacade checkoutFacade;
-    @PostMapping("/access")
-    public ResponseEntity<BaseResponse<OrderResponse> login (@RequestBody OrderRequest request){
-        return  ResponseEntity.status(HttpStatus.CREATED).(checkoutFacade.)
+    private final CurrentUserProvider currentUserProvider;
+    @PostMapping("/place-order")
+    public ResponseEntity<BaseResponse<OrderResponse>> placeOrder (@RequestBody OrderRequest request){
+        UserEntity user = currentUserProvider.getCurrentUser();
+        OrderCommand command = OrderCommand.builder()
+                .userId(user.getId()).address(user.getAddress()).checkoutSource(request.getCheckoutSource()).paymentMethod(request.getPaymentMethod()).userNotes(request.getUserNotes()).build();
+        return  ResponseEntity.status(HttpStatus.CREATED).body(new BaseResponse<>( checkoutFacade.placeOrder(command), "success"));
     }
 }

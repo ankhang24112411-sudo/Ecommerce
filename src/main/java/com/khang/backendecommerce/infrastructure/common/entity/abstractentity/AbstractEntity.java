@@ -1,6 +1,5 @@
 package com.khang.backendecommerce.infrastructure.common.entity.abstractentity;
 
-import com.khang.backendecommerce.domain.user.entity.UserEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;

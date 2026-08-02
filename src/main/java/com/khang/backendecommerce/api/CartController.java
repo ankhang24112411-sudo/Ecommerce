@@ -1,9 +1,9 @@
 package com.khang.backendecommerce.api;
 
-import com.khang.backendecommerce.domain.cart.dto.request.CartItemPriceResponse;
-import com.khang.backendecommerce.domain.cart.dto.request.CartItemQuantityUpdate;
-import com.khang.backendecommerce.domain.cart.dto.response.CartItemResponse;
-import com.khang.backendecommerce.domain.cart.service.CartService;
+import com.khang.backendecommerce.newstruc.dto.request.CartItemPriceResponse;
+import com.khang.backendecommerce.newstruc.dto.request.CartItemQuantityUpdate;
+import com.khang.backendecommerce.newstruc.dto.response.CartItemResponse;
+import com.khang.backendecommerce.newstruc.service.CartService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;

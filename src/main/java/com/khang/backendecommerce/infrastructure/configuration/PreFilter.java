@@ -1,7 +1,7 @@
 package com.khang.backendecommerce.infrastructure.configuration;
 
-import com.khang.backendecommerce.domain.authentication.service.JwtService;
-import com.khang.backendecommerce.domain.user.service.UserService;
+import com.khang.backendecommerce.newstruc.domain.authentication.service.JwtService;
+import com.khang.backendecommerce.newstruc.domain.user.service.UserService;
 import com.khang.backendecommerce.infrastructure.util.TokenType;
 import io.micrometer.common.util.StringUtils;
 import jakarta.servlet.FilterChain;

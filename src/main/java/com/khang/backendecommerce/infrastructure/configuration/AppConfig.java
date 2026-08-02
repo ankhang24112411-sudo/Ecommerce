@@ -1,6 +1,6 @@
 package com.khang.backendecommerce.infrastructure.configuration;
 
-import com.khang.backendecommerce.domain.user.service.UserService;
+import com.khang.backendecommerce.newstruc.domain.user.service.UserService;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;

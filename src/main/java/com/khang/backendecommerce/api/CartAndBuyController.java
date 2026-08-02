@@ -1,8 +1,8 @@
 package com.khang.backendecommerce.api;
 
-import com.khang.backendecommerce.domain.ordersummary.dto.request.OrderSummaryRequest;
-import com.khang.backendecommerce.domain.ordersummary.dto.response.OrderSummaryResponse;
-import com.khang.backendecommerce.domain.ordersummary.service.OrderSummaryService;
+import com.khang.backendecommerce.newstruc.dto.request.OrderSummaryRequest;
+import com.khang.backendecommerce.newstruc.dto.response.OrderSummaryResponse;
+import com.khang.backendecommerce.newstruc.service.OrderSummaryService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

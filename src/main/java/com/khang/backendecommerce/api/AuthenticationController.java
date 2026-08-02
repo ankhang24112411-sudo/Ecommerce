@@ -1,10 +1,10 @@
 package com.khang.backendecommerce.api;
 
-import com.khang.backendecommerce.domain.authentication.dto.request.ResetPasswordDTO;
-import com.khang.backendecommerce.domain.authentication.service.AuthenticationService;
-import com.khang.backendecommerce.domain.user.repository.UserRepository;
-import com.khang.backendecommerce.domain.authentication.dto.response.TokenResponse;
-import com.khang.backendecommerce.domain.authentication.dto.request.SignInRequest;
+import com.khang.backendecommerce.newstruc.domain.authentication.dto.request.ResetPasswordDTO;
+import com.khang.backendecommerce.newstruc.domain.authentication.service.AuthenticationService;
+import com.khang.backendecommerce.newstruc.domain.user.repository.UserRepository;
+import com.khang.backendecommerce.newstruc.domain.authentication.dto.response.TokenResponse;
+import com.khang.backendecommerce.newstruc.domain.authentication.dto.request.SignInRequest;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
