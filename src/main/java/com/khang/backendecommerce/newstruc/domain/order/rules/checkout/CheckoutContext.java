@@ -1,5 +1,7 @@
-package com.khang.backendecommerce.newstruc.domain.order.dto.realtime;
+package com.khang.backendecommerce.newstruc.domain.order.rules.checkout;
 
+import com.khang.backendecommerce.newstruc.domain.order.dto.realtime.CheckoutItemSnapShot;
+import com.khang.backendecommerce.newstruc.domain.order.dto.realtime.CheckoutSnapshot;
 import com.khang.backendecommerce.newstruc.domain.user.entity.UserEntity;
 import com.khang.backendecommerce.newstruc.entity.DeliveryFeeEntity;
 import com.khang.backendecommerce.newstruc.entity.DiscountEntity;

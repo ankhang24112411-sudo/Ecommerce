@@ -1,4 +1,4 @@
-package com.khang.backendecommerce.newstruc.domain.order.rules.config;
+package com.khang.backendecommerce.newstruc.domain.order.rules.checkout;
 
 import com.khang.backendecommerce.infrastructure.exception.ApplicationException;
 

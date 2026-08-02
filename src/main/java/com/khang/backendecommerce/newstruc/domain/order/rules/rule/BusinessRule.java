@@ -1,4 +1,4 @@
-package com.khang.backendecommerce.newstruc.domain.order.rules;
+package com.khang.backendecommerce.newstruc.domain.order.rules.rule;
 
 import org.springframework.core.Ordered;
 

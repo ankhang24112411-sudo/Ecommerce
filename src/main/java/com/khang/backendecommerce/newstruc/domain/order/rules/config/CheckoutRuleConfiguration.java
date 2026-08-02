@@ -1,8 +1,9 @@
 package com.khang.backendecommerce.newstruc.domain.order.rules.config;
 
-import com.khang.backendecommerce.newstruc.domain.order.dto.realtime.CheckoutContext;
-import com.khang.backendecommerce.newstruc.domain.order.rules.CheckoutRule;
+import com.khang.backendecommerce.newstruc.domain.order.rules.checkout.CheckoutContext;
+import com.khang.backendecommerce.newstruc.domain.order.rules.checkout.CheckoutRule;
 import com.khang.backendecommerce.newstruc.domain.order.rules.RuleChain;
+import com.khang.backendecommerce.newstruc.domain.order.rules.checkout.CheckoutViolation;
 import org.springframework.context.annotation.Bean;
 
 import java.util.List;
