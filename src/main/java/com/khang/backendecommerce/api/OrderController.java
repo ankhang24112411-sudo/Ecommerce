@@ -1,8 +1,8 @@
 package com.khang.backendecommerce.api;
 
-import com.khang.backendecommerce.newstruc.domain.order.dto.OrderCommand;
-import com.khang.backendecommerce.newstruc.domain.order.dto.OrderRequest;
-import com.khang.backendecommerce.newstruc.domain.order.dto.OrderResponse;
+import com.khang.backendecommerce.newstruc.domain.order.dto.request.OrderCommand;
+import com.khang.backendecommerce.newstruc.domain.order.dto.request.OrderRequest;
+import com.khang.backendecommerce.newstruc.domain.order.dto.response.OrderResponse;
 import com.khang.backendecommerce.newstruc.domain.order.facade.CheckoutFacade;
 import com.khang.backendecommerce.newstruc.domain.user.entity.UserEntity;
 import com.khang.backendecommerce.infrastructure.common.dto.response.BaseResponse;

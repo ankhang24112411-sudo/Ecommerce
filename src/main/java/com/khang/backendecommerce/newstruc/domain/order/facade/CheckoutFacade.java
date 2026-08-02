@@ -1,7 +1,7 @@
 package com.khang.backendecommerce.newstruc.domain.order.facade;
 
-import com.khang.backendecommerce.newstruc.domain.order.dto.OrderCommand;
-import com.khang.backendecommerce.newstruc.domain.order.dto.OrderResponse;
+import com.khang.backendecommerce.newstruc.domain.order.dto.request.OrderCommand;
+import com.khang.backendecommerce.newstruc.domain.order.dto.response.OrderResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

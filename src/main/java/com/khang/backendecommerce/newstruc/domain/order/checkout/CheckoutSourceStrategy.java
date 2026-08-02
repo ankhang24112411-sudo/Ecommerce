@@ -1,7 +1,7 @@
 package com.khang.backendecommerce.newstruc.domain.order.checkout;
 
 import com.khang.backendecommerce.infrastructure.common.enums.CheckoutSource;
-import com.khang.backendecommerce.newstruc.domain.order.dto.OrderCommand;
+import com.khang.backendecommerce.newstruc.domain.order.dto.request.OrderCommand;
 import com.khang.backendecommerce.newstruc.domain.order.dto.realtime.CheckoutSnapshot;
 
 public interface CheckoutSourceStrategy {

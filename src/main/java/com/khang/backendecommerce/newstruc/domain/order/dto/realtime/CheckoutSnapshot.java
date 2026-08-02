@@ -13,7 +13,6 @@ public record CheckoutSnapshot (
     String cartId,
     List<CheckoutItemSnapShot> items ,
     List<String> productIds,
-    RecipientSnapshot deliveryAddress,
     String discountId
 )
     {

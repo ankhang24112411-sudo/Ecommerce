@@ -1,13 +1,12 @@
-package com.khang.backendecommerce.newstruc.domain.order.checkout;
+package com.khang.backendecommerce.newstruc.domain.order.checkout.registry;
 
 import com.khang.backendecommerce.infrastructure.common.enums.CheckoutSource;
 import com.khang.backendecommerce.infrastructure.configuration.CurrentUserProvider;
 import com.khang.backendecommerce.infrastructure.exception.ApplicationErrors;
-import com.khang.backendecommerce.newstruc.domain.order.dto.OrderCommand;
+import com.khang.backendecommerce.newstruc.domain.order.checkout.CheckoutSourceStrategy;
+import com.khang.backendecommerce.newstruc.domain.order.dto.request.OrderCommand;
 import com.khang.backendecommerce.newstruc.domain.order.dto.realtime.CheckoutItemSnapShot;
 import com.khang.backendecommerce.newstruc.domain.order.dto.realtime.CheckoutSnapshot;
-import com.khang.backendecommerce.newstruc.domain.order.dto.realtime.RecipientSnapshot;
-import com.khang.backendecommerce.newstruc.domain.user.entity.UserEntity;
 import com.khang.backendecommerce.newstruc.entity.CartEntity;
 import com.khang.backendecommerce.newstruc.entity.CartItemEntity;
 import com.khang.backendecommerce.newstruc.entity.ProductEntity;
@@ -20,7 +19,7 @@ import java.util.List;
 
 @Component
 @RequiredArgsConstructor
-public class CartCheckoutStrategy implements CheckoutSourceStrategy{
+public class CartCheckoutStrategy implements CheckoutSourceStrategy {
     private final CartRepository cartRepo;
     private final CartItemRepository cartItemRepo;
     private final CurrentUserProvider currentUserProvider;
@@ -51,8 +50,7 @@ public class CartCheckoutStrategy implements CheckoutSourceStrategy{
                 }).toList();
         List<String> productsId = cartItems.stream()
                 .map(item -> item.getProduct().getId()).toList();
-        RecipientSnapshot recipientSnapshot = RecipientSnapshot.from(currentUserProvider.getCurrentUser());
-        return new CheckoutSnapshot(userId,CheckoutSource.CART,cart.getId(), checkOutItems, productsId,recipientSnapshot, cart.getDiscount().getId() );
+        return new CheckoutSnapshot(userId,CheckoutSource.CART,cart.getId(), checkOutItems, productsId, cart.getDiscount().getId() );
     }
 
     @Override
