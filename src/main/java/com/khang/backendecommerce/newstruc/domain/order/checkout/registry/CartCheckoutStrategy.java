@@ -5,8 +5,7 @@ import com.khang.backendecommerce.infrastructure.configuration.CurrentUserProvid
 import com.khang.backendecommerce.infrastructure.exception.ApplicationErrors;
 import com.khang.backendecommerce.newstruc.domain.order.checkout.CheckoutSourceStrategy;
 import com.khang.backendecommerce.newstruc.domain.order.dto.request.OrderCommand;
-import com.khang.backendecommerce.newstruc.domain.order.dto.realtime.CheckoutItemSnapShot;
-import com.khang.backendecommerce.newstruc.domain.order.dto.realtime.CheckoutSnapshot;
+import com.khang.backendecommerce.newstruc.domain.user.entity.UserEntity;
 import com.khang.backendecommerce.newstruc.entity.CartEntity;
 import com.khang.backendecommerce.newstruc.entity.CartItemEntity;
 import com.khang.backendecommerce.newstruc.entity.ProductEntity;
@@ -29,34 +28,38 @@ public class CartCheckoutStrategy implements CheckoutSourceStrategy {
     }
 
     @Override
-    public CheckoutSnapshot load(String userId, OrderCommand command) {
-        CartEntity cart = cartRepo.findByIdForUpdate(userId).orElseThrow(() ->  ApplicationErrors.CART_NOT_FOUND);
-        List<CartItemEntity> cartItems = cartItemRepo.findAllForCheckout(cart.getId());
-        if(cartItems.isEmpty()){
-            throw ApplicationErrors.CART_ITEM_NOT_FOUND;
-        }
-        List<CheckoutItemSnapShot> checkOutItems = cartItems.stream()
-                .map(item -> {
-                    ProductEntity product = item.getProduct();
-                       return new CheckoutItemSnapShot(
-                                item.getId() ,
-                                product.getId(),
-                                product.getStore().getId(),
-                                product.getSku(),
-                                product.getName(),
-                                product.getPrice(),
-                                item.getQuantity()
-                        );
-                }).toList();
-        List<String> productsId = cartItems.stream()
-                .map(item -> item.getProduct().getId()).toList();
-        return new CheckoutSnapshot(userId,CheckoutSource.CART,cart.getId(), checkOutItems, productsId, cart.getDiscount().getId() );
+    public CheckoutContext load(String userId, OrderCommand command) {
+        return null;
     }
 
+
+//    @Override
+//    public CheckoutContext load(String userId, OrderCommand command) {
+//        UserEntity user = currentUserProvider.getCurrentUser();
+//        CartEntity cart = cartRepo.findByIdForUpdate(userId).orElseThrow(() ->  ApplicationErrors.CART_NOT_FOUND);
+//        List<CartItemEntity> cartItems = cartItemRepo.findAllForCheckout(cart.getId());
+//
+//        List<CheckoutItemSnapshot> checkOutItems = cartItems.stream()
+//                .map(item -> {
+//                    ProductEntity product = item.getProduct();
+//                       return new CheckoutItemSnapShot(
+//                                item.getId() ,
+//                                product.getId(),
+//                                product.getStore().getId(),
+//                               item.getQuantity(),
+//                               product.getPrice(),
+//                                product.getName(),
+//                        );
+//                }).toList();
+//        List<String> productsId = cartItems.stream()
+//                .map(item -> item.getProduct().getId()).toList();
+//        return new CheckoutContext(userId,CheckoutSource.CART,cart.getId(), checkOutItems, productsId, cart.getDiscount().getId() );
+//    }
+
     @Override
-    public void complete(CheckoutSnapshot checkout) {
+    public void complete(CheckoutContext checkout) {
        int expectedRows = checkout.items().size();
-       int deletedRows = cartItemRepo.deletePurchasedItems(checkout.cartId());
+       int deletedRows = cartItemRepo.deletePurchasedItems(checkout.cartItemId());
       if(expectedRows == 0){
           return;
       }

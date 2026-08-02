@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.util.ArrayList;
 import java.util.List;
 
+import static io.lettuce.core.pubsub.PubSubOutput.Type.message;
+
 @RestControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
@@ -69,6 +71,12 @@ public class GlobalExceptionHandler {
                     if(violation.field()!= null){
                         message.append(" | field").append(violation.referenceId());
                     }
-                })
+                    if(violation.referenceId() != null){
+                        message.append(" | referenceId: ").append(violation.referenceId());
+                    }
+                    return message.toString();
+
+                }).toList();
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new BaseResponse<>(400, null, errorMessages.toString()));
     }
 }

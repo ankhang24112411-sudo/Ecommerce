@@ -1,7 +1,5 @@
-package com.khang.backendecommerce.newstruc.domain.order.rules.checkout;
+package com.khang.backendecommerce.newstruc.domain.order.checkout.registry;
 
-import com.khang.backendecommerce.newstruc.domain.order.dto.realtime.CheckoutItemSnapShot;
-import com.khang.backendecommerce.newstruc.domain.order.dto.realtime.CheckoutSnapshot;
 import com.khang.backendecommerce.newstruc.domain.user.entity.UserEntity;
 import com.khang.backendecommerce.newstruc.entity.DeliveryFeeEntity;
 import com.khang.backendecommerce.newstruc.entity.DiscountEntity;
@@ -12,19 +10,19 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-public record CheckoutContext(
-        String userId,
+public record        CheckoutContext
+(
         UserEntity user,
-        CheckoutSnapshot checkoutSnap,
+        List<CheckoutItemSnapshot> items,
         Map<String, InventoryEntity> inventories,
         Map<String, DeliveryFeeEntity> deliveryFees,
-        DiscountEntity discount
+        DiscountEntity discount,
+        int quantity
+
 ) {
 
     public CheckoutContext {
-        Objects.requireNonNull(userId);
         Objects.requireNonNull(user);
-        Objects.requireNonNull(checkoutSnap);
         Objects.requireNonNull(inventories);
         Objects.requireNonNull(deliveryFees);
 
@@ -32,12 +30,13 @@ public record CheckoutContext(
         deliveryFees = Map.copyOf(deliveryFees);
     }
 
-    public List<CheckoutItemSnapShot> items() {
-        return checkoutSnap.items();
-    }
+
 
     public Optional<DiscountEntity> optionalDiscount() {
         return Optional.ofNullable(discount);
+    }
+    public List<CheckoutItemSnapshot> items(){
+        return items;
     }
     public InventoryEntity requireInventory(String productId) {
         InventoryEntity inventory = inventories.get(productId);

@@ -1,6 +1,6 @@
 package com.khang.backendecommerce.newstruc.domain.order.rules.config;
 
-import com.khang.backendecommerce.newstruc.domain.order.rules.checkout.CheckoutContext;
+import com.khang.backendecommerce.newstruc.domain.order.checkout.registry.CheckoutContext;
 import com.khang.backendecommerce.newstruc.domain.order.rules.checkout.CheckoutRule;
 import com.khang.backendecommerce.newstruc.domain.order.rules.RuleChain;
 import com.khang.backendecommerce.newstruc.domain.order.rules.checkout.CheckoutViolation;
