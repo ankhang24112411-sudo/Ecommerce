@@ -14,11 +14,11 @@ public class CheckOutNotEmptyRule implements CheckoutRule {
         if(!context.items().isEmpty()) {
             return List.of();
         }
-        return List.of(CheckoutViolation.of(ApplicationErrors.CART_ITEM_NOT_FOUND, "items should not empty" , null));
+        return List.of(CheckoutViolation.of(ApplicationErrors.CART_ITEM_NOT_FOUND, "items" , null));
     }
 
     @Override
     public int getOrder() {
-        return 0;
+        return 100;
     }
 }

@@ -1,6 +1,7 @@
-package com.khang.backendecommerce.newstruc.domain.order.rules.checkout;
+package com.khang.backendecommerce.newstruc.domain.order.rules.config;
 
 
+import com.khang.backendecommerce.newstruc.domain.order.rules.checkout.CheckoutViolation;
 import lombok.Getter;
 
 import java.util.List;

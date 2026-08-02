@@ -7,7 +7,9 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
-
+//C = Context chain nhận
+//        V = Violation chain trả
+//R = loại rule trong chain
 public final class RuleChain <C, V , R extends BusinessRule<C,V>>{
     private final List<R> rules;
     public RuleChain(List<R> rules){
@@ -30,7 +32,7 @@ public final class RuleChain <C, V , R extends BusinessRule<C,V>>{
             if (ruleViolations == null || ruleViolations.isEmpty()) {
                 continue;
             }
-            violations.addAll(violations);
+            violations.addAll(ruleViolations);
         }
         return List.copyOf(violations);
     }
