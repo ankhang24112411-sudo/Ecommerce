@@ -20,4 +20,5 @@ public record CheckoutViolation(
                 field,
                 referenceId == null ? null : referenceId.toString());
     }
+
 }
