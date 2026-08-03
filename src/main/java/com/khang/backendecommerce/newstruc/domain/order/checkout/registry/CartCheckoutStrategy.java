@@ -57,9 +57,9 @@ public class CartCheckoutStrategy implements CheckoutSourceStrategy {
 //    }
 
     @Override
-    public void complete(CheckoutContext checkout) {
-       int expectedRows = checkout.items().size();
-       int deletedRows = cartItemRepo.deletePurchasedItems(checkout.cartItemId());
+    public void complete(CheckoutContext context) {
+       int expectedRows = context.items().size();
+       int deletedRows = 1;
       if(expectedRows == 0){
           return;
       }

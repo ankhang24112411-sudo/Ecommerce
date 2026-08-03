@@ -15,9 +15,16 @@ public class ProductShopAvailableRule implements CheckoutRule, CheckoutPreviewRu
     public List<CheckoutViolation> validate(CheckoutContext context) {
         List<CheckoutViolation> productInactive = context.items().stream()
               .filter(item -> item.product().getDeleted() == 1)
-              .map(item -> CheckoutViolation.of(ApplicationErrors.PRODUCT_INACTIVE, "Product is not activated", item.product().getId()))
+              .map(item -> CheckoutViolation.of(ApplicationErrors.PRODUCT_INACTIVE, "Product is not active", item.product().getId()))
               .toList();
-        Lis
+        List<CheckoutViolation> storeInactive = context.items().stream()
+                .filter(item -> item.store().getDeleted() == 1)
+                .map(item -> CheckoutViolation.of(ApplicationErrors.SHOP_INACTIVE, "Store is not active", item.store().getId()))
+                .toList();
+            List<CheckoutViolation> result = new ArrayList<>();
+            result.addAll(productInactive);
+            result.addAll(storeInactive);
+            return result;
     }
 
     @Override

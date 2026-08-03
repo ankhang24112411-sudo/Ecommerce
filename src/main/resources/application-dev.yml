@@ -19,6 +19,8 @@ spring:
     properties:
       hibernate:
         format_sql: true
+  kafka:
+    bootstrap-servers: localhost:29092
   redis:
     host: 127.0.0.1
     port: 6379

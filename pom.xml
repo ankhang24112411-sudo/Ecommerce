@@ -205,8 +205,13 @@
             <artifactId>spring-boot-starter-webmvc-test</artifactId>
             <scope>test</scope>
         </dependency>
-
+        <!-- ==================== KAFKA ==================== -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-kafka</artifactId>
+        </dependency>
     </dependencies>
+    <!-- ==================== Thymeleaf / JavaMailSender ==================== -->
 
     <!-- Maven profiles -->
     <profiles>

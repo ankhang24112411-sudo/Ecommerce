@@ -10,12 +10,12 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-public record        CheckoutContext
+public record   CheckoutContext
 (
         UserEntity user,
         List<CheckoutItemSnapshot> items,
-        Map<String, InventoryEntity> inventories,
-        Map<String, DeliveryFeeEntity> deliveryFees,
+        Map<String, InventoryEntity> productIdInventories,
+        Map<String, DeliveryFeeEntity> productIdDeliveryFees,
         DiscountEntity discount,
         int quantity
 
@@ -23,11 +23,11 @@ public record        CheckoutContext
 
     public CheckoutContext {
         Objects.requireNonNull(user);
-        Objects.requireNonNull(inventories);
-        Objects.requireNonNull(deliveryFees);
+        Objects.requireNonNull(productIdInventories);
+        Objects.requireNonNull(productIdDeliveryFees);
 
-        inventories = Map.copyOf(inventories);
-        deliveryFees = Map.copyOf(deliveryFees);
+        productIdInventories = Map.copyOf(productIdInventories);
+        productIdDeliveryFees = Map.copyOf(productIdDeliveryFees);
     }
 
 
@@ -39,7 +39,7 @@ public record        CheckoutContext
         return items;
     }
     public InventoryEntity requireInventory(String productId) {
-        InventoryEntity inventory = inventories.get(productId);
+        InventoryEntity inventory = productIdInventories.get(productId);
 
         if (inventory == null) {
             throw new IllegalStateException(
@@ -49,7 +49,7 @@ public record        CheckoutContext
         return inventory;
     }
     public DeliveryFeeEntity requireDeliveryFee(String shopId) {
-        DeliveryFeeEntity deliveryFee = deliveryFees.get(shopId);
+        DeliveryFeeEntity deliveryFee = productIdDeliveryFees.get(shopId);
 
         if (deliveryFee == null) {
             throw new IllegalStateException("Delivery fee was not loaded for shop: " + shopId);
