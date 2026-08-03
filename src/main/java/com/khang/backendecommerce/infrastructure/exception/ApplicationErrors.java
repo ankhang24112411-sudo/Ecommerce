@@ -7,6 +7,11 @@ public class ApplicationErrors {
             401,
             "Cart items changed during checkout"
     ) ;
+    public static final Exception INVENTORY_NOT_ENOUGH_STOCK =new ApplicationException(
+            401001,
+            401,
+            "Username or password is incorrect"
+    );
     // AUTHENTICATION
     public static ApplicationException INVALID_CREDENTIALS =
             new ApplicationException(
@@ -14,7 +19,12 @@ public class ApplicationErrors {
                     401,
                     "Username or password is incorrect"
             );
-
+    public static ApplicationException SINGLE_INVENTORY_NOT_ENOUGH_STOCK =
+            new ApplicationException(
+                    401001,
+                    401,
+                    "single inventory don't have enough stock, please adjust the quantity"
+            );
     public static ApplicationException INVALID_TOKEN =
             new ApplicationException(
                     401002,

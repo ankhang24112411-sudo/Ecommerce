@@ -2,15 +2,17 @@ package com.khang.backendecommerce.newstruc.domain.order.dto;
 
 import com.khang.backendecommerce.newstruc.entity.InventoryEntity;
 import com.khang.backendecommerce.newstruc.entity.ProductEntity;
+import lombok.Builder;
 
 import java.math.BigDecimal;
 import java.util.Objects;
-
+@Builder
 public record AllocatedItem(String cartItemId,
                             ProductEntity product,
                             InventoryEntity inventory,
                             int quantity,
                             BigDecimal unitPrice,
+                            BigDecimal subtotal,
                             BigDecimal deliveryFee) {
 
     public AllocatedItem {

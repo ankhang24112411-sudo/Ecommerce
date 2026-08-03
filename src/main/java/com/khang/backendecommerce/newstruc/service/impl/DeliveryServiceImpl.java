@@ -79,10 +79,17 @@ public class DeliveryServiceImpl implements DeliveryService {
 
     @Override
     public BigDecimal calculateDeliveryFee(InventoryEntity inventory,
-                                           String recipientStateId,
+                                           String userStateId,
                                            Map<String, DeliveryFeeEntity> deliveryFeeByWarehouseState) {
-
-        return null;
+     String wareHouseStateId = inventory.getWarehouse().getState().getId();
+     if(wareHouseStateId.equals(userStateId)){
+         return BigDecimal.ZERO;
+     }
+     DeliveryFeeEntity deliveryFee = deliveryFeeByWarehouseState.get(wareHouseStateId);
+     if(!deliveryFeeByWarehouseState.containsKey(wareHouseStateId)){
+         throw ApplicationErrors.DELIVERY_ROUTE_NOT_FOUND;
+     }
+        return deliveryFee.getBaseFee();
     }
 
 //    @Override

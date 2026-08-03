@@ -5,6 +5,7 @@ import com.khang.backendecommerce.newstruc.domain.order.dto.AllocatedItem;
 import com.khang.backendecommerce.newstruc.entity.CartItemEntity;
 import com.khang.backendecommerce.newstruc.entity.DeliveryFeeEntity;
 import com.khang.backendecommerce.newstruc.entity.InventoryEntity;
+import com.khang.backendecommerce.newstruc.repo.DeliveryService;
 import com.khang.backendecommerce.newstruc.repo.InventoryRepository;
 import com.khang.backendecommerce.newstruc.service.InventoryService;
 import com.khang.backendecommerce.newstruc.entity.ProductEntity;
@@ -12,16 +13,14 @@ import com.khang.backendecommerce.newstruc.entity.ProductEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class InventoryServiceImpl implements InventoryService {
     private final InventoryRepository inventoryRepo;
-
+    private final DeliveryService deliveryService;
 
 
 //    public void checkProductQuantityUpdate(int quantityUpdate, int inventoryQuantity ) {
@@ -84,8 +83,24 @@ public class InventoryServiceImpl implements InventoryService {
                         inventory,deliveryFeeEntityByWarehouseStateId, userStateId
                 )).toList();
 
+        InventoryEntity selectInventory = candidates.stream()
+                .filter(inventory -> inventory.getQuantity() >= productQuantity)
+                .sorted(Comparator.comparing(( InventoryEntity inventory) ->
+                        deliveryService.calculateDeliveryFee(inventory,userStateId,deliveryFeeEntityByWarehouseStateId))
+                        .thenComparing(InventoryEntity::getQuantity))
+                .findFirst().orElseThrow(() -> ApplicationErrors.INVENTORY_NOT_ENOUGH);
 
-        return null;
+        if(selectInventory.getQuantity() < productQuantity){
+            throw ApplicationErrors.INVENTORY_NOT_ENOUGH;
+        }
+
+        int totalSumProduct = inventoryEntities.stream()
+                .mapToInt(InventoryEntity::getQuantity)
+                .sum();
+        if(totalSumProduct >= productQuantity){
+            throw ApplicationErrors.SINGLE_INVENTORY_NOT_ENOUGH_STOCK;
+        }
+        return selectInventory;
     }
     public boolean canDeliveryFromWarehouse(InventoryEntity inventory ,
                                             Map<String, DeliveryFeeEntity> deliveryFeeEntityByWarehouseStateId,
