@@ -206,6 +206,17 @@ public class CartServiceImpl implements CartService {
     }
 
 
+    @Override
+    public List<CartItemEntity> loadCartItems(UserEntity user) {
+        String userId = user.getId();
+        CartEntity cart = findByUserId(userId);
+        List<CartItemEntity> cartItems = cartItemRepo.findAllForCheckout(cart.getId());
+         cartItems.forEach(cartItemEntity -> checkCartItemFromUser(cartItemEntity.getId(),cart,user));
+         cartItems.forEach(cartItemEntity -> productService.isProductActive(cartItemEntity.getProduct()));
+        return cartItems;
+    }
+
+
     private CartEntity createNewCart(UserEntity user,ProductEntity  product, int quantity) {
         InventoryEntity inventory = inventoryService.findProductAvailability(product, quantity);
 //        BigDecimal deliveryAmount = deliveryService.calculateProductDeliveryAmount(user, inventory);

@@ -1,6 +1,7 @@
 package com.khang.backendecommerce.newstruc.domain.user.repository;
 
 import com.khang.backendecommerce.newstruc.domain.user.entity.UserEntity;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -25,4 +26,14 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
     boolean existsByUsername(String username);
     boolean existsByEmail(String username);
 
+    @EntityGraph(
+            attributePaths = {"state"},
+            type = EntityGraph.EntityGraphType.FETCH
+    )
+    @Query("""
+ SELECT user
+ FROM UserEntity user
+ where user.id = :userId
+""")
+    Optional<UserEntity> findByIdWithState(@Param("userId") String userId);
 }

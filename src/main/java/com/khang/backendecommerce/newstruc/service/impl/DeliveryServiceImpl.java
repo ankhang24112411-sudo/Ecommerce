@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -60,5 +61,10 @@ public class DeliveryServiceImpl implements DeliveryService {
         return inventories.stream()
                 .map( inventoryEntity -> calculateProductDeliveryAmount(user, inventoryEntity))
                 .reduce(BigDecimal.ZERO,BigDecimal::add);
+    }
+
+    @Override
+    public Map<DeliveryRouteEntity, DeliveryFeeEntity> findDeliveryFeeOnRoute(List<InventoryEntity> inventories, String userStateId) {
+        return Map.of();
     }
 }

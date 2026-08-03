@@ -5,6 +5,7 @@ import com.khang.backendecommerce.newstruc.dto.response.CartItemResponse;
 import com.khang.backendecommerce.newstruc.entity.CartEntity;
 import com.khang.backendecommerce.newstruc.dto.response.OrderSummaryResponse;
 import com.khang.backendecommerce.newstruc.domain.user.entity.UserEntity;
+import com.khang.backendecommerce.newstruc.entity.CartItemEntity;
 
 import java.util.List;
 
@@ -20,4 +21,6 @@ public interface CartService {
     OrderSummaryResponse convertToOrderSummaryResponse(UserEntity user, String discountName , CartEntity cart ) ;
 
    CartEntity findByUserId(String id);
+
+   List<CartItemEntity> loadCartItems(UserEntity user);
    }
