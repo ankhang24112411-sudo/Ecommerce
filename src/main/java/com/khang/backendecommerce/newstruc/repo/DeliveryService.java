@@ -16,4 +16,5 @@ public interface DeliveryService {
      BigDecimal calculateCartDeliveryAmount(UserEntity user , CartEntity cart);
 //  Map<DeliveryRouteEntity, DeliveryFeeEntity>  findDeliveryFeeOnRoute(List<InventoryEntity> inventories, String userStateId);
     Map<String , DeliveryFeeEntity> deliveryFeeEntityByWarehousesId(Set<String> warehouseIds, String userStateId);
+     BigDecimal calculateDeliveryFee(InventoryEntity inventory, String recipientStateId, Map<String, DeliveryFeeEntity> deliveryFeeByWarehouseState);
     }

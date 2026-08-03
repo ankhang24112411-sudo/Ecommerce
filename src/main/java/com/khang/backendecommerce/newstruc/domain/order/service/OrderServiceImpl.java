@@ -50,6 +50,7 @@ public class OrderServiceImpl implements OrderService{
             int productQuantity = cartItem.getQuantity();
             String productId = product.getId();
             List<InventoryEntity> inventoryEntities = inventoriesByProduct.get(productId);
+            InventoryEntity selectInventory = inventoryService.selectInventory(product ,productQuantity,inventoryEntities, deliveryFeeEntityByWarehouseStateId,  userStateId);
         }
         return List.of();
     }

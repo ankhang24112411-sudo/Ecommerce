@@ -69,4 +69,32 @@ public class InventoryServiceImpl implements InventoryService {
                 .map(inventory -> inventory.getWarehouse().getId())
                 .collect(Collectors.toSet());
     }
+
+    @Override
+    public InventoryEntity selectInventory(ProductEntity product,
+                                           int productQuantity,
+                                           List<InventoryEntity> inventoryEntities,
+                                           Map<String, DeliveryFeeEntity> deliveryFeeEntityByWarehouseStateId,
+                                           String userStateId) {
+        if(inventoryEntities.isEmpty()){
+            throw ApplicationErrors.INVENTORY_NOT_FOUND;
+        }
+        List<InventoryEntity> candidates = inventoryEntities.stream()
+                .filter(inventory -> canDeliveryFromWarehouse(
+                        inventory,deliveryFeeEntityByWarehouseStateId, userStateId
+                )).toList();
+
+
+        return null;
+    }
+    public boolean canDeliveryFromWarehouse(InventoryEntity inventory ,
+                                            Map<String, DeliveryFeeEntity> deliveryFeeEntityByWarehouseStateId,
+                                            String userStateId
+                                            ){
+        String wareHouseStateId = inventory.getWarehouse().getState().getId();
+        if(wareHouseStateId.equals(userStateId)){
+            return true;
+        }
+        return deliveryFeeEntityByWarehouseStateId.containsKey(wareHouseStateId);
+    }
 }

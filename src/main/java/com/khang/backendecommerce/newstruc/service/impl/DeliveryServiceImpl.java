@@ -77,6 +77,14 @@ public class DeliveryServiceImpl implements DeliveryService {
                         Function.identity()));
     }
 
+    @Override
+    public BigDecimal calculateDeliveryFee(InventoryEntity inventory,
+                                           String recipientStateId,
+                                           Map<String, DeliveryFeeEntity> deliveryFeeByWarehouseState) {
+
+        return null;
+    }
+
 //    @Override
 //    public Map<DeliveryRouteEntity, DeliveryFeeEntity> findDeliveryFeeOnRoute(List<InventoryEntity> inventories, String userStateId) {
 //        return Map.of();

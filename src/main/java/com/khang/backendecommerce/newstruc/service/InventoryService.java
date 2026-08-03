@@ -21,6 +21,5 @@ public interface InventoryService {
      Set<String> extractWarehouseIds(Map<String, List<InventoryEntity>> productByInventories);
 
 
-
-
+    InventoryEntity selectInventory(ProductEntity product, int productQuantity, List<InventoryEntity> inventoryEntities, Map<String, DeliveryFeeEntity> deliveryFeeEntityByWarehouseStateId,String userStateId);
 }
