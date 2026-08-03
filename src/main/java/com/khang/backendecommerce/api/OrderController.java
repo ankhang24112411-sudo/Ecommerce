@@ -1,6 +1,5 @@
 package com.khang.backendecommerce.api;
 
-import com.khang.backendecommerce.newstruc.domain.order.dto.request.OrderCommand;
 import com.khang.backendecommerce.newstruc.domain.order.dto.request.OrderRequest;
 import com.khang.backendecommerce.newstruc.domain.order.dto.response.OrderResponse;
 import com.khang.backendecommerce.newstruc.domain.order.facade.CheckoutFacade;
@@ -25,13 +24,11 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name ="Order Controller")
 @RequiredArgsConstructor
 public class OrderController {
-    private final CheckoutFacade checkoutFacade;
     private final CurrentUserProvider currentUserProvider;
     @PostMapping("/place-order")
     public ResponseEntity<BaseResponse<OrderResponse>> placeOrder (@RequestBody OrderRequest request){
         UserEntity user = currentUserProvider.getCurrentUser();
-        OrderCommand command = OrderCommand.builder()
-                .userId(user.getId()).address(user.getAddress()).checkoutSource(request.getCheckoutSource()).paymentMethod(request.getPaymentMethod()).userNotes(request.getUserNotes()).build();
-        return  ResponseEntity.status(HttpStatus.CREATED).body(new BaseResponse<>( checkoutFacade.placeOrder(command), "success"));
+
+        return  ResponseEntity.status(HttpStatus.CREATED).body(new BaseResponse<>( orderService.placeOrder(request), "success"));
     }
 }

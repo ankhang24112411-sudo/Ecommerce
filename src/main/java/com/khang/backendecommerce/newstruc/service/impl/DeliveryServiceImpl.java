@@ -26,7 +26,7 @@ public class DeliveryServiceImpl implements DeliveryService {
     private final DeliveryRouteRepository deliveryRouteRepo;
     private final DeliveryFeeRepository deliveryFeeRepo;
     private final InventoryRepository inventoryRepo;
-
+//TODO code chua toi uu , N + 1
     @Override
     public BigDecimal calculateProductDeliveryAmount(UserEntity user, InventoryEntity inventory) {
 

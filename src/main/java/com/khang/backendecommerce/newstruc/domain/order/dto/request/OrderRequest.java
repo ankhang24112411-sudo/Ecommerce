@@ -9,8 +9,7 @@ import lombok.Getter;
 @Getter
 
 public class OrderRequest {
-    @NotNull
-    private CheckoutSource checkoutSource;
+
     @NotNull
     private PaymentMethod paymentMethod;
     @Size(max = 500)

@@ -16,9 +16,9 @@ public class InventoryServiceImpl implements InventoryService {
 
 
 
-    public void checkProductQuantityUpdate(int quantityUpdate, int inventoryQuantity ) {
-
-    }
+//    public void checkProductQuantityUpdate(int quantityUpdate, int inventoryQuantity ) {
+//
+//    }
     public InventoryEntity checkProductExistingInventory(String productId ){
         return inventoryRepo.findByProduct_Id(productId).orElseThrow(() ->  ApplicationErrors.PRODUCT_EXISTED);
 
