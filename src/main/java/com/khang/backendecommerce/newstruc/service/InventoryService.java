@@ -2,11 +2,13 @@ package com.khang.backendecommerce.newstruc.service;
 
 import com.khang.backendecommerce.newstruc.domain.order.dto.AllocatedItem;
 import com.khang.backendecommerce.newstruc.entity.CartItemEntity;
+import com.khang.backendecommerce.newstruc.entity.DeliveryFeeEntity;
 import com.khang.backendecommerce.newstruc.entity.InventoryEntity;
 import com.khang.backendecommerce.newstruc.entity.ProductEntity;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public interface InventoryService {
 //  void  checkProductQuantityUpdate(int quantityUpdate, int inventoryQuantity );
@@ -14,6 +16,11 @@ public interface InventoryService {
 
   InventoryEntity findProductAvailability(ProductEntity product, int quantity);
 
-  List<AllocatedItem> findAllocateAndLock (List<CartItemEntity> cartItemList, String stateId);
      Map<String, List<InventoryEntity>>  loadAndLockInventories(List<CartItemEntity> cartItemList);
+
+     Set<String> extractWarehouseIds(Map<String, List<InventoryEntity>> productByInventories);
+
+
+
+
 }

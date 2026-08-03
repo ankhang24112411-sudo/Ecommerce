@@ -19,6 +19,9 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -64,7 +67,18 @@ public class DeliveryServiceImpl implements DeliveryService {
     }
 
     @Override
-    public Map<DeliveryRouteEntity, DeliveryFeeEntity> findDeliveryFeeOnRoute(List<InventoryEntity> inventories, String userStateId) {
-        return Map.of();
+    public Map<String, DeliveryFeeEntity> deliveryFeeEntityByWarehousesId(Set<String> warehouseIds,String userStateId) {
+        List<DeliveryFeeEntity> findAllDeliveriesFee = deliveryFeeRepo.findAllForCheckOut(warehouseIds, userStateId);
+
+
+        return findAllDeliveriesFee.stream()
+                .collect(Collectors.toMap(deliveryFeeEntity ->
+                        deliveryFeeEntity.getDeliveryRoute().getStateFrom().getId(),
+                        Function.identity()));
     }
+
+//    @Override
+//    public Map<DeliveryRouteEntity, DeliveryFeeEntity> findDeliveryFeeOnRoute(List<InventoryEntity> inventories, String userStateId) {
+//        return Map.of();
+//    }
 }

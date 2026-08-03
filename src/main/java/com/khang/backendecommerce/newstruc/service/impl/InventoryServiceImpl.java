@@ -3,6 +3,7 @@ package com.khang.backendecommerce.newstruc.service.impl;
 import com.khang.backendecommerce.infrastructure.exception.ApplicationErrors;
 import com.khang.backendecommerce.newstruc.domain.order.dto.AllocatedItem;
 import com.khang.backendecommerce.newstruc.entity.CartItemEntity;
+import com.khang.backendecommerce.newstruc.entity.DeliveryFeeEntity;
 import com.khang.backendecommerce.newstruc.entity.InventoryEntity;
 import com.khang.backendecommerce.newstruc.repo.InventoryRepository;
 import com.khang.backendecommerce.newstruc.service.InventoryService;
@@ -13,6 +14,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -41,22 +44,29 @@ public class InventoryServiceImpl implements InventoryService {
         return inventory;
     }
 
-    @Override
-    public List<AllocatedItem> findAllocateAndLock(List<CartItemEntity> cartItemList, String stateId) {
 
-//            List<String> productIds = cartItemList
 
-        return List.of();
-    }
 
     @Override
     public Map<String, List<InventoryEntity>> loadAndLockInventories(List<CartItemEntity> cartItemList) {
         List<String> productIds = cartItemList.stream()
                 .map(item -> item.getProduct().getId())
                 .toList();
-        List<InventoryEntity> inventoryLists = inventoryRepo.findAllInventoryCandidates(productIds);
+        List<InventoryEntity> inventoryLists = inventoryRepo.findAllInventoryCandidates(productIds)
+                .stream()
+                .filter( inventory-> inventory.getQuantity() > 0)
+                .toList();
+        Map<String,List<InventoryEntity>> inventoryByProduct = inventoryLists.stream()
+                .collect(Collectors.groupingBy(inventory -> inventory.getProduct().getId()));
 
-        return Map.of();
+        return inventoryByProduct;
     }
 
+    @Override
+    public Set<String> extractWarehouseIds(Map<String, List<InventoryEntity>> productByInventories) {
+        return productByInventories.values().stream()
+                .flatMap(inventories -> inventories.stream())
+                .map(inventory -> inventory.getWarehouse().getId())
+                .collect(Collectors.toSet());
+    }
 }
