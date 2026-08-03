@@ -1,8 +1,10 @@
 package com.khang.backendecommerce.infrastructure.configuration;
 
 import com.khang.backendecommerce.newstruc.domain.user.service.UserService;
+import com.sendgrid.SendGrid;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -78,7 +80,10 @@ public class AppConfig {
 //                        .anyRequest().permitAll()).build();
 
     }
-
+    @Bean
+    public SendGrid sendGrid(@Value("${spring.sendGrid.apiKey}") String apiKey) {
+        return new SendGrid(apiKey);
+    }
     @Bean
     public AuthenticationProvider provider() {
         DaoAuthenticationProvider provider =
