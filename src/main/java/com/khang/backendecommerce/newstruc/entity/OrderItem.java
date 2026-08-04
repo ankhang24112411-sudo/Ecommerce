@@ -2,10 +2,7 @@ package com.khang.backendecommerce.newstruc.entity;
 
 import com.khang.backendecommerce.infrastructure.common.entity.abstractentity.AbstractEntity;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -15,6 +12,7 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@Builder
 @Table(name ="tbl_order_item")
 public class OrderItem extends AbstractEntity<String> implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)

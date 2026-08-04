@@ -8,6 +8,7 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.time.Instant;
 
 @Getter
@@ -16,7 +17,7 @@ import java.time.Instant;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name ="tbl_order")
+@Table(name ="tbl_sub_order")
 public class SubOrderEntity extends AbstractEntity<String> implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id")
@@ -35,7 +36,7 @@ public class SubOrderEntity extends AbstractEntity<String> implements Serializab
     private String storeName;
 
     @Column(name ="sub_total")
-    private String subTotal;
+    private BigDecimal subTotal;
 
     @Column(name ="confirmed_at")
     private Instant confirmedAt;
@@ -46,5 +47,10 @@ public class SubOrderEntity extends AbstractEntity<String> implements Serializab
     @Column(name ="rejection_reason")
     private String rejectionReason;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name= "delivery_route_id")
+    private DeliveryRouteEntity deliveryRoute;
 
+    @Column(name ="delivery_fee")
+    private String deliveryFee;
 }

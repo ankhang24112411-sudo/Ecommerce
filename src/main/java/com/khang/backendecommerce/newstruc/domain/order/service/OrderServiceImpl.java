@@ -1,5 +1,7 @@
 package com.khang.backendecommerce.newstruc.domain.order.service;
 
+import com.khang.backendecommerce.infrastructure.common.enums.PaymentMethod;
+import com.khang.backendecommerce.infrastructure.common.enums.PaymentStatus;
 import com.khang.backendecommerce.infrastructure.configuration.CurrentUserProvider;
 import com.khang.backendecommerce.infrastructure.discountinfra.DiscountContext;
 import com.khang.backendecommerce.infrastructure.exception.ApplicationErrors;
@@ -8,6 +10,7 @@ import com.khang.backendecommerce.newstruc.domain.order.dto.request.OrderRequest
 import com.khang.backendecommerce.newstruc.domain.order.dto.response.OrderResponse;
 import com.khang.backendecommerce.newstruc.entity.UserEntity;
 import com.khang.backendecommerce.newstruc.entity.*;
+import com.khang.backendecommerce.newstruc.repo.SubOrderRepository;
 import com.khang.backendecommerce.newstruc.service.DeliveryService;
 import com.khang.backendecommerce.newstruc.service.CartService;
 import com.khang.backendecommerce.newstruc.service.DiscountService;
@@ -18,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -32,7 +36,9 @@ public class OrderServiceImpl implements OrderService{
     private final CurrentUserProvider currentUserProvider;
     private final InventoryService inventoryService;
     private final DeliveryService deliveryService;
-    private final SubOrder
+    private final SubOrderRepository subOrderRepo;
+    private final
+
     @Override
     @Transactional
     public OrderResponse placeOrder(OrderRequest request) {
@@ -40,9 +46,8 @@ public class OrderServiceImpl implements OrderService{
         StateEntity state = user.getState();
         CartEntity cart = cartService.findByUserId(user.getId());
         DiscountCustomerEntity discountCustomer = cart.getDiscount();
-        if(discountCustomer != null) {
-            DiscountEntity discount = discountService.findAndCheckDiscountCustomer(discountCustomer);
-        }
+        DiscountEntity discount = discountCustomer == null ? null : discountService.findAndCheckDiscountCustomer(discountCustomer);
+
         List<CartItemEntity> cartItemList = cartService.loadCartItems(cart);
         Map<String, List<InventoryEntity>> inventoriesByProduct = inventoryService.loadAndLockInventories(cartItemList);
         
@@ -50,14 +55,38 @@ public class OrderServiceImpl implements OrderService{
         Map<String, DeliveryFeeEntity> deliveryFeeEntityByWarehouseStateId = deliveryService.deliveryFeeEntityByWarehousesId(warehouseIds, state.getId());
 
         List<AllocatedItem> allocatedItemList = findAllocateAndLock(cartItemList,inventoriesByProduct, warehouseIds,deliveryFeeEntityByWarehouseStateId, state.getId() );
-         OrderEntity newOrder = createOrder(allocatedItemList, user);
+         OrderEntity newOrder = createOrder(allocatedItemList, user, discountCustomer);
+         List<SubOrderEntity> subOrderList = createSubOrder(allocatedItemList, newOrder);
 
-
+         List<OrderItem> orderItemList = createOrderItem(allocatedItemList,subOrderList);
+         if(request.getPaymentMethod().equals(PaymentMethod.COD)){
+             return handleOrderCODpaymentMethod(newOrder, subOrderList);
+         }
         return null;
 
     }
 
+    private List<OrderItem> createOrderItem(List<AllocatedItem> allocatedItemList, List<SubOrderEntity> subOrderList) {
+        return allocatedItemList.stream().map( allocatedItem -> OrderItem.builder()
+                .subOrder(s)
+                .product()
+                .store()
+                .productName()
+                .sku()
+                .unitPrice()
+                .quantity()
+                .build());
+    }
+
+    private OrderResponse handleOrderCODpaymentMethod(OrderEntity newOrder, List<SubOrderEntity> subOrderList) {
+        newOrder.setPaymentMethod(PaymentMethod.COD);
+        newOrder.setConfirmedAt(Instant.now());
+        newOrder.setPaymentStatus(PaymentStatus.UNPAID);
+        subOrderList.forEach(s);
+    }
+
     private OrderEntity createOrder(List<AllocatedItem> allocatedItemList, UserEntity user, DiscountCustomerEntity discountCustomer) {
+        BigDecimal discountCalculate = BigDecimal.ZERO;
         BigDecimal orderSubTotal = allocatedItemList.stream()
                 .map(AllocatedItem::subtotal)
                 .reduce(BigDecimal.ZERO,BigDecimal::add);
@@ -69,10 +98,11 @@ public class OrderServiceImpl implements OrderService{
                 .subtotal(orderSubTotal)
                 .deliveryAmount(totalDeliveryAmount)
                 .build();
-        BigDecimal discountCalculate = discountService.calculateDiscount(discountCustomer, context);
-
+        if(discountCustomer != null) {
+             discountCalculate = discountService.calculateDiscount(discountCustomer, context);
+        }
         BigDecimal totalFinalAmount = orderSubTotal.add(totalDeliveryAmount).subtract(discountCalculate);
-       OrderEntity orderEntity = OrderEntity.builder()
+       return OrderEntity.builder()
                .customer(user)
                .customerName(user.getFullName())
                .state(user.getState())
@@ -81,16 +111,7 @@ public class OrderServiceImpl implements OrderService{
                .discountTotalAmount(discountCalculate)
                .orderTotalAmount(totalFinalAmount)
                .build();
-      List<SubOrderEntity>  listSubOrder = allocatedItemList.stream().map(subOrder -> SubOrderEntity.builder()
-                .order()
-                .store()
-                .orderStatus()
-                .storeName()
-                .subTotal()
-                .confirmedAt()
-                .rejectedAt()
-                .rejectionReason()
-                .build());
+
     }
 
     @Override
@@ -124,7 +145,12 @@ public class OrderServiceImpl implements OrderService{
         }
         return result;
     }
-    private void createSubOrder(List<AllocatedItem> listSubOrder){
-
+    private List<SubOrderEntity> createSubOrder(List<AllocatedItem> allocatedItemList ,OrderEntity orderEntity){
+        return allocatedItemList.stream()
+                .map(allocatedItem -> SubOrderEntity.builder()
+                        .order(orderEntity)
+                        .store(allocatedItem.product().getStore())
+                        .subTotal(allocatedItem.subtotal())
+                        .build()).toList();
     }
 }

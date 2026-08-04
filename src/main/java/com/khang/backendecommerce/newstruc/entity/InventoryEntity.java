@@ -35,10 +35,10 @@ public class InventoryEntity extends AbstractEntity<String> implements Serializa
     @JoinColumn(name = "warehouse_id")
     private WarehouseEntity warehouse ;
 
-    @Column(name = "available_quantity")
+    @Column(name = "available_quantity", nullable = false)
     private Integer availableQuantity;
 
-    @Column(name = "reserved_quantity ")
+    @Column(name = "reserved_quantity ", nullable = false)
     private Integer reservedQuantity;
 
     @Enumerated(EnumType.STRING)
@@ -56,5 +56,8 @@ public class InventoryEntity extends AbstractEntity<String> implements Serializa
     public void updateQuantityWhenPaymentFailed(int orderQuantity){
         availableQuantity += orderQuantity;
         reservedQuantity -= orderQuantity;
+    }
+    public void updateQuantityWhenPaymentSuccessOrCOD(int orderQuantity){
+        reservedQuantity -=orderQuantity;
     }
 }
