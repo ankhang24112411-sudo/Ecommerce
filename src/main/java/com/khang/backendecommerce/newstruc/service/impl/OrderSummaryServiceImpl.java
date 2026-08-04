@@ -6,7 +6,7 @@ import com.khang.backendecommerce.newstruc.service.DiscountService;
 import com.khang.backendecommerce.newstruc.dto.request.OrderSummaryRequest;
 import com.khang.backendecommerce.newstruc.dto.response.OrderSummaryResponse;
 import com.khang.backendecommerce.newstruc.service.OrderSummaryService;
-import com.khang.backendecommerce.newstruc.domain.user.entity.UserEntity;
+import com.khang.backendecommerce.newstruc.entity.UserEntity;
 import com.khang.backendecommerce.infrastructure.configuration.CurrentUserProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

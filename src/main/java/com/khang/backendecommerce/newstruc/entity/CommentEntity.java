@@ -1,6 +1,5 @@
 package com.khang.backendecommerce.newstruc.entity;
 
-import com.khang.backendecommerce.newstruc.domain.user.entity.UserEntity;
 import com.khang.backendecommerce.infrastructure.common.entity.abstractentity.AbstractEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

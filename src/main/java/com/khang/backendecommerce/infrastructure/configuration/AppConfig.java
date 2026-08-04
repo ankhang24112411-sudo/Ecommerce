@@ -1,6 +1,6 @@
 package com.khang.backendecommerce.infrastructure.configuration;
 
-import com.khang.backendecommerce.newstruc.domain.user.service.UserService;
+import com.khang.backendecommerce.newstruc.service.UserService;
 import com.sendgrid.SendGrid;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -69,7 +69,13 @@ public class AppConfig {
                         HttpMethod.POST,
                         "/user",
                         "/user/"
-                ).permitAll().anyRequest().authenticated())
+                ).permitAll()
+                                .requestMatchers(
+                                        HttpMethod.POST,
+                                        "/api/v1/payment/webhooks/mock"
+                                ).permitAll()
+                                .anyRequest().authenticated()
+                        )
                 .sessionManagement(manager -> manager.sessionCreationPolicy(STATELESS))
                 .authenticationProvider(provider()).addFilterBefore(preFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();

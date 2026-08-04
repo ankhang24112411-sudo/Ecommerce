@@ -1,13 +1,11 @@
-package com.khang.backendecommerce.newstruc.repo;
+package com.khang.backendecommerce.newstruc.service;
 
 import com.khang.backendecommerce.newstruc.entity.CartEntity;
 import com.khang.backendecommerce.newstruc.entity.DeliveryFeeEntity;
-import com.khang.backendecommerce.newstruc.entity.DeliveryRouteEntity;
 import com.khang.backendecommerce.newstruc.entity.InventoryEntity;
-import com.khang.backendecommerce.newstruc.domain.user.entity.UserEntity;
+import com.khang.backendecommerce.newstruc.entity.UserEntity;
 
 import java.math.BigDecimal;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 

@@ -7,9 +7,9 @@ import com.khang.backendecommerce.newstruc.domain.authentication.entity.TokenEnt
 import com.khang.backendecommerce.newstruc.domain.authentication.service.AuthenticationService;
 import com.khang.backendecommerce.newstruc.domain.authentication.service.JwtService;
 import com.khang.backendecommerce.newstruc.domain.authentication.service.TokenService;
-import com.khang.backendecommerce.newstruc.domain.user.entity.UserEntity;
-import com.khang.backendecommerce.newstruc.domain.user.repository.UserRepository;
-import com.khang.backendecommerce.newstruc.domain.user.service.UserService;
+import com.khang.backendecommerce.newstruc.entity.UserEntity;
+import com.khang.backendecommerce.newstruc.repo.UserRepository;
+import com.khang.backendecommerce.newstruc.service.UserService;
 import com.khang.backendecommerce.infrastructure.exception.ApplicationErrors;
 import com.khang.backendecommerce.infrastructure.util.TokenType;
 import io.micrometer.common.util.StringUtils;

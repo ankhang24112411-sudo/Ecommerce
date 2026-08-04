@@ -1,4 +1,4 @@
-package com.khang.backendecommerce.newstruc.domain.user.dto;
+package com.khang.backendecommerce.newstruc.dto.request;
 
 import com.khang.backendecommerce.newstruc.entity.StateEntity;
 import com.khang.backendecommerce.infrastructure.common.enums.Gender;

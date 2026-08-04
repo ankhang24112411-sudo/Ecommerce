@@ -1,7 +1,7 @@
-package com.khang.backendecommerce.newstruc.domain.user.mapper;
+package com.khang.backendecommerce.newstruc.projection;
 
-import com.khang.backendecommerce.newstruc.domain.user.dto.UserCreationRequest;
-import com.khang.backendecommerce.newstruc.domain.user.entity.UserEntity;
+import com.khang.backendecommerce.newstruc.dto.request.UserCreationRequest;
+import com.khang.backendecommerce.newstruc.entity.UserEntity;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")

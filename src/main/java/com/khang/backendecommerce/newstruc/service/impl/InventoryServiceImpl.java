@@ -1,11 +1,10 @@
 package com.khang.backendecommerce.newstruc.service.impl;
 
 import com.khang.backendecommerce.infrastructure.exception.ApplicationErrors;
-import com.khang.backendecommerce.newstruc.domain.order.dto.AllocatedItem;
 import com.khang.backendecommerce.newstruc.entity.CartItemEntity;
 import com.khang.backendecommerce.newstruc.entity.DeliveryFeeEntity;
 import com.khang.backendecommerce.newstruc.entity.InventoryEntity;
-import com.khang.backendecommerce.newstruc.repo.DeliveryService;
+import com.khang.backendecommerce.newstruc.service.DeliveryService;
 import com.khang.backendecommerce.newstruc.repo.InventoryRepository;
 import com.khang.backendecommerce.newstruc.service.InventoryService;
 import com.khang.backendecommerce.newstruc.entity.ProductEntity;

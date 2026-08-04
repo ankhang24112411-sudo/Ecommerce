@@ -2,13 +2,12 @@ package com.khang.backendecommerce.newstruc.domain.order.service;
 
 import com.khang.backendecommerce.infrastructure.configuration.CurrentUserProvider;
 import com.khang.backendecommerce.infrastructure.exception.ApplicationErrors;
-import com.khang.backendecommerce.newstruc.domain.discountinfra.DiscountContext;
 import com.khang.backendecommerce.newstruc.domain.order.dto.AllocatedItem;
 import com.khang.backendecommerce.newstruc.domain.order.dto.request.OrderRequest;
 import com.khang.backendecommerce.newstruc.domain.order.dto.response.OrderResponse;
-import com.khang.backendecommerce.newstruc.domain.user.entity.UserEntity;
+import com.khang.backendecommerce.newstruc.entity.UserEntity;
 import com.khang.backendecommerce.newstruc.entity.*;
-import com.khang.backendecommerce.newstruc.repo.DeliveryService;
+import com.khang.backendecommerce.newstruc.service.DeliveryService;
 import com.khang.backendecommerce.newstruc.service.CartService;
 import com.khang.backendecommerce.newstruc.service.InventoryService;
 import lombok.RequiredArgsConstructor;

@@ -1,4 +1,4 @@
-package com.khang.backendecommerce.newstruc.domain.discountinfra;
+package com.khang.backendecommerce.infrastructure.discountinfra;
 
 import lombok.Builder;
 

@@ -1,8 +1,8 @@
-package com.khang.backendecommerce.newstruc.domain.discountinfra;
+package com.khang.backendecommerce.infrastructure.discountinfra;
 
-import com.khang.backendecommerce.newstruc.domain.discountinfra.impl.FixedDiscountStrategy;
-import com.khang.backendecommerce.newstruc.domain.discountinfra.impl.FreeshipDiscountStrategy;
-import com.khang.backendecommerce.newstruc.domain.discountinfra.impl.PercentDiscountStrategy;
+import com.khang.backendecommerce.infrastructure.discountinfra.impl.FixedDiscountStrategy;
+import com.khang.backendecommerce.infrastructure.discountinfra.impl.FreeshipDiscountStrategy;
+import com.khang.backendecommerce.infrastructure.discountinfra.impl.PercentDiscountStrategy;
 import com.khang.backendecommerce.infrastructure.common.enums.DiscountType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

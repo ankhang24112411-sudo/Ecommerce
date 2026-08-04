@@ -1,9 +1,7 @@
-package com.khang.backendecommerce.newstruc.domain.user.entity;
+package com.khang.backendecommerce.newstruc.entity;
 
-import com.khang.backendecommerce.newstruc.entity.CartEntity;
 import com.khang.backendecommerce.infrastructure.common.entity.abstractentity.AbstractEntity;
 import com.khang.backendecommerce.infrastructure.common.enums.Gender;
-import com.khang.backendecommerce.newstruc.entity.StateEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;

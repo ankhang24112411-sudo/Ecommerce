@@ -1,7 +1,7 @@
-package com.khang.backendecommerce.newstruc.domain.discountinfra.impl;
+package com.khang.backendecommerce.infrastructure.discountinfra.impl;
 
-import com.khang.backendecommerce.newstruc.domain.discountinfra.DiscountContext;
-import com.khang.backendecommerce.newstruc.domain.discountinfra.DiscountStrategy;
+import com.khang.backendecommerce.infrastructure.discountinfra.DiscountContext;
+import com.khang.backendecommerce.infrastructure.discountinfra.DiscountStrategy;
 import com.khang.backendecommerce.newstruc.entity.DiscountEntity;
 
 import java.math.BigDecimal;

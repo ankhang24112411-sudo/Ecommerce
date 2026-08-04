@@ -4,7 +4,7 @@ import com.khang.backendecommerce.newstruc.dto.request.CartItemPriceResponse;
 import com.khang.backendecommerce.newstruc.dto.response.CartItemResponse;
 import com.khang.backendecommerce.newstruc.entity.CartEntity;
 import com.khang.backendecommerce.newstruc.dto.response.OrderSummaryResponse;
-import com.khang.backendecommerce.newstruc.domain.user.entity.UserEntity;
+import com.khang.backendecommerce.newstruc.entity.UserEntity;
 import com.khang.backendecommerce.newstruc.entity.CartItemEntity;
 
 import java.util.List;

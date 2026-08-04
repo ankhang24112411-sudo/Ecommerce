@@ -1,6 +1,6 @@
-package com.khang.backendecommerce.newstruc.domain.user.repository;
+package com.khang.backendecommerce.newstruc.repo;
 
-import com.khang.backendecommerce.newstruc.domain.user.entity.UserEntity;
+import com.khang.backendecommerce.newstruc.entity.UserEntity;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

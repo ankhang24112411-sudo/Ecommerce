@@ -1,10 +1,10 @@
-package com.khang.backendecommerce.newstruc.domain.user.service.impl;
+package com.khang.backendecommerce.newstruc.service.impl;
 
-import com.khang.backendecommerce.newstruc.domain.user.dto.UserCreationRequest;
-import com.khang.backendecommerce.newstruc.domain.user.entity.UserEntity;
-import com.khang.backendecommerce.newstruc.domain.user.mapper.NewUserMapper;
-import com.khang.backendecommerce.newstruc.domain.user.repository.UserRepository;
-import com.khang.backendecommerce.newstruc.domain.user.service.UserService;
+import com.khang.backendecommerce.newstruc.dto.request.UserCreationRequest;
+import com.khang.backendecommerce.newstruc.entity.UserEntity;
+import com.khang.backendecommerce.newstruc.projection.NewUserMapper;
+import com.khang.backendecommerce.newstruc.repo.UserRepository;
+import com.khang.backendecommerce.newstruc.service.UserService;
 import com.khang.backendecommerce.infrastructure.exception.ApplicationErrors;
 
 import com.khang.backendecommerce.infrastructure.util.ValidationUtils;

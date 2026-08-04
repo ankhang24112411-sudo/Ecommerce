@@ -1,7 +1,7 @@
-package com.khang.backendecommerce.newstruc.domain.user.service;
+package com.khang.backendecommerce.newstruc.service;
 
-import com.khang.backendecommerce.newstruc.domain.user.dto.UserCreationRequest;
-import com.khang.backendecommerce.newstruc.domain.user.entity.UserEntity;
+import com.khang.backendecommerce.newstruc.dto.request.UserCreationRequest;
+import com.khang.backendecommerce.newstruc.entity.UserEntity;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 public interface UserService {

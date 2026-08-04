@@ -3,7 +3,7 @@ package com.khang.backendecommerce.api;
 import com.khang.backendecommerce.newstruc.domain.order.dto.request.OrderRequest;
 import com.khang.backendecommerce.newstruc.domain.order.dto.response.OrderResponse;
 import com.khang.backendecommerce.newstruc.domain.order.service.OrderService;
-import com.khang.backendecommerce.newstruc.domain.user.entity.UserEntity;
+import com.khang.backendecommerce.newstruc.entity.UserEntity;
 import com.khang.backendecommerce.infrastructure.common.dto.response.BaseResponse;
 import com.khang.backendecommerce.infrastructure.configuration.CurrentUserProvider;
 import io.swagger.v3.oas.annotations.tags.Tag;

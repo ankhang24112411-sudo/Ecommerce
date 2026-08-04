@@ -38,9 +38,9 @@ openapi:
     title: API Document
     version: 1.0.0
   sendGrid:
-    apiKey: ${SENDGRID_API_KEY:DUMMY-SENDGRID-API-KEY}
-    fromEmail: ${SENDGRID_FROM_EMAIL:quoctay87@gmail.com}
-    templateId: ${SENDGRID_TEMPLATE_ID:d-2116466afd0a438b90615184dd569e42}
+    apiKey: ${SENDGRID_API_KEY}
+    fromEmail: ${SENDGRID_FROM_EMAIL}
+    templateId: ${SENDGRID_TEMPLATE_ID:d-a52ec2a1f7a84f06a2e08bbe9cae3215}
     verificationLink: ${SENDGRID_VERIFICATION_LINK:http://localhost:8080/user/confirm-email}
 
 jwt:
