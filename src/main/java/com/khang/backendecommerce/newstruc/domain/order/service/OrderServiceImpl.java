@@ -95,34 +95,16 @@ public class OrderServiceImpl implements OrderService{
     }
 
     private OrderResponse convertToOrderResponse(OrderEntity newOrder, List<SubOrderEntity> subOrderList) {
+        return OrderResponse.
     }
 
-    private OrderEntity createOrder(List<AllocatedItem> allocatedItemList, UserEntity user, DiscountCustomerEntity discountCustomer) {
-        BigDecimal discountCalculate = BigDecimal.ZERO;
-        BigDecimal orderSubTotal = allocatedItemList.stream()
-                .map(AllocatedItem::subtotal)
-                .reduce(BigDecimal.ZERO,BigDecimal::add);
+    private OrderResponse createOrder(List<AllocatedItem> allocatedItemList, UserEntity user, DiscountCustomerEntity discountCustomer) {
 
-        BigDecimal totalDeliveryAmount = allocatedItemList.stream()
-                .map(AllocatedItem::deliveryFee)
-                .reduce(BigDecimal.ZERO,BigDecimal::add);
-        DiscountContext context = DiscountContext.builder()
-                .subtotal(orderSubTotal)
-                .deliveryAmount(totalDeliveryAmount)
-                .build();
-        if(discountCustomer != null) {
-             discountCalculate = discountService.calculateDiscount(discountCustomer, context);
-        }
-        BigDecimal totalFinalAmount = orderSubTotal.add(totalDeliveryAmount).subtract(discountCalculate);
        OrderEntity orderEntity = OrderEntity.builder()
                .customer(user)
                .customerName(user.getFullName())
-               .state(user.getState())
-               .subtotal(orderSubTotal)
-               .discountQuantity(1)
-               .discountTotalAmount(discountCalculate)
-               .orderTotalAmount(totalFinalAmount)
-               .build();
+               .state(user.getState()).build();
+
 
 //      List<SubOrderEntity> subOrderEntities =   allocatedItemList.stream()
 //                         .map(allocatedItem -> SubOrderEntity.builder()
@@ -148,10 +130,11 @@ public class OrderServiceImpl implements OrderService{
            .values()
            .stream()
            .map(storeItems -> {
-
                SubOrderEntity subOrder = SubOrderEntity.builder()
-                       .order(orderEntity).store(storeItems.get(0).product().getStore())
-                       .deliveryRoute(storeItems.).deliveryFee().orderItems()
+                       .order(orderEntity)
+                       .store(storeItems.get(0).product().getStore())
+                       .deliveryRoute(storeItems.get(0).deliveryRoute())
+                       .deliveryFee(storeItems.get(0).deliveryFee())
                        .build();
 
                List<OrderItem> orderItemList = storeItems.stream()
@@ -165,10 +148,34 @@ public class OrderServiceImpl implements OrderService{
                                .quantity(item.quantity())
                                .build()).toList();
                orderItemList.forEach(subOrder::addOrderItems);
-
-
+               return subOrder;
            }).toList();
 
+
+   BigDecimal totalDeliveryAmountNoDuplicate = subOrderList.stream()
+           .map(SubOrderEntity::getDeliveryFee)
+           .reduce(BigDecimal.ZERO,BigDecimal::add);
+
+        BigDecimal discountCalculate = BigDecimal.ZERO;
+
+        BigDecimal orderSubTotal = allocatedItemList.stream()
+                .map(AllocatedItem::subtotal)
+                .reduce(BigDecimal.ZERO,BigDecimal::add);
+
+        DiscountContext context = DiscountContext.builder()
+                .subtotal(orderSubTotal)
+                .deliveryAmount(totalDeliveryAmountNoDuplicate)
+                .build();
+        if(discountCustomer != null) {
+            discountCalculate = discountService.calculateDiscount(discountCustomer, context);
+        }
+
+        BigDecimal totalFinalAmount = orderSubTotal.add(totalDeliveryAmountNoDuplicate).subtract(discountCalculate);
+
+        orderEntity.setSubtotal(orderSubTotal);
+        orderEntity.setDiscountTotalAmount(discountCalculate);
+        orderEntity.setOrderTotalAmount(totalFinalAmount);
+        return convertToOrderResponse(orderEntity,subOrderList);
     }
 
     @Override
