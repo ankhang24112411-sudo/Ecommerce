@@ -65,7 +65,9 @@ public class UserEntity extends AbstractEntity<String> implements UserDetails,Se
 
     @OneToMany(mappedBy = "user")
     private Set<UserHasRole> roles = new HashSet<>();
-
+    public String getFullName(){
+        return firstName.concat(" ").concat(lastName);
+    }
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return roles.stream()

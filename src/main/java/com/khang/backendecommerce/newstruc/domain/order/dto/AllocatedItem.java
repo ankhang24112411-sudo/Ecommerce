@@ -1,5 +1,6 @@
 package com.khang.backendecommerce.newstruc.domain.order.dto;
 
+import com.khang.backendecommerce.newstruc.entity.CartItemEntity;
 import com.khang.backendecommerce.newstruc.entity.InventoryEntity;
 import com.khang.backendecommerce.newstruc.entity.ProductEntity;
 import lombok.Builder;
@@ -7,7 +8,7 @@ import lombok.Builder;
 import java.math.BigDecimal;
 import java.util.Objects;
 @Builder
-public record AllocatedItem(String cartItemId,
+public record AllocatedItem(CartItemEntity cartItem,
                             ProductEntity product,
                             InventoryEntity inventory,
                             int quantity,
@@ -16,7 +17,7 @@ public record AllocatedItem(String cartItemId,
                             BigDecimal deliveryFee) {
 
     public AllocatedItem {
-        Objects.requireNonNull(cartItemId);
+
         Objects.requireNonNull(product);
         Objects.requireNonNull(inventory);
         Objects.requireNonNull(unitPrice);

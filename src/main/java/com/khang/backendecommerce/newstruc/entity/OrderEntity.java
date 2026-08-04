@@ -4,10 +4,7 @@ import com.khang.backendecommerce.infrastructure.common.entity.abstractentity.Ab
 import com.khang.backendecommerce.infrastructure.common.enums.PaymentMethod;
 import com.khang.backendecommerce.infrastructure.common.enums.PaymentStatus;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -20,6 +17,7 @@ import java.time.Instant;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@Builder
 @Table(name ="tbl_order")
 public class OrderEntity extends AbstractEntity<String> implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
@@ -35,7 +33,7 @@ public class OrderEntity extends AbstractEntity<String> implements Serializable 
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "state_id")
-    private UserEntity state ;
+    private StateEntity state ;
 
     @Column(name ="subtotal" , precision = 12 , scale = 2)
     private BigDecimal subtotal = BigDecimal.ZERO;

@@ -2,6 +2,7 @@ package com.khang.backendecommerce.newstruc.entity;
 
 import com.khang.backendecommerce.infrastructure.common.entity.abstractentity.AbstractEntity;
 import com.khang.backendecommerce.infrastructure.common.enums.InventoryStatus;
+import com.khang.backendecommerce.infrastructure.exception.ApplicationErrors;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -35,11 +36,25 @@ public class InventoryEntity extends AbstractEntity<String> implements Serializa
     private WarehouseEntity warehouse ;
 
     @Column(name = "available_quantity")
-    private Integer quantity;
+    private Integer availableQuantity;
+
+    @Column(name = "reserved_quantity ")
+    private Integer reservedQuantity;
 
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     @Column(name = "inventory_status", columnDefinition = "inventory_status" )
     private InventoryStatus inventoryStatus;
 
+    public  void updateReservedQuantityAndAvailableQuantity(int orderQuantity){
+        if(availableQuantity - orderQuantity < 0){
+            throw ApplicationErrors.INVENTORY_NOT_ENOUGH;
+        }
+        availableQuantity -= orderQuantity;
+        reservedQuantity+= orderQuantity;
+    }
+    public void updateQuantityWhenPaymentFailed(int orderQuantity){
+        availableQuantity += orderQuantity;
+        reservedQuantity -= orderQuantity;
+    }
 }

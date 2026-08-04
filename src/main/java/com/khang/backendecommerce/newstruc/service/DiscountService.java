@@ -15,4 +15,5 @@ public interface DiscountService {
      BigDecimal calculateDiscount(DiscountCustomerEntity discount ,  DiscountContext context );
     boolean isSameDiscount(CartEntity cart, String discountName);
 
-   }
+    DiscountEntity findAndCheckDiscountCustomer(DiscountCustomerEntity discount);
+}

@@ -67,4 +67,9 @@ public class DiscountServiceImpl implements DiscountService {
                 .filter(name -> Objects.equals(name, discountName))
                 .isPresent();
     }
+
+    @Override
+    public DiscountEntity findAndCheckDiscountCustomer(DiscountCustomerEntity discount) {
+    return null;
+    }
 }

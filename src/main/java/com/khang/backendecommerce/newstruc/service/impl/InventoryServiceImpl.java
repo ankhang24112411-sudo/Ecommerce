@@ -36,7 +36,7 @@ public class InventoryServiceImpl implements InventoryService {
             throw ApplicationErrors.PRODUCT_INACTIVE;
         }
         InventoryEntity inventory = checkProductExistingInventory(product.getId());
-        if(inventory.getQuantity() - quantity < 0){
+        if(inventory.getAvailableQuantity() - quantity < 0){
               throw ApplicationErrors.INVENTORY_NOT_ENOUGH;
         }
         return inventory;
@@ -52,7 +52,7 @@ public class InventoryServiceImpl implements InventoryService {
                 .toList();
         List<InventoryEntity> inventoryLists = inventoryRepo.findAllInventoryCandidates(productIds)
                 .stream()
-                .filter( inventory-> inventory.getQuantity() > 0)
+                .filter( inventory-> inventory.getAvailableQuantity() > 0)
                 .toList();
         Map<String,List<InventoryEntity>> inventoryByProduct = inventoryLists.stream()
                 .collect(Collectors.groupingBy(inventory -> inventory.getProduct().getId()));
@@ -83,18 +83,18 @@ public class InventoryServiceImpl implements InventoryService {
                 )).toList();
 
         InventoryEntity selectInventory = candidates.stream()
-                .filter(inventory -> inventory.getQuantity() >= productQuantity)
+                .filter(inventory -> inventory.getAvailableQuantity() >= productQuantity)
                 .sorted(Comparator.comparing(( InventoryEntity inventory) ->
                         deliveryService.calculateDeliveryFee(inventory,userStateId,deliveryFeeEntityByWarehouseStateId))
-                        .thenComparing(InventoryEntity::getQuantity))
+                        .thenComparing(InventoryEntity::getAvailableQuantity))
                 .findFirst().orElseThrow(() -> ApplicationErrors.INVENTORY_NOT_ENOUGH);
 
-        if(selectInventory.getQuantity() < productQuantity){
+        if(selectInventory.getAvailableQuantity() < productQuantity){
             throw ApplicationErrors.INVENTORY_NOT_ENOUGH;
         }
 
         int totalSumProduct = inventoryEntities.stream()
-                .mapToInt(InventoryEntity::getQuantity)
+                .mapToInt(InventoryEntity::getAvailableQuantity)
                 .sum();
         if(totalSumProduct >= productQuantity){
             throw ApplicationErrors.SINGLE_INVENTORY_NOT_ENOUGH_STOCK;

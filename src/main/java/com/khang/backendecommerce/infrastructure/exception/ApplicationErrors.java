@@ -1415,6 +1415,12 @@ public class ApplicationErrors {
                     409,
                     "Return request has already been approved"
             );
+    public static ApplicationException PAYMENT_REFERENCE_CODE_NOT_FOUND =
+            new ApplicationException(
+                    409904,
+                    409,
+                    "Payment reference not found"
+            );
 
     public static ApplicationException RETURN_ALREADY_REJECTED =
             new ApplicationException(

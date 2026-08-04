@@ -35,6 +35,9 @@ public class PaymentEntity  extends AbstractEntity<String> implements Serializab
     @Column(name ="paid_at")
     private Instant failedAt;
 
+    @Column(name ="payment_reference")
+    private String paymentReference;
+
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     @Column(name = "payment_method", columnDefinition = "payment_method")
