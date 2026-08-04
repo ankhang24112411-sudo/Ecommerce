@@ -1,5 +1,6 @@
 package com.khang.backendecommerce.newstruc.domain.order.service;
 
+import com.khang.backendecommerce.infrastructure.common.enums.OrderStatus;
 import com.khang.backendecommerce.infrastructure.common.enums.PaymentMethod;
 import com.khang.backendecommerce.infrastructure.common.enums.PaymentStatus;
 import com.khang.backendecommerce.infrastructure.configuration.CurrentUserProvider;
@@ -10,6 +11,8 @@ import com.khang.backendecommerce.newstruc.domain.order.dto.request.OrderRequest
 import com.khang.backendecommerce.newstruc.domain.order.dto.response.OrderResponse;
 import com.khang.backendecommerce.newstruc.entity.UserEntity;
 import com.khang.backendecommerce.newstruc.entity.*;
+import com.khang.backendecommerce.newstruc.repo.DeliveryRouteRepository;
+import com.khang.backendecommerce.newstruc.repo.OrderRepository;
 import com.khang.backendecommerce.newstruc.repo.SubOrderRepository;
 import com.khang.backendecommerce.newstruc.service.DeliveryService;
 import com.khang.backendecommerce.newstruc.service.CartService;
@@ -26,6 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -37,7 +41,8 @@ public class OrderServiceImpl implements OrderService{
     private final InventoryService inventoryService;
     private final DeliveryService deliveryService;
     private final SubOrderRepository subOrderRepo;
-    private final
+    private final DeliveryRouteRepository deliveryRouteRepo;
+    private final OrderRepository orderRepo;
 
     @Override
     @Transactional
@@ -56,33 +61,40 @@ public class OrderServiceImpl implements OrderService{
 
         List<AllocatedItem> allocatedItemList = findAllocateAndLock(cartItemList,inventoriesByProduct, warehouseIds,deliveryFeeEntityByWarehouseStateId, state.getId() );
          OrderEntity newOrder = createOrder(allocatedItemList, user, discountCustomer);
-         List<SubOrderEntity> subOrderList = createSubOrder(allocatedItemList, newOrder);
-
-         List<OrderItem> orderItemList = createOrderItem(allocatedItemList,subOrderList);
-         if(request.getPaymentMethod().equals(PaymentMethod.COD)){
-             return handleOrderCODpaymentMethod(newOrder, subOrderList);
-         }
+//         List<SubOrderEntity> subOrderList = createSubOrder(allocatedItemList, newOrder);
+//
+//         List<OrderItem> orderItemList = createOrderItem(allocatedItemList,subOrderList);
+//         if(request.getPaymentMethod().equals(PaymentMethod.COD)){
+//             return handleOrderCODpaymentMethod(newOrder, subOrderList);
+//         }
         return null;
 
     }
 
-    private List<OrderItem> createOrderItem(List<AllocatedItem> allocatedItemList, List<SubOrderEntity> subOrderList) {
-        return allocatedItemList.stream().map( allocatedItem -> OrderItem.builder()
-                .subOrder(s)
-                .product()
-                .store()
-                .productName()
-                .sku()
-                .unitPrice()
-                .quantity()
-                .build());
-    }
+//    private List<OrderItem> createOrderItem(List<AllocatedItem> allocatedItemList, List<SubOrderEntity> subOrderList) {
+//        return allocatedItemList.stream().map( allocatedItem -> OrderItem.builder()
+//                .subOrder(allocatedItem.)
+//                .product()
+//                .store()
+//                .productName()
+//                .sku()
+//                .unitPrice()
+//                .quantity()
+//                .build());
+//    }
 
     private OrderResponse handleOrderCODpaymentMethod(OrderEntity newOrder, List<SubOrderEntity> subOrderList) {
         newOrder.setPaymentMethod(PaymentMethod.COD);
         newOrder.setConfirmedAt(Instant.now());
         newOrder.setPaymentStatus(PaymentStatus.UNPAID);
-        subOrderList.forEach(s);
+        subOrderList.forEach(subOrder -> subOrder.setOrderStatus(OrderStatus.PENDING));
+        
+        orderRepo.save(newOrder);
+        subOrderRepo.saveAll(subOrderList);
+        return convertToOrderResponse(newOrder,subOrderList);
+    }
+
+    private OrderResponse convertToOrderResponse(OrderEntity newOrder, List<SubOrderEntity> subOrderList) {
     }
 
     private OrderEntity createOrder(List<AllocatedItem> allocatedItemList, UserEntity user, DiscountCustomerEntity discountCustomer) {
@@ -102,7 +114,7 @@ public class OrderServiceImpl implements OrderService{
              discountCalculate = discountService.calculateDiscount(discountCustomer, context);
         }
         BigDecimal totalFinalAmount = orderSubTotal.add(totalDeliveryAmount).subtract(discountCalculate);
-       return OrderEntity.builder()
+       OrderEntity orderEntity = OrderEntity.builder()
                .customer(user)
                .customerName(user.getFullName())
                .state(user.getState())
@@ -111,6 +123,51 @@ public class OrderServiceImpl implements OrderService{
                .discountTotalAmount(discountCalculate)
                .orderTotalAmount(totalFinalAmount)
                .build();
+
+//      List<SubOrderEntity> subOrderEntities =   allocatedItemList.stream()
+//                         .map(allocatedItem -> SubOrderEntity.builder()
+//                        .order(orderEntity)
+//                        .store(allocatedItem.product().getStore())
+//                        .subTotal(allocatedItem.subtotal())
+//                        .deliveryRoute(allocatedItem.deliveryRoute())
+//                        .build()).toList();
+//
+//      subOrderEntities.forEach(orderEntity::addSubOrder);
+//
+//        return allocatedItemList.stream().map( allocatedItem -> OrderItem.builder()
+//                .subOrder(allocatedItem.)
+//                .product()
+//                .store()
+//                .productName()
+//                .sku()
+//                .unitPrice()
+//                .quantity()
+//                .build());
+   List<SubOrderEntity> subOrderList = allocatedItemList.stream()
+           .collect(Collectors.groupingBy(allocatedItem -> allocatedItem.product().getStore().getId()))
+           .values()
+           .stream()
+           .map(storeItems -> {
+
+               SubOrderEntity subOrder = SubOrderEntity.builder()
+                       .order(orderEntity).store(storeItems.get(0).product().getStore())
+                       .deliveryRoute(storeItems.).deliveryFee().orderItems()
+                       .build();
+
+               List<OrderItem> orderItemList = storeItems.stream()
+                       .map(item -> OrderItem.builder()
+                               .subOrder(subOrder)
+                               .product(item.product())
+                               .store(subOrder.getStore())
+                               .productName(item.product().getName())
+                               .sku(item.product().getSku())
+                               .unitPrice(item.unitPrice())
+                               .quantity(item.quantity())
+                               .build()).toList();
+               orderItemList.forEach(subOrder::addOrderItems);
+
+
+           }).toList();
 
     }
 
@@ -130,12 +187,16 @@ public class OrderServiceImpl implements OrderService{
             }
             selectInventory.updateReservedQuantityAndAvailableQuantity(productQuantity);
 
+            DeliveryRouteEntity deliveryRoute = deliveryRouteRepo.findByStateFrom_IdAndStateTo_Id(selectInventory.getWarehouse().getId(),userStateId).orElseThrow(() -> ApplicationErrors.DELIVERY_ROUTE_NOT_FOUND);
+
             BigDecimal fee = deliveryService.calculateDeliveryFee(selectInventory, userStateId,deliveryFeeEntityByWarehouseStateId);
             BigDecimal subtotal = product.getPrice().multiply(BigDecimal.valueOf(productQuantity));
             AllocatedItem allocatedItem = AllocatedItem.builder()
+                    .deliveryRoute(deliveryRoute)
                     .cartItem(cartItem)
                     .product(product)
-                    .inventory(selectInventory).quantity(productQuantity)
+                    .inventory(selectInventory)
+                    .quantity(productQuantity)
                     .unitPrice(product.getPrice())
                     .subtotal(subtotal)
                     .deliveryFee(fee)
@@ -145,12 +206,5 @@ public class OrderServiceImpl implements OrderService{
         }
         return result;
     }
-    private List<SubOrderEntity> createSubOrder(List<AllocatedItem> allocatedItemList ,OrderEntity orderEntity){
-        return allocatedItemList.stream()
-                .map(allocatedItem -> SubOrderEntity.builder()
-                        .order(orderEntity)
-                        .store(allocatedItem.product().getStore())
-                        .subTotal(allocatedItem.subtotal())
-                        .build()).toList();
-    }
+
 }

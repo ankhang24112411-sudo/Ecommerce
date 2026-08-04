@@ -1,6 +1,7 @@
 package com.khang.backendecommerce.newstruc.domain.order.dto;
 
 import com.khang.backendecommerce.newstruc.entity.CartItemEntity;
+import com.khang.backendecommerce.newstruc.entity.DeliveryRouteEntity;
 import com.khang.backendecommerce.newstruc.entity.InventoryEntity;
 import com.khang.backendecommerce.newstruc.entity.ProductEntity;
 import lombok.Builder;
@@ -14,6 +15,7 @@ public record AllocatedItem(CartItemEntity cartItem,
                             int quantity,
                             BigDecimal unitPrice,
                             BigDecimal subtotal,
+                            DeliveryRouteEntity deliveryRoute,
                             BigDecimal deliveryFee) {
 
     public AllocatedItem {

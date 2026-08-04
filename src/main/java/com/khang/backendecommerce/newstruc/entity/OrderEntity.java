@@ -11,6 +11,7 @@ import org.hibernate.type.SqlTypes;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.List;
 
 @Getter
 @Setter
@@ -69,6 +70,11 @@ public class OrderEntity extends AbstractEntity<String> implements Serializable 
     @Column(name = "cancelled_at")
     private Instant cancelledAt;
 
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<SubOrderEntity> subOrderEntities;
 
-
+    public void addSubOrder(SubOrderEntity subOrder){
+        subOrderEntities.add(subOrder);
+        subOrder.setOrder(this);
+    }
 }

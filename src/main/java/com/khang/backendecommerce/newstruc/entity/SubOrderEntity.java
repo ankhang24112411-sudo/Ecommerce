@@ -10,6 +10,8 @@ import org.hibernate.type.SqlTypes;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -52,5 +54,13 @@ public class SubOrderEntity extends AbstractEntity<String> implements Serializab
     private DeliveryRouteEntity deliveryRoute;
 
     @Column(name ="delivery_fee")
-    private String deliveryFee;
+    private BigDecimal deliveryFee;
+
+    @OneToMany(mappedBy = "subOrder", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<OrderItem> orderItems = new ArrayList<>();
+
+    public void addOrderItems(OrderItem orderItem){
+        orderItems.add(orderItem);
+        orderItem.setSubOrder(this);
+    }
 }
