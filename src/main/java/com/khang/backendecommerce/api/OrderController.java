@@ -28,7 +28,6 @@ public class OrderController {
     private final OrderService orderService;
     @PostMapping("/place-order")
     public ResponseEntity<BaseResponse<OrderResponse>> placeOrder (@RequestBody OrderRequest request){
-        UserEntity user = currentUserProvider.getCurrentUser();
 
         return  ResponseEntity.status(HttpStatus.CREATED).body(new BaseResponse<>( orderService.placeOrder(request), "success"));
     }

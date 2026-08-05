@@ -61,7 +61,7 @@ public class CartServiceImpl implements CartService {
         productService.isProductActive(product);
 
         final InventoryEntity inventory = inventoryService.checkProductExistingInventory(product.getId());
-        if ((quantityUpdate > 0 && inventory.getQuantity() - quantityUpdate < 0) || inventory.getInventoryStatus() == InventoryStatus.OUT_OF_STOCK) {
+        if ((quantityUpdate > 0 && inventory.getAvailableQuantity() - quantityUpdate < 0) || inventory.getInventoryStatus() == InventoryStatus.OUT_OF_STOCK) {
             throw ApplicationErrors.INVENTORY_NOT_ENOUGH;
         }
 
@@ -207,7 +207,7 @@ public class CartServiceImpl implements CartService {
 
 
     @Override
-    public List<CartItemEntity> loadCartItems(CartEntity cart) {
+    public List<CartItemEntity> loadCartItems(CartEntity cart, UserEntity user) {
         List<CartItemEntity> cartItems = cartItemRepo.findAllForCheckout(cart.getId());
          cartItems.forEach(cartItemEntity -> checkCartItemFromUser(cartItemEntity.getId(),cart,user));
          cartItems.forEach(cartItemEntity -> productService.isProductActive(cartItemEntity.getProduct()));

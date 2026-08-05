@@ -1,6 +1,7 @@
 package com.khang.backendecommerce.newstruc.entity;
 
 import com.khang.backendecommerce.infrastructure.common.entity.abstractentity.AbstractEntity;
+import com.khang.backendecommerce.infrastructure.common.enums.OrderStatus;
 import com.khang.backendecommerce.infrastructure.common.enums.PaymentMethod;
 import com.khang.backendecommerce.infrastructure.common.enums.PaymentStatus;
 import jakarta.persistence.*;
@@ -75,6 +76,11 @@ public class OrderEntity extends AbstractEntity<String> implements Serializable 
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SubOrderEntity> subOrders;
+
+    @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    @Column(name = "order_status", columnDefinition = "order_status")
+    private OrderStatus orderStatus;
 
     public void addSubOrder(SubOrderEntity subOrder){
         subOrders.add(subOrder);

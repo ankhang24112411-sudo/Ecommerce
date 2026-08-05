@@ -69,15 +69,15 @@ public class OrderServiceImpl implements OrderService{
         DiscountCustomerEntity discountCustomer = cart.getDiscount();
         DiscountEntity discount = discountCustomer == null ? null : discountService.findAndCheckDiscountCustomer(discountCustomer);
 
-        List<CartItemEntity> cartItemList = cartService.loadCartItems(cart);
+        List<CartItemEntity> cartItemList = cartService.loadCartItems(cart, user);
         Map<String, List<InventoryEntity>> inventoriesByProduct = inventoryService.loadAndLockInventories(cartItemList);
 
         Set<String> warehouseIds = inventoryService.extractWarehouseIds(inventoriesByProduct);
         Map<String, DeliveryFeeEntity> deliveryFeeEntityByWarehouseStateId = deliveryService.deliveryFeeEntityByWarehousesId(warehouseIds, state.getId());
 
         List<AllocatedItem> allocatedItemList = findAllocateAndLock(cartItemList, inventoriesByProduct, warehouseIds, deliveryFeeEntityByWarehouseStateId, state.getId(), request.getPaymentMethod());
-        OrderEntity newOrder = createOrder(allocatedItemList, user, discountCustomer);
-        return null;
+        return createOrder(allocatedItemList, user, discountCustomer,request.getPaymentMethod());
+
     }
 
     private OrderResponse handleOrderCODpaymentMethod(OrderEntity newOrder, List<SubOrderEntity> subOrderList) {
@@ -85,9 +85,8 @@ public class OrderServiceImpl implements OrderService{
         newOrder.setConfirmedAt(Instant.now());
         newOrder.setPaymentStatus(PaymentStatus.UNPAID);
         subOrderList.forEach(subOrder -> subOrder.setOrderStatus(OrderStatus.PENDING));
-        
+        subOrderList.forEach(newOrder::addSubOrder);
         orderRepo.save(newOrder);
-        subOrderRepo.saveAll(subOrderList);
         return convertToOrderResponse(newOrder,subOrderList);
     }
 
@@ -131,10 +130,15 @@ public class OrderServiceImpl implements OrderService{
                             );
                         }).toList();
           return new OrderResponse(
-                  newOrder.getId(),
+                  newOrder.getOrderCode(),
+                  newOrder.getOrderStatus(),
                   newOrder.getPaymentStatus(),
-                  newOrder.
-          )
+                  newOrder.getSubtotal(),
+                  newOrder.getDiscountTotalAmount(),
+                  newOrder.getOrderTotalAmount(),
+                  newOrder.getCreatedAt(),
+                  subOrderResponses
+          );
       }
 
 
@@ -146,25 +150,7 @@ public class OrderServiceImpl implements OrderService{
                .state(user.getState()).build();
 
 
-//      List<SubOrderEntity> subOrderEntities =   allocatedItemList.stream()
-//                         .map(allocatedItem -> SubOrderEntity.builder()
-//                        .order(orderEntity)
-//                        .store(allocatedItem.product().getStore())
-//                        .subTotal(allocatedItem.subtotal())
-//                        .deliveryRoute(allocatedItem.deliveryRoute())
-//                        .build()).toList();
-//
-//      subOrderEntities.forEach(orderEntity::addSubOrder);
-//
-//        return allocatedItemList.stream().map( allocatedItem -> OrderItem.builder()
-//                .subOrder(allocatedItem.)
-//                .product()
-//                .store()
-//                .productName()
-//                .sku()
-//                .unitPrice()
-//                .quantity()
-//                .build());
+
    List<SubOrderEntity> subOrderList = allocatedItemList.stream()
            .collect(Collectors.groupingBy(allocatedItem -> allocatedItem.product().getStore().getId()))
            .values()
@@ -225,14 +211,25 @@ public class OrderServiceImpl implements OrderService{
         orderEntity.setOrderCode(generateOrderCode());
 
         if(paymentMethod.equals(PaymentMethod.COD)){
-            return handleOrderCODpaymentMethod(orderEntity);
+            return handleOrderCODpaymentMethod(orderEntity, subOrderList);
         }
+          return handleOrderOnlineBanking(orderEntity, subOrderList);
+    }
 
-        return convertToOrderResponse(orderEntity,subOrderList);
+    private OrderResponse handleOrderOnlineBanking(OrderEntity newOrder, List<SubOrderEntity> subOrderList) {
+        newOrder.setPaymentMethod(PaymentMethod.BANK_TRANSFER);
+        newOrder.setConfirmedAt(Instant.now());
+        newOrder.setPaymentStatus(PaymentStatus.UNPAID);
+        subOrderList.forEach(subOrder -> subOrder.setOrderStatus(OrderStatus.PENDING));
+        subOrderList.forEach(newOrder::addSubOrder);
+        orderRepo.save(newOrder);
+        return convertToOrderResponse(newOrder,subOrderList);
     }
 
     @Override
-    public List<AllocatedItem> findAllocateAndLock(List<CartItemEntity> cartItemList,Map<String, List<InventoryEntity>> inventoriesByProduct, Set<String> warehouseIds,
+    public List<AllocatedItem> findAllocateAndLock(List<CartItemEntity> cartItemList,
+                                                   Map<String, List<InventoryEntity>> inventoriesByProduct,
+                                                   Set<String> warehouseIds,
                                                    Map<String, DeliveryFeeEntity> deliveryFeeEntityByWarehouseStateId,
                                                    String userStateId, PaymentMethod paymentMethod) {
         List<AllocatedItem> result = new ArrayList<>();

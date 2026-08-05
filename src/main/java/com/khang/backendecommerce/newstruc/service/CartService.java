@@ -22,5 +22,5 @@ public interface CartService {
 
    CartEntity findByUserId(String id);
 
-   List<CartItemEntity> loadCartItems(CartEntity cart );
+   List<CartItemEntity> loadCartItems(CartEntity cart, UserEntity user );
    }

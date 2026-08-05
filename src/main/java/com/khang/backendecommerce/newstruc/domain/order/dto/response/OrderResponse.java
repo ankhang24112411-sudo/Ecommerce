@@ -12,10 +12,10 @@ import java.util.List;
 @Builder
 public record OrderResponse (
 
+    String orderCode,
     OrderStatus status,
     PaymentStatus paymentStatus,
     BigDecimal subtotal,
-    BigDecimal deliveryAmount,
     BigDecimal discountAmount,
     BigDecimal totalAmount,
 

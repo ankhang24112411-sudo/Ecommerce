@@ -63,7 +63,7 @@ public class InventoryServiceImpl implements InventoryService {
     @Override
     public Set<String> extractWarehouseIds(Map<String, List<InventoryEntity>> productByInventories) {
         return productByInventories.values().stream()
-                .flatMap(inventories -> inventories.stream())
+                .flatMap(Collection::stream)
                 .map(inventory -> inventory.getWarehouse().getId())
                 .collect(Collectors.toSet());
     }
@@ -84,7 +84,8 @@ public class InventoryServiceImpl implements InventoryService {
 
         InventoryEntity selectInventory = candidates.stream()
                 .filter(inventory -> inventory.getAvailableQuantity() >= productQuantity)
-                .sorted(Comparator.comparing(( InventoryEntity inventory) ->
+                .sorted(Comparator.comparing(
+                        ( InventoryEntity inventory) ->
                         deliveryService.calculateDeliveryFee(inventory,userStateId,deliveryFeeEntityByWarehouseStateId))
                         .thenComparing(InventoryEntity::getAvailableQuantity))
                 .findFirst().orElseThrow(() -> ApplicationErrors.INVENTORY_NOT_ENOUGH);

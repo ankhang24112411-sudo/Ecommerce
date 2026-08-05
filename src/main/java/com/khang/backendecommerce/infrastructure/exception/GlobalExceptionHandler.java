@@ -1,7 +1,6 @@
 package com.khang.backendecommerce.infrastructure.exception;
 
 import com.khang.backendecommerce.infrastructure.common.dto.response.BaseResponse;
-import com.khang.backendecommerce.newstruc.domain.order.rules.config.CheckoutValidationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -62,21 +61,5 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new BaseResponse<>(400, null, errorMessages.toString()));
     }
-    @ExceptionHandler(CheckoutValidationException.class)
-    public ResponseEntity<BaseResponse<Object>>
-            handleMethodArgumentNotValidException(CheckoutValidationException exception){
-        List<String> errorMessages = exception.getViolations().stream()
-                .map(violation -> {
-                    StringBuilder message = new StringBuilder(violation.error().getMessage());
-                    if(violation.field()!= null){
-                        message.append(" | field").append(violation.referenceId());
-                    }
-                    if(violation.referenceId() != null){
-                        message.append(" | referenceId: ").append(violation.referenceId());
-                    }
-                    return message.toString();
 
-                }).toList();
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new BaseResponse<>(400, null, errorMessages.toString()));
-    }
 }

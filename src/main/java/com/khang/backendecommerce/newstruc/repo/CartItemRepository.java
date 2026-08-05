@@ -4,14 +4,19 @@ import com.khang.backendecommerce.newstruc.entity.CartItemEntity;
 import io.lettuce.core.dynamic.annotation.Param;
 import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.*;
+import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-
+@Repository
 public interface CartItemRepository extends JpaRepository<CartItemEntity,String> {
+
+
     Optional<CartItemEntity> findByIdAndCart_User_Id(String cartItemId , String userId);
+
      boolean existsByIdAndCart_Id(String cartItemId , String cartId);
+
 @Lock(LockModeType.PESSIMISTIC_WRITE)
 @EntityGraph(
         type = EntityGraph.EntityGraphType.FETCH,
