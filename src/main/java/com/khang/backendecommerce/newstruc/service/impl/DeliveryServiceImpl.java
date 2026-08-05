@@ -67,8 +67,8 @@ public class DeliveryServiceImpl implements DeliveryService {
     }
 
     @Override
-    public Map<String, DeliveryFeeEntity> deliveryFeeEntityByWarehousesId(Set<String> warehouseIds,String userStateId) {
-        List<DeliveryFeeEntity> findAllDeliveriesFee = deliveryFeeRepo.findAllForCheckOut(warehouseIds, userStateId);
+    public Map<String, DeliveryFeeEntity> deliveryFeeEntityByWarehousesStateId(Set<String> warehouseStateIds,String userStateId) {
+        List<DeliveryFeeEntity> findAllDeliveriesFee = deliveryFeeRepo.findAllForCheckOut(warehouseStateIds, userStateId);
 
 
         return findAllDeliveriesFee.stream()
@@ -86,9 +86,7 @@ public class DeliveryServiceImpl implements DeliveryService {
          return BigDecimal.ZERO;
      }
      DeliveryFeeEntity deliveryFee = deliveryFeeByWarehouseState.get(wareHouseStateId);
-     if(!deliveryFeeByWarehouseState.containsKey(wareHouseStateId)){
-         throw ApplicationErrors.DELIVERY_ROUTE_NOT_FOUND;
-     }
+
         return deliveryFee.getBaseFee();
     }
 

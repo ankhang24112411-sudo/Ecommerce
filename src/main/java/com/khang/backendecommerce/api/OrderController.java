@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/order")
+@RequestMapping("/v1/order")
 @Validated
 @Slf4j
 @Tag(name ="Order Controller")
@@ -28,7 +28,8 @@ public class OrderController {
     private final OrderService orderService;
     @PostMapping("/place-order")
     public ResponseEntity<BaseResponse<OrderResponse>> placeOrder (@RequestBody OrderRequest request){
+         log.info("DA VAO ORDER CONTROLLER");
+ return  ResponseEntity.status(HttpStatus.CREATED).body(new BaseResponse<>( orderService.placeOrder(request), "success"));
 
-        return  ResponseEntity.status(HttpStatus.CREATED).body(new BaseResponse<>( orderService.placeOrder(request), "success"));
-    }
 }
+      }

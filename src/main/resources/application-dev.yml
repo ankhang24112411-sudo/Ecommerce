@@ -24,6 +24,14 @@ spring:
   redis:
     host: 127.0.0.1
     port: 6379
+logging:
+  level:
+    org.springframework.security: TRACE
+sendgrid:
+  api-key: ${SENDGRID_API_KEY}
+  from-email: ${SENDGRID_FROM_EMAIL}
+  template-id: ${SENDGRID_TEMPLATE_ID:d-a52ec2a1f7a84f06a2e08bbe9cae3215}
+  verification-link: ${SENDGRID_VERIFICATION_LINK:http://localhost:8080/user/confirm-email}
 
 springdoc:
   api-docs:
@@ -37,11 +45,6 @@ openapi:
     serverName: Backend Ecommerce
     title: API Document
     version: 1.0.0
-  sendGrid:
-    apiKey: ${SENDGRID_API_KEY}
-    fromEmail: ${SENDGRID_FROM_EMAIL}
-    templateId: ${SENDGRID_TEMPLATE_ID:d-a52ec2a1f7a84f06a2e08bbe9cae3215}
-    verificationLink: ${SENDGRID_VERIFICATION_LINK:http://localhost:8080/user/confirm-email}
 
 jwt:
   expiryHour: 1

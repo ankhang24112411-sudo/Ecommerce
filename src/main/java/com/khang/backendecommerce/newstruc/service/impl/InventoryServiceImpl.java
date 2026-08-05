@@ -10,6 +10,7 @@ import com.khang.backendecommerce.newstruc.service.InventoryService;
 import com.khang.backendecommerce.newstruc.entity.ProductEntity;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -17,6 +18,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j(topic = "INVENTORY - SERVICE")
 public class InventoryServiceImpl implements InventoryService {
     private final InventoryRepository inventoryRepo;
     private final DeliveryService deliveryService;
@@ -61,10 +63,10 @@ public class InventoryServiceImpl implements InventoryService {
     }
 
     @Override
-    public Set<String> extractWarehouseIds(Map<String, List<InventoryEntity>> productByInventories) {
+    public Set<String> extractWarehouseStateIds(Map<String, List<InventoryEntity>> productByInventories) {
         return productByInventories.values().stream()
                 .flatMap(Collection::stream)
-                .map(inventory -> inventory.getWarehouse().getId())
+                .map(inventory -> inventory.getWarehouse().getState().getId())
                 .collect(Collectors.toSet());
     }
 
@@ -83,13 +85,28 @@ public class InventoryServiceImpl implements InventoryService {
                 )).toList();
 
         InventoryEntity selectInventory = candidates.stream()
+                .peek(inv -> log.info("Candidate inventory={}, stock={}, reserved={}, requested={}",
+                        inv.getId(),
+                        inv.getAvailableQuantity(),
+                        inv.getReservedQuantity(),
+
+                        productQuantity
+                ))
                 .filter(inventory -> inventory.getAvailableQuantity() >= productQuantity)
                 .sorted(Comparator.comparing(
                         ( InventoryEntity inventory) ->
                         deliveryService.calculateDeliveryFee(inventory,userStateId,deliveryFeeEntityByWarehouseStateId))
                         .thenComparing(InventoryEntity::getAvailableQuantity))
                 .findFirst().orElseThrow(() -> ApplicationErrors.INVENTORY_NOT_ENOUGH);
+        log.info(
+                "Check stock productId= {}, inventoryId= {}, stock= {}, reserved= {}, requested= {}",
+                product.getId(),
+                selectInventory.getId(),
+                selectInventory.getAvailableQuantity(),
+                selectInventory.getReservedQuantity(),
+                productQuantity
 
+        );
         if(selectInventory.getAvailableQuantity() < productQuantity){
             throw ApplicationErrors.INVENTORY_NOT_ENOUGH;
         }
@@ -97,7 +114,7 @@ public class InventoryServiceImpl implements InventoryService {
         int totalSumProduct = inventoryEntities.stream()
                 .mapToInt(InventoryEntity::getAvailableQuantity)
                 .sum();
-        if(totalSumProduct >= productQuantity){
+        if(totalSumProduct < productQuantity){
             throw ApplicationErrors.SINGLE_INVENTORY_NOT_ENOUGH_STOCK;
         }
         return selectInventory;

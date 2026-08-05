@@ -1458,7 +1458,7 @@ public class ApplicationErrors {
             new ApplicationException(
                     400906,
                     400,
-                    "Not enough stock for product"
+                    "Email not found for product"
             );
 
 }

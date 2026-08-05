@@ -56,6 +56,7 @@ public class SubOrderEntity extends AbstractEntity<String> implements Serializab
     @Column(name ="delivery_fee")
     private BigDecimal deliveryFee;
 
+    @Builder.Default
     @OneToMany(mappedBy = "subOrder", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItem> orderItems = new ArrayList<>();
 

@@ -16,6 +16,7 @@ import com.khang.backendecommerce.newstruc.entity.*;
 import com.khang.backendecommerce.newstruc.repo.DeliveryRouteRepository;
 import com.khang.backendecommerce.newstruc.repo.OrderRepository;
 import com.khang.backendecommerce.newstruc.repo.SubOrderRepository;
+import com.khang.backendecommerce.newstruc.repo.UserRepository;
 import com.khang.backendecommerce.newstruc.service.DeliveryService;
 import com.khang.backendecommerce.newstruc.service.CartService;
 import com.khang.backendecommerce.newstruc.service.DiscountService;
@@ -46,6 +47,7 @@ public class OrderServiceImpl implements OrderService{
     private final SubOrderRepository subOrderRepo;
     private final DeliveryRouteRepository deliveryRouteRepo;
     private final OrderRepository orderRepo;
+    private final UserRepository userRepo;
     private static final DateTimeFormatter ORDER_CODE_FORMAT =
             DateTimeFormatter.ofPattern("yyyyMMdd");
 
@@ -63,19 +65,33 @@ public class OrderServiceImpl implements OrderService{
     @Override
     @Transactional
     public OrderResponse placeOrder(OrderRequest request) {
-        UserEntity user = currentUserProvider.getCurrentUser();
+        String userId = currentUserProvider.getCurrentUser().getId();
+        UserEntity user = userRepo.findByIdWithState(userId).orElseThrow(() -> ApplicationErrors.USER_NOT_FOUND);
+        log.info("Creating order for userId: {}", user.getId());
+
         StateEntity state = user.getState();
         CartEntity cart = cartService.findByUserId(user.getId());
+        if(cart == null) {
+            log.error("Cart not found for userId: {}", user.getId());
+        }
         DiscountCustomerEntity discountCustomer = cart.getDiscount();
         DiscountEntity discount = discountCustomer == null ? null : discountService.findAndCheckDiscountCustomer(discountCustomer);
 
         List<CartItemEntity> cartItemList = cartService.loadCartItems(cart, user);
         Map<String, List<InventoryEntity>> inventoriesByProduct = inventoryService.loadAndLockInventories(cartItemList);
 
-        Set<String> warehouseIds = inventoryService.extractWarehouseIds(inventoriesByProduct);
-        Map<String, DeliveryFeeEntity> deliveryFeeEntityByWarehouseStateId = deliveryService.deliveryFeeEntityByWarehousesId(warehouseIds, state.getId());
+//        inventoriesByProduct.entrySet().stream()
+//                .map(entry -> Map.entry(
+//                        entry.getKey(),
+//                        entry.getValue().stream()
+//                                .map(inventory -> inventory.getWarehouse())
+//                                .toList()
+//                ))
+//                .toList()
+        Set<String> warehouseStateIds = inventoryService.extractWarehouseStateIds(inventoriesByProduct);
+        Map<String, DeliveryFeeEntity> deliveryFeeEntityByWarehouseStateId = deliveryService.deliveryFeeEntityByWarehousesStateId(warehouseStateIds, state.getId());
 
-        List<AllocatedItem> allocatedItemList = findAllocateAndLock(cartItemList, inventoriesByProduct, warehouseIds, deliveryFeeEntityByWarehouseStateId, state.getId(), request.getPaymentMethod());
+        List<AllocatedItem> allocatedItemList = findAllocateAndLock(cartItemList, inventoriesByProduct, warehouseStateIds, deliveryFeeEntityByWarehouseStateId, state.getId(), request.getPaymentMethod());
         return createOrder(allocatedItemList, user, discountCustomer,request.getPaymentMethod());
 
     }
@@ -149,15 +165,29 @@ public class OrderServiceImpl implements OrderService{
                .customerName(user.getFullName())
                .state(user.getState()).build();
 
+        Map<SubOrderGroupKey, List<AllocatedItem>> groupedItems =
+                allocatedItemList.stream().collect(Collectors.groupingBy(item ->
+                                new SubOrderGroupKey(item.product().getStore().getId(), item.inventory().getWarehouse().getId(),
+                                        item.deliveryRoute().getId())
+                        ));
 
-
-   List<SubOrderEntity> subOrderList = allocatedItemList.stream()
-           .collect(Collectors.groupingBy(allocatedItem -> allocatedItem.product().getStore().getId()))
+   List<SubOrderEntity> subOrderList = groupedItems
            .values()
            .stream()
            .map(storeItems -> {
 
+               AllocatedItem firstItem = storeItems.get(0);
+               SubOrderEntity subOrder = SubOrderEntity.builder()
+                       .order(orderEntity)
+                       .store(firstItem.product().getStore())
+                       .deliveryRoute(firstItem.deliveryRoute())
+                       .deliveryFee(firstItem.deliveryFee())
+                       .build();
+
                List<OrderItem> orderItemList = storeItems.stream()
+                       .peek(item -> {
+                           log.info("Before mapping : product {}", item.product());
+                       })
                        .map(item -> OrderItem.builder()
                                .product(item.product())
                                .store(item.product().getStore())
@@ -167,20 +197,23 @@ public class OrderServiceImpl implements OrderService{
                                .quantity(item.quantity())
                                .build()).toList();
 
+               orderItemList.forEach(subOrder::addOrderItems);
+
+               log.info(
+                       "After mapping: product Name{}",
+                       orderItemList.stream().map(OrderItem::getProduct)
+                               .map(ProductEntity::getName)
+               );
+
+
+
                BigDecimal subOrderTotal = orderItemList.stream()
                        .map(orderItem -> orderItem.getUnitPrice().multiply(BigDecimal.valueOf(orderItem.getQuantity())))
                        .reduce(BigDecimal.ZERO,BigDecimal::add);
 
-               SubOrderEntity subOrder = SubOrderEntity.builder()
-                       .order(orderEntity)
-                       .store(storeItems.get(0).product().getStore())
-                       .deliveryRoute(storeItems.get(0).deliveryRoute())
-                       .deliveryFee(storeItems.get(0).deliveryFee())
-                       .subTotal(subOrderTotal)
-                       .build();
+               subOrder.setSubTotal(subOrderTotal);
 
 
-               orderItemList.forEach(subOrder::addOrderItems);
                return subOrder;
            }).toList();
 
@@ -229,7 +262,7 @@ public class OrderServiceImpl implements OrderService{
     @Override
     public List<AllocatedItem> findAllocateAndLock(List<CartItemEntity> cartItemList,
                                                    Map<String, List<InventoryEntity>> inventoriesByProduct,
-                                                   Set<String> warehouseIds,
+                                                   Set<String> warehouseStateIds,
                                                    Map<String, DeliveryFeeEntity> deliveryFeeEntityByWarehouseStateId,
                                                    String userStateId, PaymentMethod paymentMethod) {
         List<AllocatedItem> result = new ArrayList<>();
@@ -240,6 +273,7 @@ public class OrderServiceImpl implements OrderService{
 
             List<InventoryEntity> inventoryEntities = inventoriesByProduct.get(productId);
             InventoryEntity selectInventory = inventoryService.selectInventory(product ,productQuantity,inventoryEntities, deliveryFeeEntityByWarehouseStateId,  userStateId);
+            log.info("inventory is ={} in state {}" , selectInventory , selectInventory.getWarehouse().getState());
             if(selectInventory == null){
                 throw ApplicationErrors.INVENTORY_NOT_FOUND;
             }
@@ -251,9 +285,10 @@ public class OrderServiceImpl implements OrderService{
                 selectInventory.updateReservedQuantityAndAvailableQuantity(productQuantity);
             }
 
-            DeliveryRouteEntity deliveryRoute = deliveryRouteRepo.findByStateFrom_IdAndStateTo_Id(selectInventory.getWarehouse().getId(),userStateId).orElseThrow(() -> ApplicationErrors.DELIVERY_ROUTE_NOT_FOUND);
-
+            DeliveryRouteEntity deliveryRoute = deliveryRouteRepo.findByStateFrom_IdAndStateTo_Id(selectInventory.getWarehouse().getState().getId(),userStateId).orElseThrow(() -> ApplicationErrors.DELIVERY_ROUTE_NOT_FOUND);
+          log.info("delivery route is = {}" , deliveryRoute);
             BigDecimal fee = deliveryService.calculateDeliveryFee(selectInventory, userStateId,deliveryFeeEntityByWarehouseStateId);
+
             BigDecimal subtotal = product.getPrice().multiply(BigDecimal.valueOf(productQuantity));
             AllocatedItem allocatedItem = AllocatedItem.builder()
                     .deliveryRoute(deliveryRoute)

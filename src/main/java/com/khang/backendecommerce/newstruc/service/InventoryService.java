@@ -18,7 +18,7 @@ public interface InventoryService {
 
      Map<String, List<InventoryEntity>>  loadAndLockInventories(List<CartItemEntity> cartItemList);
 
-     Set<String> extractWarehouseIds(Map<String, List<InventoryEntity>> productByInventories);
+     Set<String> extractWarehouseStateIds(Map<String, List<InventoryEntity>> productByInventories);
 
 
     InventoryEntity selectInventory(ProductEntity product, int productQuantity, List<InventoryEntity> inventoryEntities, Map<String, DeliveryFeeEntity> deliveryFeeEntityByWarehouseStateId,String userStateId);

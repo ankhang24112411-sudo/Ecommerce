@@ -65,15 +65,9 @@ public class AppConfig {
         http.csrf(AbstractHttpConfigurer::disable)
         // nur AccessTokenAPI kein Token zwingen
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests.requestMatchers("/auth/**").permitAll()
-                        .requestMatchers(
-                        HttpMethod.POST,
-                        "/user",
-                        "/user/"
-                ).permitAll()
-                                .requestMatchers(
-                                        HttpMethod.POST,
-                                        "/api/v1/payment/webhooks/mock"
-                                ).permitAll()
+                        .requestMatchers(HttpMethod.POST, "/user", "/user/").permitAll()
+                                .requestMatchers("/error").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/api/v1/payment/webhooks/mock").permitAll()
                                 .anyRequest().authenticated()
                         )
                 .sessionManagement(manager -> manager.sessionCreationPolicy(STATELESS))
@@ -87,7 +81,7 @@ public class AppConfig {
 
     }
     @Bean
-    public SendGrid sendGrid(@Value("${spring.sendGrid.apiKey}") String apiKey) {
+    public SendGrid sendGrid(@Value("${sendgrid.api-key}") String apiKey) {
         return new SendGrid(apiKey);
     }
     @Bean

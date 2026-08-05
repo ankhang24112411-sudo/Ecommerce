@@ -209,8 +209,29 @@ public class CartServiceImpl implements CartService {
     @Override
     public List<CartItemEntity> loadCartItems(CartEntity cart, UserEntity user) {
         List<CartItemEntity> cartItems = cartItemRepo.findAllForCheckout(cart.getId());
-         cartItems.forEach(cartItemEntity -> checkCartItemFromUser(cartItemEntity.getId(),cart,user));
-         cartItems.forEach(cartItemEntity -> productService.isProductActive(cartItemEntity.getProduct()));
+        log.debug(
+                "items loaded: cartId={}, count={}, itemIds={}",
+                cart.getId(),
+                cartItems.size(),
+                cartItems.stream()
+                        .map(CartItemEntity::getId)
+                        .toList()
+        );
+        cartItems.forEach(cartItem -> {
+            log.debug("Checking cart ownership: cartItemId={}, cartId={}, userId={}", cartItem.getId(), cart.getId(), user.getId());
+            checkCartItemFromUser(cartItem.getId(), cart, user);
+            log.debug("Checking product status: cartItemId={}, productId={}, quantity={}", cartItem.getId(), cartItem.getProduct().getId(), cartItem.getQuantity());
+            productService.isProductActive(cartItem.getProduct());
+            log.debug("Cart item validation passed: cartItemId={}", cartItem.getId());
+        });
+
+        log.info(
+                "Checkout cart validated successfully: cartId={}, userId={}, itemCount={}",
+                cart.getId(),
+                user.getId(),
+                cartItems.size()
+        );
+
         return cartItems;
     }
 

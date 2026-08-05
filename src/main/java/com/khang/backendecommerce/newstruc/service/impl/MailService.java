@@ -16,8 +16,7 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
-import org.thymeleaf.context.Context;
-import org.thymeleaf.spring6.SpringTemplateEngine;
+
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -34,13 +33,16 @@ import com.sendgrid.helpers.mail.objects.Email;
 public class MailService {
     private final SendGrid sendGrid;
 
-    @Value("${spring.sendGrid.fromEmail}")
+    @Value("${sendgrid.api-key}")
+    private String apiKey;
+
+    @Value("${sendgrid.from-email}")
     private String from;
 
-    @Value("${spring.sendGrid.templateId}")
+    @Value("${sendgrid.template-id}")
     private String templateId;
 
-    @Value("${spring.sendGrid.verificationLink}")
+    @Value("${sendgrid.verification-link}")
     private String verificationLink;
     public void send(String to, String subject , String text)  {
         Email fromEmail = new Email(from);

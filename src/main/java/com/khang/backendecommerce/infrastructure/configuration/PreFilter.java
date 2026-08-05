@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -58,9 +59,12 @@ public class PreFilter extends OncePerRequestFilter {
                 SecurityContextHolder.setContext(context);
             }
         }
-        log.info("Token :", token);
-
+        Authentication authentication =
+                SecurityContextHolder.getContext().getAuthentication();
+        log.info("Authentication: {}", authentication);
         filterChain.doFilter(request,response);
+
+        log.info("After chain - status: {}", response.getStatus());
     }
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
