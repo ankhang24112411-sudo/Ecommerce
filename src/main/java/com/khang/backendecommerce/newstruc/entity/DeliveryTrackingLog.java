@@ -24,6 +24,7 @@ public class DeliveryTrackingLog extends AbstractEntity<String> implements Seria
     @JoinColumn(name = "delivery_id")
     private DeliveryEntity delivery;
 
+
     @Column(name = "tracking_code")
     private String trackingCode;
 
@@ -55,6 +56,12 @@ public class DeliveryTrackingLog extends AbstractEntity<String> implements Seria
 
     @Column(name = "total_amount")
     private BigDecimal totalAmount;
+//TODO
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "sub_order_id")
+    private SubOrderEntity subOrder;
 
-
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_id")
+    private OrderEntity order;
 }

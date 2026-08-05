@@ -1,5 +1,6 @@
 package com.khang.backendecommerce.newstruc.domain.order.service;
 
+import com.khang.backendecommerce.infrastructure.common.enums.PaymentMethod;
 import com.khang.backendecommerce.newstruc.domain.order.dto.AllocatedItem;
 import com.khang.backendecommerce.newstruc.domain.order.dto.request.OrderRequest;
 import com.khang.backendecommerce.newstruc.domain.order.dto.response.OrderResponse;
@@ -17,6 +18,6 @@ public interface OrderService {
                                                    Map<String, List<InventoryEntity>> inventoriesByProduct,
                                                    Set<String> warehouseIds,
                                                    Map<String, DeliveryFeeEntity> deliveryFeeEntityByWarehouseStateId,
-                                                   String userStateId);
+                                                   String userStateId,  PaymentMethod paymentMethod);
 
 }

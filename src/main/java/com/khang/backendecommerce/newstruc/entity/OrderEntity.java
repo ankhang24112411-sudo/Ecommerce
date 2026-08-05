@@ -32,6 +32,9 @@ public class OrderEntity extends AbstractEntity<String> implements Serializable 
     @Column(name = "customer_name")
     private String customerName;
 
+    @Column(name = "order_code")
+    private String orderCode;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "state_id")
     private StateEntity state ;
@@ -71,10 +74,10 @@ public class OrderEntity extends AbstractEntity<String> implements Serializable 
     private Instant cancelledAt;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<SubOrderEntity> subOrderEntities;
+    private List<SubOrderEntity> subOrders;
 
     public void addSubOrder(SubOrderEntity subOrder){
-        subOrderEntities.add(subOrder);
+        subOrders.add(subOrder);
         subOrder.setOrder(this);
     }
 }

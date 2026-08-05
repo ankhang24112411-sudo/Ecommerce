@@ -20,19 +20,19 @@ import java.util.List;
 public class DeliveryEntity extends AbstractEntity<String> implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "delivery_shipper_id")
-    private UserEntity shipperId ;
+    private UserEntity shipper ;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id")
-    private OrderEntity orderId ;
+    private OrderEntity order ;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_id")
-    private UserEntity customerId ;
+    private UserEntity customer ;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "company_id")
-    private DeliveryCompanyEntity companyId ;
+    private DeliveryCompanyEntity company ;
 
     @Column(name = "tracking_code")
     private String trackingCode;
@@ -51,4 +51,8 @@ public class DeliveryEntity extends AbstractEntity<String> implements Serializab
 
     @OneToMany(mappedBy = "delivery")
     private List<DeliveryTrackingLog> deliveryTrackingLogList = new ArrayList<>();
+    //TODO
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "sub_order_id")
+    private SubOrderEntity subOrder;
 }

@@ -11,16 +11,16 @@ import java.util.List;
 
 @Builder
 public record OrderResponse (
-    String orderId,
+
     OrderStatus status,
     PaymentStatus paymentStatus,
-
     BigDecimal subtotal,
     BigDecimal deliveryAmount,
     BigDecimal discountAmount,
     BigDecimal totalAmount,
 
     Instant createdAt,
-    List<OrderItem> orderItems
+    List<SubOrderResponse> subOrders
+
 )
 {}
