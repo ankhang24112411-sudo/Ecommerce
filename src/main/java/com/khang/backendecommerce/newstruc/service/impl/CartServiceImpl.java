@@ -115,10 +115,8 @@ public class CartServiceImpl implements CartService {
     private CartEntity addProductToCart(UserEntity user ,CartEntity cart, ProductEntity product, int quantity) {
 
         List<CartItemEntity> cartItemList = cart.getCartItemList();
-        cartItemList.stream()
-                .filter( cartItemEntity -> cartItemEntity.getProduct().getId().equals(product.getId()))
-                .map(cartItemEntity -> updateCartItemQuantity(cartItemEntity.getId(), quantity))
-                .toList();
+//
+//
         Map<String, List<InventoryEntity>> inventoriesByProductId = inventoryService.loadAndLockInventories(cartItemList);
         Set<String> existingWareHouseStateIds = inventoryService.extractWarehouseStateIds(inventoriesByProductId);
 
@@ -217,7 +215,6 @@ public class CartServiceImpl implements CartService {
 
     private CartEntity createNewCart(UserEntity user,ProductEntity  product, int quantity) {
         InventoryNewCartContext inventoryContext = inventoryService.findProductAvailability(product, quantity, user );
-//        BigDecimal deliveryAmount = deliveryService.calculateProductDeliveryAmount(user, inventory);
         InventoryEntity inventory = inventoryContext.inventory();
         DeliveryFeeEntity deliveryFee = inventoryContext.deliveryFee();
         BigDecimal subtotal = product.getPrice().multiply(BigDecimal.valueOf(quantity));

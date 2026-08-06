@@ -57,7 +57,20 @@ public class InventoryServiceImpl implements InventoryService {
     }
     public InventoryEntity findOptimizeInventory(ProductEntity product, int quantity, Map<String, List<InventoryEntity>> inventoriesByProductId){
         List<InventoryEntity> inventoryList = inventoryRepo.findAllInventoryCandidatesWithEnoughStock(product.getId(), quantity);
-
+        String affectedShop = product.getStore().getId();
+        Map<String,List<InventoryEntity>> sameShopInventory = inventoriesByProductId.entrySet()
+                .stream()
+                .filter( entry ->
+                     entry.getValue()
+                            .stream().anyMatch(inventory ->
+                                  inventory.getProduct().getStore().getId().equals(affectedShop)
+                             )).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        if(inventoryList.isEmpty()){
+          throw  ApplicationErrors.INVENTORY_NOT_ENOUGH;
+        }
+        if(!inventoriesByProductId.containsKey(product.getId())){
+            inventoriesByProductId.put(product.getId(),inventoryList);
+        }
     }
 
 
