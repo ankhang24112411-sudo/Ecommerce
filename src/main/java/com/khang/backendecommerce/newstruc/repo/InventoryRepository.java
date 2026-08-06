@@ -39,4 +39,19 @@ public interface InventoryRepository extends JpaRepository<InventoryEntity,Strin
    where inventory.product.id in :productIds
 """)
    List<InventoryEntity> findAllInventoryCandidates(@Param("productIds") Collection<String> productIds);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @EntityGraph(
+            attributePaths = {
+                    "product.store",
+                    "warehouse.state"
+            }
+    )
+    @Query("""
+   select inventory
+   from InventoryEntity inventory
+   where inventory.product.id =: productId
+   and inventory.availableQuantity >= quantity
+""")
+    List<InventoryEntity> findAllInventoryCandidatesWithEnoughStock(@Param("productId") String productId , int quantity);
 }

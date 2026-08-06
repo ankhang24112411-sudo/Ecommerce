@@ -7,6 +7,7 @@ import com.khang.backendecommerce.newstruc.entity.CartItemEntity;
 import com.khang.backendecommerce.newstruc.projection.CartMapper;
 import com.khang.backendecommerce.newstruc.repo.CartItemRepository;
 import com.khang.backendecommerce.newstruc.repo.CartRepository;
+import com.khang.backendecommerce.newstruc.repo.ProductRepository;
 import com.khang.backendecommerce.newstruc.service.CartService;
 import com.khang.backendecommerce.newstruc.service.DeliveryService;
 import com.khang.backendecommerce.infrastructure.discountinfra.DiscountContext;
@@ -44,6 +45,7 @@ public class CartServiceImpl implements CartService {
     private final ProductService productService;
     private final DeliveryService deliveryService;
     private final DiscountService discountService;
+    private final ProductRepository productRepo;
     @Override
     public List<CartItemResponse> getAllCartItems() {
         return cartRepo.getAllCartItems(currentUserProvider.getCurrentUserId());
@@ -102,9 +104,9 @@ public class CartServiceImpl implements CartService {
     }
     @Override
     public OrderSummaryResponse createBuyNow(UserEntity user, String discountName, String productId) {
-        ProductEntity product = productService.findProductById(productId);
+        ProductEntity product = productRepo.findProductAndShopByProductId(productId).orElseThrow(() -> ApplicationErrors.PRODUCT_NOT_FOUND);
         productService.isProductActive(product);
-        CartEntity cart = findByUserId(user.getId());
+        CartEntity cart = cartRepo.findCartAndCartItemsByUserId(user.getId()).orElseThrow(() -> ApplicationErrors.CART_NOT_FOUND);
         if (cart == null) {
             cart = createNewCart(user, product, AppConst.BUY_NOW_QUANTITY);
             if(discountName != null) {
@@ -126,24 +128,30 @@ public class CartServiceImpl implements CartService {
     }
 
     private void addProductToCart(CartEntity cart, ProductEntity product, int quantity) {
-        log.info("add Product to cart : {}" ,cart.getId());
-        InventoryEntity inventory = inventoryService.findProductAvailability(product, quantity);
-        BigDecimal subtotalNewCartItem = product.getPrice().multiply(BigDecimal.valueOf(quantity));
 
-        CartItemEntity cartItem= CartItemEntity.builder()
-                .cart(cart)
-                .product(product)
-                .quantity(AppConst.BUY_NOW_QUANTITY)
-                .subtotal(subtotalNewCartItem)
-                .inventoryStatus(inventory.getInventoryStatus())
-                .build();
-        log.info("add  cartItem success with cart id : {}" , cartItem.getCart());
-        cart.addCartItem(cartItem);
+       Map<String, Integer> demandByProductId = buildAffectedShopDemand(cart,product,quantity);
+//        log.info("add Product to cart : {}" ,cart.getId());
+//        InventoryEntity inventory = inventoryService.findProductAvailability(product, quantity);
+//        BigDecimal subtotalNewCartItem = product.getPrice().multiply(BigDecimal.valueOf(quantity));
+//
+//        CartItemEntity cartItem= CartItemEntity.builder()
+//                .cart(cart)
+//                .product(product)
+//                .quantity(AppConst.BUY_NOW_QUANTITY)
+//                .subtotal(subtotalNewCartItem)
+//                .inventoryStatus(inventory.getInventoryStatus())
+//                .build();
+//        log.info("add  cartItem success with cart id : {}" , cartItem.getCart());
+//        cart.addCartItem(cartItem);
+//
+//        BigDecimal oldCartSubtotal = cart.getSubtotal();
+//        BigDecimal newCartSubtotal = oldCartSubtotal.add(subtotalNewCartItem);
+//        cart.setSubtotal(newCartSubtotal);
+//        cart.setTotalAmount(newCartSubtotal);
+    }
 
-        BigDecimal oldCartSubtotal = cart.getSubtotal();
-        BigDecimal newCartSubtotal = oldCartSubtotal.add(subtotalNewCartItem);
-        cart.setSubtotal(newCartSubtotal);
-        cart.setTotalAmount(newCartSubtotal);
+    private Map<String, Integer> buildAffectedShopDemand(CartEntity cart, ProductEntity product, int quantity) {
+        String shopId = product.getStore().getId();
     }
 
     @Override

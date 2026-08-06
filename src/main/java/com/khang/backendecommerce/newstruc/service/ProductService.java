@@ -6,4 +6,6 @@ public interface ProductService {
     void isProductActive(ProductEntity product);
 
     ProductEntity findProductById(String productId);
+
+     ProductEntity findProductByIdWithShop(String productId);
 }

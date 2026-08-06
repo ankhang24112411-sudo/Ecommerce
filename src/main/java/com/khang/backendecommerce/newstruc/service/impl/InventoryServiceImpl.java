@@ -1,13 +1,11 @@
 package com.khang.backendecommerce.newstruc.service.impl;
 
 import com.khang.backendecommerce.infrastructure.exception.ApplicationErrors;
-import com.khang.backendecommerce.newstruc.entity.CartItemEntity;
-import com.khang.backendecommerce.newstruc.entity.DeliveryFeeEntity;
-import com.khang.backendecommerce.newstruc.entity.InventoryEntity;
+import com.khang.backendecommerce.newstruc.entity.*;
+import com.khang.backendecommerce.newstruc.repo.DeliveryFeeRepository;
 import com.khang.backendecommerce.newstruc.service.DeliveryService;
 import com.khang.backendecommerce.newstruc.repo.InventoryRepository;
 import com.khang.backendecommerce.newstruc.service.InventoryService;
-import com.khang.backendecommerce.newstruc.entity.ProductEntity;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +20,7 @@ import java.util.stream.Collectors;
 public class InventoryServiceImpl implements InventoryService {
     private final InventoryRepository inventoryRepo;
     private final DeliveryService deliveryService;
-
+   private final DeliveryFeeRepository deliveryFeeRepo;
 
 //    public void checkProductQuantityUpdate(int quantityUpdate, int inventoryQuantity ) {
 //
@@ -33,8 +31,15 @@ public class InventoryServiceImpl implements InventoryService {
     }
 
     @Override
-    public InventoryEntity findProductAvailability(ProductEntity product, int quantity) {
-        List<In>
+    public InventoryEntity findProductAvailability(ProductEntity product, int quantity, UserEntity user, CartEntity cart) {
+        List<InventoryEntity> inventoryList = inventoryRepo.findAllInventoryCandidatesWithEnoughStock(product.getId(), quantity);
+        Map<String, List<InventoryEntity>> wareHouseStateIdByInventory = inventoryList.stream()
+                .collect(Collectors.groupingBy(inventory -> inventory.getWarehouse().getState().getId()));
+
+       List<DeliveryFeeEntity> deliveryFeeEntities = deliveryFeeRepo.findAllForCheckOut(wareHouseStateIdByInventory.keySet() , user.getState().getId());
+        Map<String, DeliveryFeeEntity> deliveryFeeEntityByWarehouseStateId = deliveryFeeEntities.stream()
+                .collect(Collectors.groupingBy(deliveryFeeEntity ))
+
 
     }
 

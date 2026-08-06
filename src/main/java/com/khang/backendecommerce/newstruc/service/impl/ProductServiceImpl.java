@@ -24,4 +24,9 @@ public class ProductServiceImpl implements ProductService {
     public ProductEntity findProductById(String productId) {
         return productRepo.findById(productId).orElseThrow(() -> ApplicationErrors.PRODUCT_NOT_FOUND);
     }
+
+    @Override
+    public ProductEntity findProductByIdWithShop(String productId) {
+        return productRepo.findProductAndShopByProductId(productId).orElseThrow(() -> ApplicationErrors.PRODUCT_NOT_FOUND);
+    }
 }

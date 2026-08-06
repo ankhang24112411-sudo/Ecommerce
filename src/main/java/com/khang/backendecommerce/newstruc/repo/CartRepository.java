@@ -29,6 +29,17 @@ where tc.user_id = :userId
 
     CartEntity findByUser_Id(String id);
 
+    @EntityGraph(
+            attributePaths = {
+                    "cartItemList"
+            }, type = EntityGraph.EntityGraphType.FETCH
+    )
+    @Query("""
+Select cart
+From CartEntity cart
+where CartEntity.user.id =:userId
+""")
+    Optional<CartEntity> findCartAndCartItemsByUserId(@Param("userId") String userId);
 
 //@Query(value = """
 //
