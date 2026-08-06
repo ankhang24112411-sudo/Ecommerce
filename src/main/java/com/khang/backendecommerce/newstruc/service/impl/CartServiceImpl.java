@@ -148,56 +148,39 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public OrderSummaryResponse convertToOrderSummaryResponse(UserEntity user, String discountName , CartEntity cart ) {
-        BigDecimal subTotal = cart.getSubtotal();
-        BigDecimal discountAmount = BigDecimal.ZERO;
-        BigDecimal totalAmount = BigDecimal.ZERO;
-        BigDecimal deliveryAmount = deliveryService.calculateCartDeliveryAmount(user , cart);
-        if(discountName == null){
-            totalAmount = cart.getTotalAmount().add(deliveryAmount);
-            return   OrderSummaryResponse.builder()
-                    .subtotal(subTotal)
-                    .discountAmount(null)
-                    .deliveryAmount(deliveryAmount)
-                    .totalAmount(totalAmount)
-                    .build();
-        }
-        DiscountCustomerEntity discount = discountService.checkDiscountValidationFromUser(user.getId(), discountName);
-        boolean sameDiscount = discountService.isSameDiscount(cart,discountName);
-        if(!sameDiscount){
-           cart.setDiscount(discount);
-        }
-        DiscountContext context = DiscountContext.builder()
-                .subtotal(subTotal)
-                .deliveryAmount(deliveryAmount)
-                .build();
-        discountAmount = discountService.calculateDiscount(discount , context);
-        totalAmount = subTotal.add(deliveryAmount).subtract(discountAmount);
-         return  OrderSummaryResponse.builder()
-                    .subtotal(subTotal)
-                    .discountAmount(discountAmount)
-                    .deliveryAmount(deliveryAmount)
-                    .totalAmount(totalAmount)
-                    .build();
-
-//        if (discount.getDiscount().getDiscountType() == DiscountType.FREE_SHIP) {
-//            discountAmount =  discountService.discountFreeShipCalculation( discount,  deliveryAmount);
-//            totalAmount = cart.getSubtotal().add(deliveryAmount).subtract(discountAmount);
-//            return OrderSummaryResponse.builder()
+//        BigDecimal subTotal = cart.getSubtotal();
+//        BigDecimal discountAmount = BigDecimal.ZERO;
+//        BigDecimal totalAmount = BigDecimal.ZERO;
+//        BigDecimal deliveryAmount = deliveryService.calculateCartDeliveryAmount(user , cart);
+//        if(discountName == null){
+//            totalAmount = cart.getTotalAmount().add(deliveryAmount);
+//            return   OrderSummaryResponse.builder()
+//                    .subtotal(subTotal)
+//                    .discountAmount(null)
+//                    .deliveryAmount(deliveryAmount)
+//                    .totalAmount(totalAmount)
+//                    .build();
+//        }
+//        DiscountCustomerEntity discount = discountService.checkDiscountValidationFromUser(user.getId(), discountName);
+//        boolean sameDiscount = discountService.isSameDiscount(cart,discountName);
+//        if(!sameDiscount){
+//           cart.setDiscount(discount);
+//        }
+//        DiscountContext context = DiscountContext.builder()
+//                .subtotal(subTotal)
+//                .deliveryAmount(deliveryAmount)
+//                .build();
+//        discountAmount = discountService.calculateDiscount(discount , context);
+//        totalAmount = subTotal.add(deliveryAmount).subtract(discountAmount);
+//         return  OrderSummaryResponse.builder()
 //                    .subtotal(subTotal)
 //                    .discountAmount(discountAmount)
 //                    .deliveryAmount(deliveryAmount)
 //                    .totalAmount(totalAmount)
 //                    .build();
-//        }
-//           discountAmount = discountService.discountCalculation(discount,subTotal);
-//           totalAmount = subTotal.subtract(deliveryAmount).add(deliveryAmount);
-//        return OrderSummaryResponse.builder()
-//                .subtotal(subTotal)
-//                .discountAmount(discountAmount)
-//                .deliveryAmount(deliveryAmount)
-//                .totalAmount(totalAmount)
-//                .build();
 
+
+           return null;
     }
 
     @Override

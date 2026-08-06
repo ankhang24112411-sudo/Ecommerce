@@ -13,9 +13,10 @@ import java.util.List;
 public record OrderResponse (
 
     String orderCode,
-    OrderStatus status,
+    OrderStatus orderStatus,
     PaymentStatus paymentStatus,
     BigDecimal subtotal,
+    BigDecimal deliveryAmount,
     BigDecimal discountAmount,
     BigDecimal totalAmount,
 

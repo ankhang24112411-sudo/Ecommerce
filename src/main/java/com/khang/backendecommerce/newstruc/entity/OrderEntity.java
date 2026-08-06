@@ -41,7 +41,7 @@ public class OrderEntity extends AbstractEntity<String> implements Serializable 
     @JoinColumn(name = "state_id")
     private StateEntity state ;
 
-    @Column(name ="subtotal" , precision = 12 , scale = 2)
+    @Column(name ="sub_total" , precision = 12 , scale = 2)
     private BigDecimal subtotal = BigDecimal.ZERO;
 
     @Column(name ="discount_quantity")
@@ -74,6 +74,7 @@ public class OrderEntity extends AbstractEntity<String> implements Serializable 
 
     @Column(name = "cancelled_at")
     private Instant cancelledAt;
+    @Builder.Default
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SubOrderEntity> subOrders = new ArrayList<>();

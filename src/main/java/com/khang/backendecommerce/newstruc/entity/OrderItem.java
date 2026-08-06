@@ -23,9 +23,7 @@ public class OrderItem extends AbstractEntity<String> implements Serializable {
     @JoinColumn(name = "product_id")
     private ProductEntity product ;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "store_id")
-    private StoreEntity store ;
+
 
     @Column(name ="product_name")
     private String productName;

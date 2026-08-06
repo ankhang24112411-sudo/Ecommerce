@@ -5,7 +5,6 @@ import lombok.Builder;
 import java.math.BigDecimal;
 @Builder
 public record OrderItemResponse(String orderItemId,
-                                String storeName,
                                 String productName,
                                 String sku,
                                 BigDecimal unitPrice,

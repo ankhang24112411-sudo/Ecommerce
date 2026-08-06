@@ -100,6 +100,7 @@ public class OrderServiceImpl implements OrderService{
         newOrder.setPaymentMethod(PaymentMethod.COD);
         newOrder.setConfirmedAt(Instant.now());
         newOrder.setPaymentStatus(PaymentStatus.UNPAID);
+        newOrder.setOrderStatus(OrderStatus.PENDING);
         subOrderList.forEach(subOrder -> subOrder.setOrderStatus(OrderStatus.PENDING));
         subOrderList.forEach(newOrder::addSubOrder);
         orderRepo.save(newOrder);
@@ -127,7 +128,6 @@ public class OrderServiceImpl implements OrderService{
                                     .map(orderItem -> {
                                         return new OrderItemResponse(
                                                 orderItem.getId(),
-                                                orderItem.getStore().getName(),
                                                 orderItem.getProduct().getName(),
                                                 orderItem.getSku(),
                                                 orderItem.getUnitPrice(),
@@ -150,6 +150,7 @@ public class OrderServiceImpl implements OrderService{
                   newOrder.getOrderStatus(),
                   newOrder.getPaymentStatus(),
                   newOrder.getSubtotal(),
+                  subOrderList.stream().map(SubOrderEntity::getDeliveryFee).reduce(BigDecimal.ZERO, BigDecimal::add),
                   newOrder.getDiscountTotalAmount(),
                   newOrder.getOrderTotalAmount(),
                   newOrder.getCreatedAt(),
@@ -190,7 +191,6 @@ public class OrderServiceImpl implements OrderService{
                        })
                        .map(item -> OrderItem.builder()
                                .product(item.product())
-                               .store(item.product().getStore())
                                .productName(item.product().getName())
                                .sku(item.product().getSku())
                                .unitPrice(item.unitPrice())
@@ -252,7 +252,9 @@ public class OrderServiceImpl implements OrderService{
     private OrderResponse handleOrderOnlineBanking(OrderEntity newOrder, List<SubOrderEntity> subOrderList) {
         newOrder.setPaymentMethod(PaymentMethod.BANK_TRANSFER);
         newOrder.setConfirmedAt(Instant.now());
+        newOrder.setOrderStatus(OrderStatus.PENDING);
         newOrder.setPaymentStatus(PaymentStatus.UNPAID);
+
         subOrderList.forEach(subOrder -> subOrder.setOrderStatus(OrderStatus.PENDING));
         subOrderList.forEach(newOrder::addSubOrder);
         orderRepo.save(newOrder);
