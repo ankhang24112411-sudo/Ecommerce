@@ -18,7 +18,7 @@ public interface CartService {
 
    OrderSummaryResponse createBuyNow(UserEntity user, String discountName, String productId);
 
-    OrderSummaryResponse convertToOrderSummaryResponse(UserEntity user, String discountName , CartEntity cart ) ;
+    OrderSummaryResponse getOrderSummaryResponseForBuyNow(UserEntity user, String discountName , CartEntity cart ) ;
 
    CartEntity findByUserId(String id);
 

@@ -2,8 +2,8 @@ package com.khang.backendecommerce.newstruc.service.impl;
 
 import com.khang.backendecommerce.newstruc.dto.request.CartItemPriceResponse;
 import com.khang.backendecommerce.newstruc.dto.response.CartItemResponse;
-import com.khang.backendecommerce.newstruc.entity.CartEntity;
-import com.khang.backendecommerce.newstruc.entity.CartItemEntity;
+import com.khang.backendecommerce.newstruc.dto.response.InventoryNewCartContext;
+import com.khang.backendecommerce.newstruc.entity.*;
 import com.khang.backendecommerce.newstruc.projection.CartMapper;
 import com.khang.backendecommerce.newstruc.repo.CartItemRepository;
 import com.khang.backendecommerce.newstruc.repo.CartRepository;
@@ -11,14 +11,10 @@ import com.khang.backendecommerce.newstruc.repo.ProductRepository;
 import com.khang.backendecommerce.newstruc.service.CartService;
 import com.khang.backendecommerce.newstruc.service.DeliveryService;
 import com.khang.backendecommerce.infrastructure.discountinfra.DiscountContext;
-import com.khang.backendecommerce.newstruc.entity.DiscountCustomerEntity;
 import com.khang.backendecommerce.newstruc.service.DiscountService;
-import com.khang.backendecommerce.newstruc.entity.InventoryEntity;
 import com.khang.backendecommerce.newstruc.service.InventoryService;
 import com.khang.backendecommerce.newstruc.dto.response.OrderSummaryResponse;
-import com.khang.backendecommerce.newstruc.entity.ProductEntity;
 import com.khang.backendecommerce.newstruc.service.ProductService;
-import com.khang.backendecommerce.newstruc.entity.UserEntity;
 import com.khang.backendecommerce.infrastructure.common.enums.InventoryStatus;
 import com.khang.backendecommerce.infrastructure.configuration.CurrentUserProvider;
 
@@ -109,29 +105,26 @@ public class CartServiceImpl implements CartService {
         CartEntity cart = cartRepo.findCartAndCartItemsByUserId(user.getId()).orElseThrow(() -> ApplicationErrors.CART_NOT_FOUND);
         if (cart == null) {
             cart = createNewCart(user, product, AppConst.BUY_NOW_QUANTITY);
-            if(discountName != null) {
-                return convertToOrderSummaryResponse(user, discountName, cart);
-            }
-            else {
-                return convertToOrderSummaryResponse(user, null, cart);
-            }
+            return getOrderSummaryResponseForBuyNow(user,discountName,cart);
         }
-       else {
-            addProductToCart(cart, product , AppConst.BUY_NOW_QUANTITY);
+           cart = addProductToCart(user,cart , product,AppConst.BUY_NOW_QUANTITY);
+            return null;
 
-            if(discountName != null){
-                return convertToOrderSummaryResponse(user, discountName , cart);
-
-            }
-            return convertToOrderSummaryResponse(user ,null, cart);
-        }
     }
 
-    private void addProductToCart(CartEntity cart, ProductEntity product, int quantity) {
+    private CartEntity addProductToCart(UserEntity user ,CartEntity cart, ProductEntity product, int quantity) {
 
-       Map<String, Integer> demandByProductId = buildAffectedShopDemand(cart,product,quantity);
+        List<CartItemEntity> cartItemList = cart.getCartItemList();
+        cartItemList.stream()
+                .filter( cartItemEntity -> cartItemEntity.getProduct().getId().equals(product.getId()))
+                .map(cartItemEntity -> updateCartItemQuantity(cartItemEntity.getId(), quantity))
+                .toList();
+        Map<String, List<InventoryEntity>> inventoriesByProductId = inventoryService.loadAndLockInventories(cartItemList);
+        Set<String> existingWareHouseStateIds = inventoryService.extractWarehouseStateIds(inventoriesByProductId);
+
+//
 //        log.info("add Product to cart : {}" ,cart.getId());
-//        InventoryEntity inventory = inventoryService.findProductAvailability(product, quantity);
+//        InventoryEntity inventory = inventoryService.findProductAvailability(product, quantity,user  );
 //        BigDecimal subtotalNewCartItem = product.getPrice().multiply(BigDecimal.valueOf(quantity));
 //
 //        CartItemEntity cartItem= CartItemEntity.builder()
@@ -150,45 +143,40 @@ public class CartServiceImpl implements CartService {
 //        cart.setTotalAmount(newCartSubtotal);
     }
 
-    private Map<String, Integer> buildAffectedShopDemand(CartEntity cart, ProductEntity product, int quantity) {
-        String shopId = product.getStore().getId();
-    }
+
 
     @Override
-    public OrderSummaryResponse convertToOrderSummaryResponse(UserEntity user, String discountName , CartEntity cart ) {
-//        BigDecimal subTotal = cart.getSubtotal();
-//        BigDecimal discountAmount = BigDecimal.ZERO;
-//        BigDecimal totalAmount = BigDecimal.ZERO;
-//        BigDecimal deliveryAmount = deliveryService.calculateCartDeliveryAmount(user , cart);
-//        if(discountName == null){
-//            totalAmount = cart.getTotalAmount().add(deliveryAmount);
-//            return   OrderSummaryResponse.builder()
-//                    .subtotal(subTotal)
-//                    .discountAmount(null)
-//                    .deliveryAmount(deliveryAmount)
-//                    .totalAmount(totalAmount)
-//                    .build();
-//        }
-//        DiscountCustomerEntity discount = discountService.checkDiscountValidationFromUser(user.getId(), discountName);
-//        boolean sameDiscount = discountService.isSameDiscount(cart,discountName);
-//        if(!sameDiscount){
-//           cart.setDiscount(discount);
-//        }
-//        DiscountContext context = DiscountContext.builder()
-//                .subtotal(subTotal)
-//                .deliveryAmount(deliveryAmount)
-//                .build();
-//        discountAmount = discountService.calculateDiscount(discount , context);
-//        totalAmount = subTotal.add(deliveryAmount).subtract(discountAmount);
-//         return  OrderSummaryResponse.builder()
-//                    .subtotal(subTotal)
-//                    .discountAmount(discountAmount)
-//                    .deliveryAmount(deliveryAmount)
-//                    .totalAmount(totalAmount)
-//                    .build();
-
-
-           return null;
+    public OrderSummaryResponse getOrderSummaryResponseForBuyNow(UserEntity user, String discountName , CartEntity cart ) {
+        BigDecimal subTotal = cart.getSubtotal();
+        BigDecimal discountAmount = BigDecimal.ZERO;
+        BigDecimal totalAmount = BigDecimal.ZERO;
+        BigDecimal deliveryAmount = deliveryService.calculateCartDeliveryAmount(user , cart);
+        if(discountName == null){
+            totalAmount = cart.getTotalAmount().add(deliveryAmount);
+            return   OrderSummaryResponse.builder()
+                    .subtotal(subTotal)
+                    .discountAmount(null)
+                    .deliveryAmount(deliveryAmount)
+                    .totalAmount(totalAmount)
+                    .build();
+        }
+        DiscountCustomerEntity discount = discountService.checkDiscountValidationFromUser(user.getId(), discountName);
+        boolean sameDiscount = discountService.isSameDiscount(cart,discountName);
+        if(!sameDiscount){
+           cart.setDiscount(discount);
+        }
+        DiscountContext context = DiscountContext.builder()
+                .subtotal(subTotal)
+                .deliveryAmount(deliveryAmount)
+                .build();
+        discountAmount = discountService.calculateDiscount(discount , context);
+        totalAmount = subTotal.add(deliveryAmount).subtract(discountAmount);
+         return  OrderSummaryResponse.builder()
+                    .subtotal(subTotal)
+                    .discountAmount(discountAmount)
+                    .deliveryAmount(deliveryAmount)
+                    .totalAmount(totalAmount)
+                    .build();
     }
 
     @Override
@@ -228,14 +216,17 @@ public class CartServiceImpl implements CartService {
 
 
     private CartEntity createNewCart(UserEntity user,ProductEntity  product, int quantity) {
-        InventoryEntity inventory = inventoryService.findProductAvailability(product, quantity);
+        InventoryNewCartContext inventoryContext = inventoryService.findProductAvailability(product, quantity, user );
 //        BigDecimal deliveryAmount = deliveryService.calculateProductDeliveryAmount(user, inventory);
+        InventoryEntity inventory = inventoryContext.inventory();
+        DeliveryFeeEntity deliveryFee = inventoryContext.deliveryFee();
         BigDecimal subtotal = product.getPrice().multiply(BigDecimal.valueOf(quantity));
 
       CartEntity cart =  CartEntity.builder()
                 .user(user)
                 .subtotal(subtotal)
                 .totalAmount(subtotal)
+                .deliveryFee(deliveryFee.getBaseFee())
                 .cartItemList(new ArrayList<>())
                 .build();
       log.info("New cart created : {} from User {}" , cart.getId() , cart.getUser().getId());
@@ -245,6 +236,7 @@ public class CartServiceImpl implements CartService {
               .quantity(quantity)
               .subtotal(subtotal)
               .inventoryStatus(inventory.getInventoryStatus())
+              .deliveryFee(deliveryFee)
               .build();
       cart.addCartItem(itemEntity);
       cartRepo.save(cart);

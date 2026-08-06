@@ -29,7 +29,6 @@ public class CartEntity extends AbstractEntity<String> implements Serializable {
     private BigDecimal subtotal = BigDecimal.ZERO;
 
 
-
     @Column(name = "total_amount" , precision = 12 , scale = 2)
     private BigDecimal totalAmount = BigDecimal.ZERO;
 
@@ -47,4 +46,7 @@ public class CartEntity extends AbstractEntity<String> implements Serializable {
         cartItemList.remove(cartItem);
         cartItem.setCart(null);
     }
+    //TODO ADD TO DBS
+    @Column(name = "delivery_fee")
+    private BigDecimal deliveryFee;
 }

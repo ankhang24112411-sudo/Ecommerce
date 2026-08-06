@@ -20,7 +20,7 @@ public interface DeliveryFeeRepository extends JpaRepository<DeliveryFeeEntity,S
 //    Optional<DeliveryFeeEntity> findAllForCheckout(@Param("warehouseIds") Collection<String> warehouseIds);
 @EntityGraph(
         attributePaths = {
-                "deliveryRoute.stateFromName"
+                "deliveryRoute.stateFrom"
         }, type = EntityGraph.EntityGraphType.FETCH
 )
 @Query("""
