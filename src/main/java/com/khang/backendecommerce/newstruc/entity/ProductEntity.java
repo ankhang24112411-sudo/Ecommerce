@@ -43,4 +43,8 @@ public class ProductEntity extends AbstractEntity<String> implements Serializabl
 
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
     private List<InventoryEntity> inventoryList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "product" ,fetch = FetchType.LAZY,orphanRemoval = false)
+    private List<ProductImageEntity> productImageList = new ArrayList<>();
+
 }

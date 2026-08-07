@@ -25,5 +25,5 @@ public class CategoryEntity extends AbstractEntity<String> implements Serializab
     private String description;
 
     @Column(name = "picture")
-    private String picture;
+    private String imageUrl;
 }
