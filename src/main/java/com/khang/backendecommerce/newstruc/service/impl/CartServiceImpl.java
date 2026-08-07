@@ -49,12 +49,22 @@ public class CartServiceImpl implements CartService {
     private final DeliveryRouteRepository deliveryRouteRepo;
     @Override
     public List<CartItemResponse> getAllCartItems() {
-        return cartRepo.getAllCartItems(currentUserProvider.getCurrentUserId());
+        CartEntity cart = findByUserId(currentUserProvider.getCurrentUserId());
+         List<CartItemEntity> cartItemList = cart.getCartItemList();
+         cartItemList.forEach(cartItem -> cartItem.setInventoryStatus(getInventoryStatus(cartItem)));
+        return cartItemList.stream().map(cartItem -> CartItemResponse.builder()
+                .name(cartItem.getProduct().getName())
+                .subtotal(cartItem.getSubtotal())
+                .quantity(cartItem.getQuantity())
+                .inventoryStatus(cartItem.getInventoryStatus())
+                .build()).toList();
     }
-
+    public InventoryStatus getInventoryStatus(CartItemEntity cartItem){
+        return cartItem.getInventory().getInventoryStatus();
+    }
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public CartItemPriceResponse updateCartItemQuantity(String cartItemId, Integer quantityUpdate) {
+    public CartItemPriceResponse updateCartItemQuantity(String cartItemId, int quantityUpdate) {
         UserEntity user = currentUserProvider.getCurrentUser();
         CartEntity cart = findByUserId(user.getId());
 
@@ -112,12 +122,12 @@ public class CartServiceImpl implements CartService {
             cart = createNewCart(user, product, AppConst.BUY_NOW_QUANTITY);
             return getOrderSummaryResponseForBuyNow(user,discountName,cart);
         }
-           return addProductToCart(user, cart , product,AppConst.BUY_NOW_QUANTITY);
+           return getOrderSummaryResponse(user, cart , product,AppConst.BUY_NOW_QUANTITY);
 
 
     }
 
-    private OrderSummaryResponse addProductToCart(UserEntity user  ,CartEntity cart, ProductEntity product, int quantity) {
+    public OrderSummaryResponse getOrderSummaryResponse(UserEntity user  ,CartEntity cart, ProductEntity product, int quantity) {
         List<CartItemEntity> cartItemList = cart.getCartItemList();
         DiscountCustomerEntity discountCustomer = cart.getDiscount();
         DiscountEntity discount = discountCustomer == null ? null : discountService.findAndCheckDiscountCustomer(discountCustomer);
@@ -138,7 +148,7 @@ public class CartServiceImpl implements CartService {
 
       Set<String>  wareHouseStateIds = inventoryService.extractWarehouseStateIds(inventoriesByProductId);
         Map<String, DeliveryFeeEntity> deliveryFeeEntityByWarehouseIds = deliveryService.deliveryFeeEntityByWarehousesStateId(wareHouseStateIds, user.getState().getId());
-        List<AllocatedItem> allocatedItemList = findAllocate(cartItemList, inventoriesByProductId,wareHouseStateIds,deliveryFeeEntityByWarehouseIds , user.getState().getId(), newCartItem);
+        List<AllocatedItem> allocatedItemList = findAllocate(cart ,cartItemList, inventoriesByProductId,wareHouseStateIds,deliveryFeeEntityByWarehouseIds , user.getState().getId(), newCartItem);
 
         Map<SubOrderGroupKey , List<AllocatedItem>> groupedItems = allocatedItemList.stream()
                 .collect(Collectors.groupingBy(item -> new SubOrderGroupKey(item.product().getStore().getId(), item.inventory().getWarehouse().getId(), item.deliveryRoute().getId())));
@@ -204,7 +214,7 @@ public class CartServiceImpl implements CartService {
 //        cart.setTotalAmount(newCartSubtotal);
     }
 
-    private List<AllocatedItem> findAllocate(List<CartItemEntity> cartItemList,
+    private List<AllocatedItem> findAllocate(CartEntity cart, List<CartItemEntity> cartItemList,
                                              Map<String, List<InventoryEntity>> inventoriesByProductId,
                                              Set<String> wareHouseStateIds,
                                              Map<String, DeliveryFeeEntity> deliveryFeeEntityByWarehouseIds,
@@ -331,7 +341,8 @@ public class CartServiceImpl implements CartService {
               .quantity(quantity)
               .subtotal(subtotal)
               .inventoryStatus(inventory.getInventoryStatus())
-              .deliveryFee(deliveryFee.getBaseFee())
+              .inventory(inventory)
+//              .deliveryFee(deliveryFee.getBaseFee())
               .build();
       cart.addCartItem(itemEntity);
       cartRepo.save(cart);

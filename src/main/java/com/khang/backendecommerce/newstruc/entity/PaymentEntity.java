@@ -4,10 +4,7 @@ import com.khang.backendecommerce.infrastructure.common.entity.abstractentity.Ab
 import com.khang.backendecommerce.infrastructure.common.enums.PaymentMethod;
 import com.khang.backendecommerce.infrastructure.common.enums.PaymentStatus;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -19,6 +16,7 @@ import java.time.Instant;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@Builder
 @Table(name ="tbl_payment")
 public class PaymentEntity  extends AbstractEntity<String> implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
@@ -38,10 +36,7 @@ public class PaymentEntity  extends AbstractEntity<String> implements Serializab
     @Column(name ="payment_reference")
     private String paymentReference;
 
-    @Enumerated(EnumType.STRING)
-    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
-    @Column(name = "payment_method", columnDefinition = "payment_method")
-    private PaymentMethod paymentMethod;
+
 
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)

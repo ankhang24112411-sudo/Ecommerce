@@ -7,9 +7,7 @@ import java.math.BigDecimal;
 public record MockPaymentWebhookRequest (
         String userId,
         String orderId,
-        String transactionId,
         String paymentReference,
-        BigDecimal amount,
-        PaymentStatus status
+        PaymentStatus paymentStatus
 ){
 }

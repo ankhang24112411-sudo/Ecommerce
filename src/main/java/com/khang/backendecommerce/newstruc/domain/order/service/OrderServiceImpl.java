@@ -6,6 +6,7 @@ import com.khang.backendecommerce.infrastructure.common.enums.PaymentStatus;
 import com.khang.backendecommerce.infrastructure.configuration.CurrentUserProvider;
 import com.khang.backendecommerce.infrastructure.discountinfra.DiscountContext;
 import com.khang.backendecommerce.infrastructure.exception.ApplicationErrors;
+import com.khang.backendecommerce.infrastructure.util.AppConst;
 import com.khang.backendecommerce.newstruc.domain.order.dto.AllocatedItem;
 import com.khang.backendecommerce.newstruc.domain.order.dto.request.OrderRequest;
 import com.khang.backendecommerce.newstruc.domain.order.dto.response.OrderItemResponse;
@@ -13,10 +14,7 @@ import com.khang.backendecommerce.newstruc.domain.order.dto.response.OrderRespon
 import com.khang.backendecommerce.newstruc.domain.order.dto.response.SubOrderResponse;
 import com.khang.backendecommerce.newstruc.entity.UserEntity;
 import com.khang.backendecommerce.newstruc.entity.*;
-import com.khang.backendecommerce.newstruc.repo.DeliveryRouteRepository;
-import com.khang.backendecommerce.newstruc.repo.OrderRepository;
-import com.khang.backendecommerce.newstruc.repo.SubOrderRepository;
-import com.khang.backendecommerce.newstruc.repo.UserRepository;
+import com.khang.backendecommerce.newstruc.repo.*;
 import com.khang.backendecommerce.newstruc.service.DeliveryService;
 import com.khang.backendecommerce.newstruc.service.CartService;
 import com.khang.backendecommerce.newstruc.service.DiscountService;
@@ -48,6 +46,7 @@ public class OrderServiceImpl implements OrderService{
     private final DeliveryRouteRepository deliveryRouteRepo;
     private final OrderRepository orderRepo;
     private final UserRepository userRepo;
+    private final PaymentRepository paymentRepo;
     private static final DateTimeFormatter ORDER_CODE_FORMAT =
             DateTimeFormatter.ofPattern("yyyyMMdd");
 
@@ -101,13 +100,14 @@ public class OrderServiceImpl implements OrderService{
         newOrder.setConfirmedAt(Instant.now());
         newOrder.setPaymentStatus(PaymentStatus.UNPAID);
         newOrder.setOrderStatus(OrderStatus.PENDING);
+
         subOrderList.forEach(subOrder -> subOrder.setOrderStatus(OrderStatus.PENDING));
         subOrderList.forEach(newOrder::addSubOrder);
         orderRepo.save(newOrder);
-        return convertToOrderResponse(newOrder,subOrderList);
+        return convertToOrderResponse(null,newOrder,subOrderList);
     }
 
-    private OrderResponse convertToOrderResponse(OrderEntity newOrder, List<SubOrderEntity> subOrderList) {
+    private OrderResponse convertToOrderResponse(String paymentRefence ,OrderEntity newOrder, List<SubOrderEntity> subOrderList) {
 //        List<OrderItem> orderItems = subOrderList.stream()
 //                .map(SubOrderEntity::getOrderItems)
 //                .flatMap(Collection::stream).toList();
@@ -149,6 +149,7 @@ public class OrderServiceImpl implements OrderService{
                   newOrder.getOrderCode(),
                   newOrder.getOrderStatus(),
                   newOrder.getPaymentStatus(),
+                  newOrder.getPaymentMethod() == PaymentMethod.COD ? "COD" : paymentRefence,
                   newOrder.getSubtotal(),
                   subOrderList.stream().map(SubOrderEntity::getDeliveryFee).reduce(BigDecimal.ZERO, BigDecimal::add),
                   newOrder.getDiscountTotalAmount(),
@@ -239,6 +240,7 @@ public class OrderServiceImpl implements OrderService{
         BigDecimal totalFinalAmount = orderSubTotal.add(totalDeliveryAmountNoDuplicate).subtract(discountCalculate);
 
         orderEntity.setSubtotal(orderSubTotal);
+        orderEntity.setDeliveryFee(totalDeliveryAmountNoDuplicate);
         orderEntity.setDiscountTotalAmount(discountCalculate);
         orderEntity.setOrderTotalAmount(totalFinalAmount);
         orderEntity.setOrderCode(generateOrderCode());
@@ -246,19 +248,25 @@ public class OrderServiceImpl implements OrderService{
         if(paymentMethod.equals(PaymentMethod.COD)){
             return handleOrderCODpaymentMethod(orderEntity, subOrderList);
         }
-          return handleOrderOnlineBanking(orderEntity, subOrderList);
+          return handleOrderOnlineBanking(user ,orderEntity, subOrderList);
     }
 
-    private OrderResponse handleOrderOnlineBanking(OrderEntity newOrder, List<SubOrderEntity> subOrderList) {
+    private OrderResponse handleOrderOnlineBanking(UserEntity user , OrderEntity newOrder, List<SubOrderEntity> subOrderList) {
         newOrder.setPaymentMethod(PaymentMethod.BANK_TRANSFER);
         newOrder.setConfirmedAt(Instant.now());
         newOrder.setOrderStatus(OrderStatus.PENDING);
         newOrder.setPaymentStatus(PaymentStatus.UNPAID);
 
+        PaymentEntity payment = PaymentEntity.builder()
+                .user(user)
+                .order(newOrder)
+                .paymentReference(AppConst.paymentReference)
+                .build();
+        paymentRepo.save(payment);
         subOrderList.forEach(subOrder -> subOrder.setOrderStatus(OrderStatus.PENDING));
         subOrderList.forEach(newOrder::addSubOrder);
         orderRepo.save(newOrder);
-        return convertToOrderResponse(newOrder,subOrderList);
+        return convertToOrderResponse(payment.getPaymentReference(),newOrder,subOrderList);
     }
 
     @Override

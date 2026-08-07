@@ -44,7 +44,7 @@ public class CartItemEntity extends AbstractEntity<String> implements Serializab
 
 
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "delivery_fee")
-    private BigDecimal deliveryFee;
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "delivery_fee")
+//    private BigDecimal deliveryFee;
 }

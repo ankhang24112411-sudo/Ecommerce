@@ -15,6 +15,7 @@ public record OrderResponse (
     String orderCode,
     OrderStatus orderStatus,
     PaymentStatus paymentStatus,
+    String paymentReference,
     BigDecimal subtotal,
     BigDecimal deliveryAmount,
     BigDecimal discountAmount,

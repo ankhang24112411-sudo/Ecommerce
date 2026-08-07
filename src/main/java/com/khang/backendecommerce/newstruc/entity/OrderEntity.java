@@ -71,7 +71,8 @@ public class OrderEntity extends AbstractEntity<String> implements Serializable 
 
     @Column(name = "confirmed_at")
     private Instant confirmedAt;
-
+    @Column(name ="delivery_fee")
+    private BigDecimal deliveryFee;
     @Column(name = "cancelled_at")
     private Instant cancelledAt;
     @Builder.Default

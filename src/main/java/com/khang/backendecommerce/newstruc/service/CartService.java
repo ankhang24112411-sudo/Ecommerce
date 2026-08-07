@@ -4,6 +4,7 @@ import com.khang.backendecommerce.newstruc.dto.request.CartItemPriceResponse;
 import com.khang.backendecommerce.newstruc.dto.response.CartItemResponse;
 import com.khang.backendecommerce.newstruc.entity.CartEntity;
 import com.khang.backendecommerce.newstruc.dto.response.OrderSummaryResponse;
+import com.khang.backendecommerce.newstruc.entity.ProductEntity;
 import com.khang.backendecommerce.newstruc.entity.UserEntity;
 import com.khang.backendecommerce.newstruc.entity.CartItemEntity;
 
@@ -12,7 +13,7 @@ import java.util.List;
 public interface CartService {
    List<CartItemResponse> getAllCartItems();
 
-   CartItemPriceResponse updateCartItemQuantity(String itemId, Integer quantity);
+   CartItemPriceResponse updateCartItemQuantity(String itemId, int quantity);
 
    String deleteCartItems(String itemId);
 
@@ -20,7 +21,9 @@ public interface CartService {
 
     OrderSummaryResponse getOrderSummaryResponseForBuyNow(UserEntity user, String discountName , CartEntity cart ) ;
 
-   CartEntity findByUserId(String id);
+    OrderSummaryResponse getOrderSummaryResponse(UserEntity user  , CartEntity cart, ProductEntity product, int quantity) ;
+
+      CartEntity findByUserId(String id);
 
    List<CartItemEntity> loadCartItems(CartEntity cart, UserEntity user );
    }

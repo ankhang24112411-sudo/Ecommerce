@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class PaymentController {
     private final PaymentService paymentService;
-    public ResponseEntity<BaseResponse<Void>> mockingWebhooks(@RequestBody MockPaymentWebhookRequest request){
+    public ResponseEntity<BaseResponse<String>> mockingWebhooks(@RequestBody MockPaymentWebhookRequest request){
         paymentService.mockWebhooks(request);
-        return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(null, "Payment on the way"));
+        return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(paymentService.mockWebhooks(request), "ok"));
     }
 }

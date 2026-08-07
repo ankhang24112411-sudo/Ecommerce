@@ -1,6 +1,7 @@
 package com.khang.backendecommerce.newstruc.service.impl;
 
 import com.khang.backendecommerce.newstruc.entity.CartEntity;
+import com.khang.backendecommerce.newstruc.entity.ProductEntity;
 import com.khang.backendecommerce.newstruc.service.CartService;
 import com.khang.backendecommerce.newstruc.service.DiscountService;
 import com.khang.backendecommerce.newstruc.dto.request.OrderSummaryRequest;
@@ -34,7 +35,8 @@ public class OrderSummaryServiceImpl implements OrderSummaryService {
            case CART_SUM -> {
              CartEntity cart =  cartService.findByUserId(user.getId());
 
-               yield  cartService.convertToOrderSummaryResponse(user , orderSummaryRequest.getDiscountName(), cart);
+               yield  cartService.getOrderSummaryResponse( user  , cart, null,0);
+
             }
         };
 
