@@ -36,7 +36,7 @@ public class ProductEntity extends AbstractEntity<String> implements Serializabl
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
-    private CategoryEntity categoryId ;
+    private CategoryEntity category ;
 
     @Column(name = "description")
     private String description;

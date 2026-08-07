@@ -1,10 +1,14 @@
 package com.khang.backendecommerce.newstruc.service.impl;
 
 import com.khang.backendecommerce.infrastructure.exception.ApplicationErrors;
+import com.khang.backendecommerce.newstruc.dto.response.BannerResponse;
 import com.khang.backendecommerce.newstruc.dto.response.FeaturedCategoryResponse;
 import com.khang.backendecommerce.newstruc.dto.response.FeaturedProductResponse;
+import com.khang.backendecommerce.newstruc.entity.CategoryEntity;
 import com.khang.backendecommerce.newstruc.entity.ProductEntity;
 import com.khang.backendecommerce.newstruc.entity.ProductImageEntity;
+import com.khang.backendecommerce.newstruc.repo.BannerRepository;
+import com.khang.backendecommerce.newstruc.repo.CategoryRepository;
 import com.khang.backendecommerce.newstruc.repo.ProductImageRepository;
 import com.khang.backendecommerce.newstruc.repo.ProductRepository;
 import com.khang.backendecommerce.newstruc.service.ProductService;
@@ -25,6 +29,7 @@ public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepo;
     private final ProductImageRepository productImageRepo;
     private final CategoryRepository categoryRepo;
+    private final BannerRepository bannerRepo;
     @Override
     public void isProductActive(ProductEntity product) {
         if(product.getDeleted() == 1){
@@ -51,25 +56,41 @@ public class ProductServiceImpl implements ProductService {
         return productImageEntityByProductId.entrySet().stream()
                 .map( productImageEntityById -> {
                     ProductImageEntity productImage = productImageEntityById.getValue();
+                    ProductEntity product = productRepo.findById(productImageEntityById.getKey()).orElseThrow(() -> ApplicationErrors.PRODUCT_NOT_FOUND);
                            return FeaturedProductResponse.builder()
                             .id(productImageEntityById.getKey())
                                    .name(productImage.getProduct().getName())
                                    .primaryImageURL(productImage.getImage())
+                                   .unitPrice(product.getPrice())
                             .build();
                        }).toList();
-
-
-
-
-//                    FeaturedCategoryResponse response = FeaturedCategoryResponse.builder()
-//                            .id().name().imageURL()
-//                            .build();
 
     }
 
     @Override
     public List<FeaturedCategoryResponse> getFeaturedCategory() {
-        List<String> featureCategoryIds = categoryRepo.
-        return List.of();
+        List<CategoryEntity> featureCategory = categoryRepo.getFeaturedCategory(PageRequest.of(0,5));
+        return featureCategory.stream()
+                .map(categoryEntity -> FeaturedCategoryResponse.builder()
+                        .id(categoryEntity.getId())
+                        .name(categoryEntity.getName())
+                        .imageURL(categoryEntity.getImageUrl()).build())
+                .toList();
+    }
+
+    @Override
+    public List<BannerResponse> getBanner() {
+        return bannerRepo.getBanner(PageRequest.of(0,5))
+                .stream()
+                .map(banner -> BannerResponse.builder()
+                        .id(banner.getId())
+                        .title(banner.getTitle())
+                        .description(banner.getDescription())
+                        .imageUrl(banner.getImageUrl())
+                        .buttonText(banner.getButtonText())
+                        .targetUrl(banner.getTargetUrl())
+                        .build())
+                .toList();
+
     }
 }

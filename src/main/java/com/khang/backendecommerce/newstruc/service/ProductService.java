@@ -1,5 +1,6 @@
 package com.khang.backendecommerce.newstruc.service;
 
+import com.khang.backendecommerce.newstruc.dto.response.BannerResponse;
 import com.khang.backendecommerce.newstruc.dto.response.FeaturedCategoryResponse;
 import com.khang.backendecommerce.newstruc.dto.response.FeaturedProductResponse;
 import com.khang.backendecommerce.newstruc.entity.ProductEntity;
@@ -16,4 +17,6 @@ public interface ProductService {
     List<FeaturedProductResponse> getFeaturedProduct();
 
     List<FeaturedCategoryResponse> getFeaturedCategory();
+
+    List<BannerResponse> getBanner();
 }

@@ -1,6 +1,7 @@
 package com.khang.backendecommerce.newstruc.service.impl;
 
 import com.khang.backendecommerce.newstruc.dto.request.OrderSummaryRequest;
+import com.khang.backendecommerce.newstruc.dto.response.BannerResponse;
 import com.khang.backendecommerce.newstruc.dto.response.FeaturedCategoryResponse;
 import com.khang.backendecommerce.newstruc.dto.response.FeaturedProductResponse;
 import com.khang.backendecommerce.newstruc.dto.response.StoreFrontHomeResponse;
@@ -20,7 +21,8 @@ public class StoreFrontServiceImpl implements StoreFrontService {
     @Override
     public StoreFrontHomeResponse getStoreFront(OrderSummaryRequest orderSummaryRequest) {
         List<FeaturedProductResponse> product = productService.getFeaturedProduct();
-        List<FeaturedCategoryResponse> categoryList = product.getFeaturedCategory();
+        List<FeaturedCategoryResponse> categoryList = productService.getFeaturedCategory();
+        List<BannerResponse> bannerResponseList = productService.getBanner();
         return null;
     }
 }

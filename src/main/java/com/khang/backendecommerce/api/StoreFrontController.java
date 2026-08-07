@@ -5,16 +5,18 @@ import com.khang.backendecommerce.newstruc.dto.request.OrderSummaryRequest;
 import com.khang.backendecommerce.newstruc.dto.response.OrderSummaryResponse;
 import com.khang.backendecommerce.newstruc.dto.response.StoreFrontHomeResponse;
 import com.khang.backendecommerce.newstruc.service.StoreFrontService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RestController
 @RequestMapping("/v1/storefront/home")
@@ -24,8 +26,16 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class StoreFrontController {
     private final StoreFrontService storeFrontService;
-
-    ResponseEntity<BaseResponse<StoreFrontHomeResponse>> createOrderSummaryRequest(@RequestBody OrderSummaryRequest orderSummaryRequest) {
+    @GetMapping("/banner-features")
+    ResponseEntity<BaseResponse<StoreFrontHomeResponse>> getBannerAndFeature(@RequestBody OrderSummaryRequest orderSummaryRequest) {
         return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(storeFrontService.getStoreFront(orderSummaryRequest), "success"));
+    }
+    @GetMapping("/search")
+    @Operation(summary = "Advance search query by specifications", description = "Return list of users")
+    @GetMapping(path = "/advance-search-with-specification", produces = APPLICATION_JSON_VALUE)
+    public ResponseData<?> advanceSearchWithSpecifications(Pageable pageable,
+                                                           @RequestParam(required = false) String[] user,
+                                                           @RequestParam(required = false) String[] address) {
+        return new ResponseData<>(HttpStatus.OK.value(), "users", userService.advanceSearchWithSpecifications(pageable, user, address));
     }
 }
