@@ -5,6 +5,7 @@ import com.khang.backendecommerce.newstruc.entity.DeliveryRouteEntity;
 import com.khang.backendecommerce.newstruc.entity.InventoryEntity;
 import com.khang.backendecommerce.newstruc.entity.ProductEntity;
 import lombok.Builder;
+import lombok.Getter;
 
 import java.math.BigDecimal;
 import java.util.Objects;

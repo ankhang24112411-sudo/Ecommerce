@@ -32,7 +32,7 @@ where tc.user_id = :userId
     @EntityGraph(
             attributePaths = {
                     "cartItemList",
-                    "cartItemList.product"
+                    "cartItemList.product.store"
             }, type = EntityGraph.EntityGraphType.FETCH
     )
     @Query("""

@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Getter
 @Builder
@@ -14,7 +15,6 @@ import java.math.BigDecimal;
 public class OrderSummaryResponse {
     private BigDecimal subtotal;
     private BigDecimal discountAmount;
-
     private BigDecimal deliveryAmount;
     private BigDecimal totalAmount;
 }

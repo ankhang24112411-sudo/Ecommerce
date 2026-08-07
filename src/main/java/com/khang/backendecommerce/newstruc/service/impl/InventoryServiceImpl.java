@@ -55,22 +55,13 @@ public class InventoryServiceImpl implements InventoryService {
          InventoryNewCartContext context = new InventoryNewCartContext(bestInventory,cheapest);
          return  context;
     }
-    public InventoryEntity findOptimizeInventory(ProductEntity product, int quantity, Map<String, List<InventoryEntity>> inventoriesByProductId){
+    public Map<String, List<InventoryEntity>> findOptimizeInventory(CartEntity cart ,ProductEntity product, int quantity, Map<String, List<InventoryEntity>> inventoriesByProductId){
         List<InventoryEntity> inventoryList = inventoryRepo.findAllInventoryCandidatesWithEnoughStock(product.getId(), quantity);
-        String affectedShop = product.getStore().getId();
-        Map<String,List<InventoryEntity>> sameShopInventory = inventoriesByProductId.entrySet()
-                .stream()
-                .filter( entry ->
-                     entry.getValue()
-                            .stream().anyMatch(inventory ->
-                                  inventory.getProduct().getStore().getId().equals(affectedShop)
-                             )).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-        if(inventoryList.isEmpty()){
-          throw  ApplicationErrors.INVENTORY_NOT_ENOUGH;
-        }
+
         if(!inventoriesByProductId.containsKey(product.getId())){
             inventoriesByProductId.put(product.getId(),inventoryList);
         }
+        return inventoriesByProductId;
     }
 
 
@@ -113,29 +104,17 @@ public class InventoryServiceImpl implements InventoryService {
                 )).toList();
 
         InventoryEntity selectInventory = candidates.stream()
-                .peek(inv -> log.info("Candidate inventory={}, stock={}, reserved={}, requested={}",
-                        inv.getId(),
-                        inv.getAvailableQuantity(),
-                        inv.getReservedQuantity(),
-
-                        productQuantity
-                ))
-                .filter(inventory -> inventory.getAvailableQuantity() >= productQuantity)
+                .peek(inventory -> log.info("Candidate inventory={}stock={} reserved={} requested={}", inventory.getId(), inventory.getAvailableQuantity(), inventory.getReservedQuantity(), productQuantity))
+                .filter(inventory -> inventory.getAvailableQuantity() - inventory.getReservedQuantity() >= productQuantity)
                 .sorted(Comparator.comparing(
                         ( InventoryEntity inventory) ->
                         deliveryService.calculateDeliveryFee(inventory,userStateId,deliveryFeeEntityByWarehouseStateId))
                         .thenComparing(InventoryEntity::getAvailableQuantity))
                 .findFirst().orElseThrow(() -> ApplicationErrors.INVENTORY_NOT_ENOUGH);
         log.info(
-                "Check stock productId= {}, inventoryId= {}, stock= {}, reserved= {}, requested= {}",
-                product.getId(),
-                selectInventory.getId(),
-                selectInventory.getAvailableQuantity(),
-                selectInventory.getReservedQuantity(),
-                productQuantity
-
+                "Check stock productId= {} inventoryId= {}stock= {} reserved= {} requested= {}", product.getId(), selectInventory.getId(), selectInventory.getAvailableQuantity(), selectInventory.getReservedQuantity(), productQuantity
         );
-        if(selectInventory.getAvailableQuantity() < productQuantity){
+        if(selectInventory.getAvailableQuantity() - selectInventory.getReservedQuantity()< productQuantity){
             throw ApplicationErrors.INVENTORY_NOT_ENOUGH;
         }
 

@@ -22,5 +22,5 @@ public interface InventoryService {
     InventoryEntity selectInventory(ProductEntity product, int productQuantity, List<InventoryEntity> inventoryEntities, Map<String, DeliveryFeeEntity> deliveryFeeEntityByWarehouseStateId,String userStateId);
 
      Map<String, List<InventoryEntity>> loadInventories(List<CartItemEntity> cartItemList) ;
-
+    Map<String, List<InventoryEntity>> findOptimizeInventory(CartEntity cart ,ProductEntity product, int quantity, Map<String, List<InventoryEntity>> inventoriesByProductId);
     }

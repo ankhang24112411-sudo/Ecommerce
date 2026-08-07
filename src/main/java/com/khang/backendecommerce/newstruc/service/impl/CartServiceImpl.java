@@ -1,12 +1,15 @@
 package com.khang.backendecommerce.newstruc.service.impl;
 
+import com.khang.backendecommerce.newstruc.domain.order.dto.AllocatedItem;
 import com.khang.backendecommerce.newstruc.dto.request.CartItemPriceResponse;
 import com.khang.backendecommerce.newstruc.dto.response.CartItemResponse;
 import com.khang.backendecommerce.newstruc.dto.response.InventoryNewCartContext;
+import com.khang.backendecommerce.newstruc.dto.response.SubOrderSummaryResponse;
 import com.khang.backendecommerce.newstruc.entity.*;
 import com.khang.backendecommerce.newstruc.projection.CartMapper;
 import com.khang.backendecommerce.newstruc.repo.CartItemRepository;
 import com.khang.backendecommerce.newstruc.repo.CartRepository;
+import com.khang.backendecommerce.newstruc.repo.DeliveryRouteRepository;
 import com.khang.backendecommerce.newstruc.repo.ProductRepository;
 import com.khang.backendecommerce.newstruc.service.CartService;
 import com.khang.backendecommerce.newstruc.service.DeliveryService;
@@ -28,6 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -42,6 +46,7 @@ public class CartServiceImpl implements CartService {
     private final DeliveryService deliveryService;
     private final DiscountService discountService;
     private final ProductRepository productRepo;
+    private final DeliveryRouteRepository deliveryRouteRepo;
     @Override
     public List<CartItemResponse> getAllCartItems() {
         return cartRepo.getAllCartItems(currentUserProvider.getCurrentUserId());
@@ -107,19 +112,77 @@ public class CartServiceImpl implements CartService {
             cart = createNewCart(user, product, AppConst.BUY_NOW_QUANTITY);
             return getOrderSummaryResponseForBuyNow(user,discountName,cart);
         }
-           cart = addProductToCart(user,cart , product,AppConst.BUY_NOW_QUANTITY);
-            return null;
+           return addProductToCart(user, cart , product,AppConst.BUY_NOW_QUANTITY);
+
 
     }
 
-    private CartEntity addProductToCart(UserEntity user ,CartEntity cart, ProductEntity product, int quantity) {
-
+    private OrderSummaryResponse addProductToCart(UserEntity user  ,CartEntity cart, ProductEntity product, int quantity) {
         List<CartItemEntity> cartItemList = cart.getCartItemList();
-//
-//
-        Map<String, List<InventoryEntity>> inventoriesByProductId = inventoryService.loadAndLockInventories(cartItemList);
-        Set<String> existingWareHouseStateIds = inventoryService.extractWarehouseStateIds(inventoriesByProductId);
+        DiscountCustomerEntity discountCustomer = cart.getDiscount();
+        DiscountEntity discount = discountCustomer == null ? null : discountService.findAndCheckDiscountCustomer(discountCustomer);
+        Map<String, List<InventoryEntity>> inventoriesByProductIdOld = inventoryService.loadInventories(cartItemList);
+        Map<String, List<InventoryEntity>> inventoriesByProductId ;
+       CartItemEntity newCartItem = null;
+        if(product != null ) {
+            inventoriesByProductId = inventoryService.findOptimizeInventory(cart, product, quantity, inventoriesByProductIdOld);
+             newCartItem = CartItemEntity.builder()
+                    .cart(cart)
+                    .product(product)
+                    .quantity(quantity)
+                    .build();
+            cart.addCartItem(newCartItem);
+        }else{
+            inventoriesByProductId = inventoriesByProductIdOld;
+        }
 
+      Set<String>  wareHouseStateIds = inventoryService.extractWarehouseStateIds(inventoriesByProductId);
+        Map<String, DeliveryFeeEntity> deliveryFeeEntityByWarehouseIds = deliveryService.deliveryFeeEntityByWarehousesStateId(wareHouseStateIds, user.getState().getId());
+        List<AllocatedItem> allocatedItemList = findAllocate(cartItemList, inventoriesByProductId,wareHouseStateIds,deliveryFeeEntityByWarehouseIds , user.getState().getId(), newCartItem);
+
+        Map<SubOrderGroupKey , List<AllocatedItem>> groupedItems = allocatedItemList.stream()
+                .collect(Collectors.groupingBy(item -> new SubOrderGroupKey(item.product().getStore().getId(), item.inventory().getWarehouse().getId(), item.deliveryRoute().getId())));
+        BigDecimal shippingFee = groupedItems.values().stream()
+                .map(item -> item.get(0).deliveryFee())
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal subtotal = groupedItems.values().stream()
+                .flatMap(Collection::stream)
+                .map(AllocatedItem::subtotal)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        BigDecimal discountAmount = BigDecimal.ZERO;
+        if(discount != null) {
+            DiscountContext context = DiscountContext.builder()
+                    .subtotal(subtotal)
+                    .deliveryAmount(shippingFee)
+                    .build();
+            discountAmount = discountService.calculateDiscount(discountCustomer,context);
+        }
+        return OrderSummaryResponse.builder()
+                .subtotal(subtotal)
+                .discountAmount(discountAmount)
+                .deliveryAmount(shippingFee)
+                .totalAmount(subtotal.add(shippingFee).subtract(discountAmount))
+                .build();
+//        OrderSummaryResponse orderSummaryResponse = groupedItems.values().stream()
+//                .map( orderItems ->{
+//                    AllocatedItem firstItem = orderItems.get(0);
+//                    SubOrderSummaryResponse subOrderSummaryResponses =SubOrderSummaryResponse.builder()
+//                            .deliveryFee(firstItem.deliveryFee())
+//                            .build();
+//                    BigDecimal subtotal = orderItems.stream()
+//                            .map(AllocatedItem::subtotal)
+//                            .reduce(BigDecimal.ZERO,BigDecimal::add);
+//                    BigDecimal deliveryFee =
+////                    OrderSummaryResponse orderSummaryResponse1 = OrderSummaryResponse.builder().build();
+//                }
+
+
+//        OrderSummaryResponse orderSummaryResponse = allocatedItemList.stream()
+//                .map( allocatedItem -> {
+//                    allocatedItemList.stream().
+//                    OrderSummaryResponse orderSummaryResponse1 = OrderSummaryResponse.builder().build();
+//                })
 //
 //        log.info("add Product to cart : {}" ,cart.getId());
 //        InventoryEntity inventory = inventoryService.findProductAvailability(product, quantity,user  );
@@ -141,6 +204,41 @@ public class CartServiceImpl implements CartService {
 //        cart.setTotalAmount(newCartSubtotal);
     }
 
+    private List<AllocatedItem> findAllocate(List<CartItemEntity> cartItemList,
+                                             Map<String, List<InventoryEntity>> inventoriesByProductId,
+                                             Set<String> wareHouseStateIds,
+                                             Map<String, DeliveryFeeEntity> deliveryFeeEntityByWarehouseIds,
+                                             String userStateId,
+                                             CartItemEntity newCartItem) {
+        List<AllocatedItem> result = new ArrayList<>();
+        for(CartItemEntity cartItem : cartItemList){
+            ProductEntity product = cartItem.getProduct();
+            int quantity = cartItem.getQuantity();
+            List<InventoryEntity> inventoryList = inventoriesByProductId.get(product.getId());
+            InventoryEntity selectedInventory = inventoryService.selectInventory(product,quantity,inventoryList, deliveryFeeEntityByWarehouseIds, userStateId);
+          if(selectedInventory == null){
+              throw ApplicationErrors.INVENTORY_NOT_FOUND;
+          }
+          DeliveryRouteEntity deliveryRoute = deliveryRouteRepo.findByStateFrom_IdAndStateTo_Id(selectedInventory.getWarehouse().getState().getId() , userStateId).orElseThrow(() -> ApplicationErrors.DELIVERY_ROUTE_NOT_FOUND);
+          BigDecimal fee = deliveryService.calculateDeliveryFee(selectedInventory, userStateId, deliveryFeeEntityByWarehouseIds);
+          BigDecimal subtotal = product.getPrice().multiply(BigDecimal.valueOf(quantity));
+          if(cartItem.getId().equals(newCartItem.getId())){
+              cartItem.setSubtotal(subtotal);
+          }
+          AllocatedItem allocatedItem = AllocatedItem.builder()
+                  .cartItem(cartItem)
+                  .product(product)
+                  .inventory(selectedInventory)
+                  .quantity(quantity)
+                  .unitPrice(product.getPrice())
+                  .subtotal(subtotal)
+                  .deliveryRoute(deliveryRoute)
+                  .deliveryFee(fee)
+                  .build();
+          result.add(allocatedItem);
+        }
+        return result;
+    }
 
 
     @Override
@@ -233,7 +331,7 @@ public class CartServiceImpl implements CartService {
               .quantity(quantity)
               .subtotal(subtotal)
               .inventoryStatus(inventory.getInventoryStatus())
-              .deliveryFee(deliveryFee)
+              .deliveryFee(deliveryFee.getBaseFee())
               .build();
       cart.addCartItem(itemEntity);
       cartRepo.save(cart);

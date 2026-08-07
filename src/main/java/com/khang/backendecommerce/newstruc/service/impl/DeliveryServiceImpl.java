@@ -31,30 +31,30 @@ public class DeliveryServiceImpl implements DeliveryService {
     private final DeliveryFeeRepository deliveryFeeRepo;
     private final InventoryRepository inventoryRepo;
 //TODO code chua toi uu , N + 1
-    @Override
-    public BigDecimal calculateProductDeliveryAmount(UserEntity user, InventoryEntity inventory) {
+@Override
+public BigDecimal calculateProductDeliveryAmount(UserEntity user, InventoryEntity inventory) {
 
 
-//        String userStateId = user.getState().getId();
-//        String warehouseStateId = inventory.getWarehouse().getState().getId();
-//        if(userStateId.equals(warehouseStateId)){
-//            return BigDecimal.ZERO;
-//        }
-//        log.info("warehouse state id :{}  " , warehouseStateId );
-//        log.info("User state id :{} ", userStateId );
-//
-//
-//        DeliveryRouteEntity route = deliveryRouteRepo.findByStateFrom_IdAndStateTo_Id(warehouseStateId, userStateId)
-//                .orElseThrow(() -> ApplicationErrors.DELIVERY_ROUTE_NOT_FOUND);
-//        log.info("Delivery {} route is from {} to {}" ,route.getId(), route.getStateFromName() ,route.getStateToName());
-//
-//
-//        DeliveryFeeEntity deliveryFee =deliveryFeeRepo.findByDeliveryRoute_Id(route.getId())
-//                .orElseThrow(() ->  ApplicationErrors.INVALID_DELIVERY_FEE);
-//        log.info("Delivery fee is : {} and company {}" , deliveryFee.getDeliveryRoute().getId() , deliveryFee.getCompanyId());
-//
-//        return deliveryFee.getBaseFee();
+    String userStateId = user.getState().getId();
+    String warehouseStateId = inventory.getWarehouse().getState().getId();
+    if(userStateId.equals(warehouseStateId)){
+        return BigDecimal.ZERO;
     }
+    log.info("warehouse state id :{}  " , warehouseStateId );
+    log.info("User state id :{} ", userStateId );
+
+
+    DeliveryRouteEntity route = deliveryRouteRepo.findByStateFrom_IdAndStateTo_Id(warehouseStateId, userStateId)
+            .orElseThrow(() -> ApplicationErrors.DELIVERY_ROUTE_NOT_FOUND);
+    log.info("Delivery {} route is from {} to {}" ,route.getId(), route.getStateFromName() ,route.getStateToName());
+
+
+    DeliveryFeeEntity deliveryFee =deliveryFeeRepo.findByDeliveryRoute_Id(route.getId())
+            .orElseThrow(() ->  ApplicationErrors.INVALID_DELIVERY_FEE);
+    log.info("Delivery fee is : {} and company {}" , deliveryFee.getDeliveryRoute().getId() , deliveryFee.getCompanyId());
+
+    return deliveryFee.getBaseFee();
+}
     @Override
     public BigDecimal calculateCartDeliveryAmount(UserEntity user ,CartEntity cart){
         List<String> productIds = cart.getCartItemList().stream()
