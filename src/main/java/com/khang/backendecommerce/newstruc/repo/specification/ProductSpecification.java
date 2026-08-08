@@ -1,6 +1,7 @@
 package com.khang.backendecommerce.newstruc.repo.specification;
 
 
+import com.khang.backendecommerce.newstruc.entity.ProductEntity;
 import com.khang.backendecommerce.newstruc.entity.UserEntity;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
@@ -14,12 +15,12 @@ import org.springframework.lang.NonNull;
 
 @Getter
 @AllArgsConstructor
-public class UserSpecification implements Specification<UserEntity> {
+public class ProductSpecification implements Specification<ProductEntity> {
 
     private SpecSearchCriteria criteria;
 
     @Override
-    public Predicate toPredicate(@NonNull final Root<UserEntity> root, @NonNull final CriteriaQuery<?> query, @NonNull final CriteriaBuilder builder) {
+    public Predicate toPredicate(@NonNull final Root<ProductEntity> root, @NonNull final CriteriaQuery<?> query, @NonNull final CriteriaBuilder builder) {
         return switch (criteria.getOperation()) {
             case EQUALITY -> builder.equal(root.get(criteria.getKey()), criteria.getValue());
             case NEGATION -> builder.notEqual(root.get(criteria.getKey()), criteria.getValue());

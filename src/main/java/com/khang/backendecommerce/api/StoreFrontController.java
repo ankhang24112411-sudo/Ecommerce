@@ -31,11 +31,9 @@ public class StoreFrontController {
         return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(storeFrontService.getStoreFront(orderSummaryRequest), "success"));
     }
     @GetMapping("/search")
-    @Operation(summary = "Advance search query by specifications", description = "Return list of users")
-    @GetMapping(path = "/advance-search-with-specification", produces = APPLICATION_JSON_VALUE)
-    public ResponseData<?> advanceSearchWithSpecifications(Pageable pageable,
-                                                           @RequestParam(required = false) String[] user,
-                                                           @RequestParam(required = false) String[] address) {
-        return new ResponseData<>(HttpStatus.OK.value(), "users", userService.advanceSearchWithSpecifications(pageable, user, address));
+
+    public  ResponseEntity<BaseResponse<?>> advanceSearchWithSpecificationsProduct(Pageable pageable,
+                                                           @RequestParam(required = false) String[] product, String [] store) {
+        return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(storeFrontService.advanceSearchWithSpecificationsProduct(pageable,product,store), "success"));
     }
 }
