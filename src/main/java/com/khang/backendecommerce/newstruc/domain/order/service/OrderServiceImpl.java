@@ -331,19 +331,28 @@ public class OrderServiceImpl implements OrderService{
      List<OrderItem> orderItemListInOrder = orderItemRepo.getAllOrderItemsByOrderId(order.getId());
 
      List<CartItemEntity> cartItemListInCart = cartItemRepo.findAllCartItem(cart.getId());
-     Map<ProductEntity,Integer> productByQuantityInCart = cartItemListInCart.stream()
-             .collect(Collectors.toMap(CartItemEntity::getProduct, CartItemEntity::getQuantity));
-//TODO : handle the situation that user add more quantity for a product that was checked out in Order
+        Map<String, CartItemEntity> cartItemsByProductId =
+                cartItemListInCart.stream().collect(Collectors.toMap(item -> item.getProduct().getId(), item -> item));
+
      for(var orderItem : orderItemListInOrder){
          ProductEntity product = orderItem.getProduct();
-         int quantity = orderItem.getQuantity();
-         int quantityInCart = productByQuantityInCart.get(product);
+         int quantityInOrder = orderItem.getQuantity();
          InventoryEntity inventory = orderItem.getInventory();
+         inventory.updateReservedQuantityAndAvailableQuantity(quantityInOrder);
 
-         if(quantityInCart == quantity){
-             inventory.updateReservedQuantityAndAvailableQuantity(quantity);
+         CartItemEntity cartItem = cartItemsByProductId.get(product.getId());
+         Integer quantityInCart = cartItem.getQuantity();
+         if(quantityInCart == null){
+             continue;
          }
-         else if (quantityInCart )
+
+        else if(quantityInCart == quantityInOrder){
+             cart.removeCartItem(cartItem);
+         }
+         // TODO : handle situation that quantity in cart not matching the quantity when checked out in order
+         if(quantityInCart > quantityInOrder) {
+             cartItem.setQuantity(quantityInCart - quantityInOrder);
+         }
      }
 //     List<InventoryEntity> inventoryInOrder = productListInOrder.stream().map(product -> product.getInventoryList())
 //        deleteCartAfterOrder(cart);
