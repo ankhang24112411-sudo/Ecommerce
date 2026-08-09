@@ -51,7 +51,6 @@ public class DeliveryEntity extends AbstractEntity<String> implements Serializab
 
     @OneToMany(mappedBy = "delivery")
     private List<DeliveryTrackingLog> deliveryTrackingLogList = new ArrayList<>();
-    //TODO
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sub_order_id")
     private SubOrderEntity subOrder;

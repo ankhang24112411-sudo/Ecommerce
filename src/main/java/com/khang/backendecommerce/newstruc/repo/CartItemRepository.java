@@ -39,4 +39,13 @@ delete from CartItemEntity cartItem
 where cartItem.cart.id = :cartId
 """)
     int deletePurchasedItems(@Param("cartId") String cartId );
+    void deleteAllByCart_Id(String cartId);
+    @Query("""
+        select cartItem
+        from CartItemEntity cartItem
+        where cartItem.cart.id = :cartId
+        order by cartItem.id
+        """)
+    List<CartItemEntity> findAllCartItem(@Param("cartId") String cartId);
+
 }

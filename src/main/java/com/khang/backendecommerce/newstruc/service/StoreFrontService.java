@@ -8,5 +8,5 @@ import org.springframework.data.domain.Pageable;
 public interface StoreFrontService {
     StoreFrontHomeResponse getStoreFront(OrderSummaryRequest orderSummaryRequest);
 
-    BaseResponse<?> advanceSearchWithSpecificationsProduct(Pageable pageable, String[] user, String [] store);
+    BaseResponse<?> advanceSearchWithSpecificationsProduct(Pageable pageable, String[] user, String [] store,String [] inventory);
 }

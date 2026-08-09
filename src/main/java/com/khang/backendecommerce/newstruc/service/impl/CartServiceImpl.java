@@ -51,7 +51,7 @@ public class CartServiceImpl implements CartService {
     public List<CartItemResponse> getAllCartItems() {
         CartEntity cart = findByUserId(currentUserProvider.getCurrentUserId());
          List<CartItemEntity> cartItemList = cart.getCartItemList();
-         cartItemList.forEach(cartItem -> cartItem.setInventoryStatus(getInventoryStatus(cartItem)));
+//         cartItemList.forEach(cartItem -> cartItem.setInventoryStatus(getInventoryStatus(cartItem)));
         return cartItemList.stream().map(cartItem -> CartItemResponse.builder()
                 .name(cartItem.getProduct().getName())
                 .subtotal(cartItem.getSubtotal())
@@ -59,9 +59,9 @@ public class CartServiceImpl implements CartService {
                 .inventoryStatus(cartItem.getInventoryStatus())
                 .build()).toList();
     }
-    public InventoryStatus getInventoryStatus(CartItemEntity cartItem){
-        return cartItem.getInventory().getInventoryStatus();
-    }
+//    public InventoryStatus getInventoryStatus(CartItemEntity cartItem){
+//        return cartItem.getInventory().getInventoryStatus();
+//    }
     @Override
     @Transactional(rollbackFor = Exception.class)
     public CartItemPriceResponse updateCartItemQuantity(String cartItemId, int quantityUpdate) {
@@ -341,7 +341,7 @@ public class CartServiceImpl implements CartService {
               .quantity(quantity)
               .subtotal(subtotal)
               .inventoryStatus(inventory.getInventoryStatus())
-              .inventory(inventory)
+//              .inventory(inventory)
 //              .deliveryFee(deliveryFee.getBaseFee())
               .build();
       cart.addCartItem(itemEntity);

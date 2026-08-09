@@ -1,6 +1,7 @@
 package com.khang.backendecommerce.newstruc.service.impl;
 
 import com.khang.backendecommerce.infrastructure.common.dto.response.BaseResponse;
+import com.khang.backendecommerce.infrastructure.common.entity.abstractentity.PageResponse;
 import com.khang.backendecommerce.newstruc.dto.request.OrderSummaryRequest;
 import com.khang.backendecommerce.newstruc.dto.response.BannerResponse;
 import com.khang.backendecommerce.newstruc.dto.response.FeaturedCategoryResponse;
@@ -39,13 +40,52 @@ public class StoreFrontServiceImpl implements StoreFrontService {
         List<FeaturedProductResponse> product = productService.getFeaturedProduct();
         List<FeaturedCategoryResponse> categoryList = productService.getFeaturedCategory();
         List<BannerResponse> bannerResponseList = productService.getBanner();
-        return null;
+        return StoreFrontHomeResponse.builder()
+                .bannerResponseList(bannerResponseList)
+                .productResponseList(product)
+                .categoryResponseList(categoryList).build();
     }
 
     @Override
+    public BaseResponse<?> advanceSearchWithSpecificationsProduct(Pageable pageable, String[] product, String[] store, String[] inventory) {
+        if (store != null || inventory != null) {
+            return searchRepository.searchProductByCriteriaWithJoin(pageable, product, store, inventory);
+        }
+        if (product != null) {
+
+            ProductSpecificationsBuilder builder = new ProductSpecificationsBuilder();
+
+            Pattern pattern = Pattern.compile(SEARCH_SPEC_OPERATOR);
+
+
+            for (String s : product) {
+                Matcher matcher = pattern.matcher(s);
+
+                if (matcher.find()) {
+                    builder.with(matcher.group(1), matcher.group(2), matcher.group(4), matcher.group(3), matcher.group(5));
+                }
+            }
+
+
+            Page<ProductEntity> products =
+                    productRepo.findAll(
+                            Objects.requireNonNull(
+                                    builder.build()
+                            ),
+                            pageable
+                    );
+            return BaseResponse.ofSuccess(PageResponse.of(products.getContent(), pageable, products.getTotalElements())
+            );
+        }
+
+
+        Page<ProductEntity> products = productRepo.findAll(pageable);
+        return BaseResponse.ofSuccess(PageResponse.of(products.getContent(), pageable, products.getTotalElements()));
+    }
+
     public BaseResponse<?> advanceSearchWithSpecificationsProduct(Pageable pageable, String[] product, String [] store) {
         if(product != null && store != null){
-            return searchRepository.searchUserByCriteriaWithJoin(pageable, product, store);
+//            return searchRepository.searchProductByCriteriaWithJoin(pageable, product, store);
 
         }
         if(product != null){

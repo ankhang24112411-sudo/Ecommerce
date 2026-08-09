@@ -16,4 +16,6 @@ public interface DiscountService {
     boolean isSameDiscount(CartEntity cart, String discountName);
 
     DiscountEntity findAndCheckDiscountCustomer(DiscountCustomerEntity discount);
+
+    void clearDiscountCustomer(DiscountCustomerEntity discountCustomer);
 }

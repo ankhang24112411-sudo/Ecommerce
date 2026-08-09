@@ -1,6 +1,7 @@
 package com.khang.backendecommerce.newstruc.repo;
 
 import com.khang.backendecommerce.newstruc.entity.InventoryEntity;
+import com.khang.backendecommerce.newstruc.entity.ProductEntity;
 import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -68,4 +69,5 @@ public interface InventoryRepository extends JpaRepository<InventoryEntity,Strin
    and inventory.availableQuantity -  inventory.reservedQuantity >= quantity
 """)
     List<InventoryEntity> findAllInventoryCandidatesWithEnoughStock(@Param("productId") String productId , int quantity);
-}
+
+

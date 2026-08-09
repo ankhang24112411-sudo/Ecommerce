@@ -33,7 +33,7 @@ public class StoreFrontController {
     @GetMapping("/search")
 
     public  ResponseEntity<BaseResponse<?>> advanceSearchWithSpecificationsProduct(Pageable pageable,
-                                                           @RequestParam(required = false) String[] product, String [] store) {
-        return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(storeFrontService.advanceSearchWithSpecificationsProduct(pageable,product,store), "success"));
+                                                           @RequestParam(required = false) String[] product, String [] store,String[] inventory) {
+        return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(storeFrontService.advanceSearchWithSpecificationsProduct(pageable,product,store, inventory), "success"));
     }
 }

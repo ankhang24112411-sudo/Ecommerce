@@ -5,6 +5,7 @@ import com.khang.backendecommerce.infrastructure.common.enums.PaymentStatus;
 import com.khang.backendecommerce.infrastructure.configuration.CurrentUserProvider;
 import com.khang.backendecommerce.infrastructure.exception.ApplicationErrors;
 import com.khang.backendecommerce.infrastructure.util.AppConst;
+import com.khang.backendecommerce.newstruc.domain.order.service.OrderService;
 import com.khang.backendecommerce.newstruc.dto.request.MockPaymentWebhookRequest;
 import com.khang.backendecommerce.newstruc.entity.OrderEntity;
 import com.khang.backendecommerce.newstruc.entity.PaymentEntity;
@@ -23,6 +24,7 @@ public class PaymentServiceImpl implements PaymentService {
     private final PaymentRepository paymentRepo;
     private final CurrentUserProvider currentUserProvider;
     private final OrderRepository orderRepo;
+    private final OrderService orderService;
     @Override
     public String mockWebhooks(MockPaymentWebhookRequest request) {
         String paymentReference = null  ;
@@ -45,9 +47,11 @@ public class PaymentServiceImpl implements PaymentService {
                      paymentRepo.save(newPayment);
             }
             case PAID ->   {
+
                              order.setPaymentStatus(PaymentStatus.PAID);
                              order.setOrderStatus(OrderStatus.PENDING);
                              payment.setPaymentStatus(PaymentStatus.PAID);
+                             orderService.deleteCartAndUpdateInventoryAfterPaymentSuccess(user,order,payment);
             }
         }
         orderRepo.save(order);

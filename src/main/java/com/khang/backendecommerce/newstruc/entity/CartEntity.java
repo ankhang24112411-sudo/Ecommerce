@@ -47,6 +47,6 @@ public class CartEntity extends AbstractEntity<String> implements Serializable {
         cartItem.setCart(null);
     }
     //TODO ADD TO DBS
-    @Column(name = "delivery_fee")
+    @Column(name = "delivery_amount")
     private BigDecimal deliveryFee;
 }

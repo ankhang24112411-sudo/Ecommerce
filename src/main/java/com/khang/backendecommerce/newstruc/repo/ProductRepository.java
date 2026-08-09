@@ -33,5 +33,17 @@ group by p.id
 order by sum(i.quantity) desc
 """)
     List<String> getFeaturedProduct(Pageable pageable);
+
+    @Query("""
+select p
+from OrderEntity oe
+join oe.subOrders so
+join fetch so.orderItems oi
+join oi.product p
+join fetch p.inventoryList i
+where oe.id =:orderId
+""")
+    List<ProductEntity> getAllProductByOrderId(@Param("orderId") String orderId);
 }
+
 

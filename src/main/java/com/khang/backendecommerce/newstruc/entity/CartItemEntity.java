@@ -38,9 +38,9 @@ public class CartItemEntity extends AbstractEntity<String> implements Serializab
     private InventoryStatus inventoryStatus;
 //TODO new in dbs
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "inventory_id")
-    private InventoryEntity inventory;
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "inventory_id")
+//    private InventoryEntity inventory;
 
 
 

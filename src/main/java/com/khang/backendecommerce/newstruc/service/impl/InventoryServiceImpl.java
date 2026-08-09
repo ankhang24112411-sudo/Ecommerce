@@ -55,7 +55,8 @@ public class InventoryServiceImpl implements InventoryService {
          InventoryNewCartContext context = new InventoryNewCartContext(bestInventory,cheapest);
          return  context;
     }
-    public Map<String, List<InventoryEntity>> findOptimizeInventory(CartEntity cart ,ProductEntity product, int quantity, Map<String, List<InventoryEntity>> inventoriesByProductId){
+    public Map<String, List<InventoryEntity>> findOptimizeInventory(CartEntity cart ,ProductEntity product, int quantity,
+                                                                    Map<String, List<InventoryEntity>> inventoriesByProductId){
         List<InventoryEntity> inventoryList = inventoryRepo.findAllInventoryCandidatesWithEnoughStock(product.getId(), quantity);
 
         if(!inventoriesByProductId.containsKey(product.getId())){

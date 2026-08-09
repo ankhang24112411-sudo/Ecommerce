@@ -47,22 +47,26 @@ public class OrderServiceImpl implements OrderService{
     private final OrderRepository orderRepo;
     private final UserRepository userRepo;
     private final PaymentRepository paymentRepo;
+    private final CartItemRepository cartItemRepo;
+    private final ProductRepository productRepo;
+    private final OrderItemRepository orderItemRepo;
     private static final DateTimeFormatter ORDER_CODE_FORMAT =
             DateTimeFormatter.ofPattern("yyyyMMdd");
 
     private String generateOrderCode() {
         String date = LocalDate.now().format(ORDER_CODE_FORMAT);
-
-        String randomPart = UUID.randomUUID()
-                .toString()
-                .replace("-", "")
-                .substring(0, 8)
-                .toUpperCase();
-
+        String randomPart = UUID.randomUUID().toString().replace("-", "").substring(0, 8).toUpperCase();
         return "ORD-" + date + "-" + randomPart;
     }
+    public void deleteCartAfterOrderAndCOD(CartEntity cart){
+      cartItemRepo.deleteAllByCart_Id(cart.getId());
+      cart.setSubtotal(BigDecimal.ZERO);
+      cart.getCartItemList().clear();
+      cart.setTotalAmount(BigDecimal.ZERO);
+      cart.setDiscount(null);
+    }
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public OrderResponse placeOrder(OrderRequest request) {
         String userId = currentUserProvider.getCurrentUser().getId();
         UserEntity user = userRepo.findByIdWithState(userId).orElseThrow(() -> ApplicationErrors.USER_NOT_FOUND);
@@ -91,11 +95,11 @@ public class OrderServiceImpl implements OrderService{
         Map<String, DeliveryFeeEntity> deliveryFeeEntityByWarehouseStateId = deliveryService.deliveryFeeEntityByWarehousesStateId(warehouseStateIds, state.getId());
 
         List<AllocatedItem> allocatedItemList = findAllocateAndLock(cartItemList, inventoriesByProduct, warehouseStateIds, deliveryFeeEntityByWarehouseStateId, state.getId(), request.getPaymentMethod());
-        return createOrder(allocatedItemList, user, discountCustomer,request.getPaymentMethod());
+        return createOrder(cart , allocatedItemList, user, discountCustomer,request.getPaymentMethod());
 
     }
 
-    private OrderResponse handleOrderCODpaymentMethod(OrderEntity newOrder, List<SubOrderEntity> subOrderList) {
+    private OrderResponse handleOrderCODpaymentMethod(CartEntity cart, OrderEntity newOrder, List<SubOrderEntity> subOrderList) {
         newOrder.setPaymentMethod(PaymentMethod.COD);
         newOrder.setConfirmedAt(Instant.now());
         newOrder.setPaymentStatus(PaymentStatus.UNPAID);
@@ -104,6 +108,7 @@ public class OrderServiceImpl implements OrderService{
         subOrderList.forEach(subOrder -> subOrder.setOrderStatus(OrderStatus.PENDING));
         subOrderList.forEach(newOrder::addSubOrder);
         orderRepo.save(newOrder);
+        deleteCartAfterOrderAndCOD(cart);
         return convertToOrderResponse(null,newOrder,subOrderList);
     }
 
@@ -160,7 +165,7 @@ public class OrderServiceImpl implements OrderService{
       }
 
 
-    private OrderResponse createOrder(List<AllocatedItem> allocatedItemList, UserEntity user, DiscountCustomerEntity discountCustomer, PaymentMethod paymentMethod) {
+    private OrderResponse createOrder(CartEntity cart , List<AllocatedItem> allocatedItemList, UserEntity user, DiscountCustomerEntity discountCustomer, PaymentMethod paymentMethod) {
 
        OrderEntity orderEntity = OrderEntity.builder()
                .customer(user)
@@ -191,6 +196,7 @@ public class OrderServiceImpl implements OrderService{
                            log.info("Before mapping : product {}", item.product());
                        })
                        .map(item -> OrderItem.builder()
+                               .inventory(item.inventory())
                                .product(item.product())
                                .productName(item.product().getName())
                                .sku(item.product().getSku())
@@ -235,6 +241,7 @@ public class OrderServiceImpl implements OrderService{
                 .build();
         if(discountCustomer != null) {
             discountCalculate = discountService.calculateDiscount(discountCustomer, context);
+            discountService.clearDiscountCustomer(discountCustomer);
         }
 
         BigDecimal totalFinalAmount = orderSubTotal.add(totalDeliveryAmountNoDuplicate).subtract(discountCalculate);
@@ -246,9 +253,10 @@ public class OrderServiceImpl implements OrderService{
         orderEntity.setOrderCode(generateOrderCode());
 
         if(paymentMethod.equals(PaymentMethod.COD)){
-            return handleOrderCODpaymentMethod(orderEntity, subOrderList);
+            return handleOrderCODpaymentMethod(cart ,orderEntity, subOrderList);
         }
           return handleOrderOnlineBanking(user ,orderEntity, subOrderList);
+
     }
 
     private OrderResponse handleOrderOnlineBanking(UserEntity user , OrderEntity newOrder, List<SubOrderEntity> subOrderList) {
@@ -314,6 +322,31 @@ public class OrderServiceImpl implements OrderService{
 
         }
         return result;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void deleteCartAndUpdateInventoryAfterPaymentSuccess(UserEntity user, OrderEntity order, PaymentEntity payment) {
+        CartEntity cart = user.getCart();
+     List<OrderItem> orderItemListInOrder = orderItemRepo.getAllOrderItemsByOrderId(order.getId());
+
+     List<CartItemEntity> cartItemListInCart = cartItemRepo.findAllCartItem(cart.getId());
+     Map<ProductEntity,Integer> productByQuantityInCart = cartItemListInCart.stream()
+             .collect(Collectors.toMap(CartItemEntity::getProduct, CartItemEntity::getQuantity));
+//TODO : handle the situation that user add more quantity for a product that was checked out in Order
+     for(var orderItem : orderItemListInOrder){
+         ProductEntity product = orderItem.getProduct();
+         int quantity = orderItem.getQuantity();
+         int quantityInCart = productByQuantityInCart.get(product);
+         InventoryEntity inventory = orderItem.getInventory();
+
+         if(quantityInCart == quantity){
+             inventory.updateReservedQuantityAndAvailableQuantity(quantity);
+         }
+         else if (quantityInCart )
+     }
+//     List<InventoryEntity> inventoryInOrder = productListInOrder.stream().map(product -> product.getInventoryList())
+//        deleteCartAfterOrder(cart);
     }
 
 }

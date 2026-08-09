@@ -72,4 +72,9 @@ public class DiscountServiceImpl implements DiscountService {
     public DiscountEntity findAndCheckDiscountCustomer(DiscountCustomerEntity discount) {
     return null;
     }
+
+    @Override
+    public void clearDiscountCustomer(DiscountCustomerEntity discountCustomer) {
+        discountCustomer.setDiscountQuantity(-1);
+    }
 }

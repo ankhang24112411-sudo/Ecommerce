@@ -36,4 +36,7 @@ public class OrderItem extends AbstractEntity<String> implements Serializable {
 
     @Column(name ="quantity")
     private Integer quantity;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name= "inventory_id")
+    private InventoryEntity inventory;
 }
