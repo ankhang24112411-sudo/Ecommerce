@@ -8,13 +8,8 @@ import org.springframework.stereotype.Component;
 public class ConfirmedState implements SubOrderState {
 
     @Override
-    public void nextState(SubOrderEntity subOrder) {
+    public void startPicking(SubOrderEntity subOrder) {
         subOrder.setOrderStatus(OrderStatus.PICKING);
-    }
-
-    @Override
-    public void previousState(SubOrderEntity subOrder) {
-        subOrder.setOrderStatus(OrderStatus.PENDING);
     }
 
     @Override

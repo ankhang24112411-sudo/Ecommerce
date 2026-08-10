@@ -8,12 +8,10 @@ import org.springframework.stereotype.Component;
 public class PendingState implements SubOrderState {
 
     @Override
-    public void nextState(SubOrderEntity subOrder) {
+    public void confirm(SubOrderEntity subOrder) {
         subOrder.setOrderStatus(OrderStatus.CONFIRMED);
     }
-    @Override
-    public void previousState(SubOrderEntity subOrder) {
-    }
+
     @Override
     public OrderStatus getCurrentState(SubOrderEntity subOrder) {
         return subOrder.getOrderStatus();

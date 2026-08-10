@@ -5,17 +5,7 @@ import com.khang.backendecommerce.newstruc.entity.SubOrderEntity;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ShippingState implements SubOrderState {
-
-    @Override
-    public void delivered(SubOrderEntity subOrder) {
-        subOrder.setOrderStatus(OrderStatus.DELIVERED);
-    }
-
-    @Override
-    public void failed(SubOrderEntity subOrder) {
-        subOrder.setOrderStatus(OrderStatus.FAILED);
-    }
+public class ReattemptState implements SubOrderState {
 
     @Override
     public OrderStatus getCurrentState(SubOrderEntity subOrder) {
