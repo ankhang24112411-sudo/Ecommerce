@@ -89,11 +89,12 @@ public class SubOrderManagementServiceImpl implements SubOrderManagementService 
              inventory.updateQuantityWhenSubOrderRejectOrRefund(orderItem.getQuantity());
       });
     OrderEntity order = subOrder.getOrder();
-    BigDecimal payableAmount = order.getOrderTotalAmount().subtract(subOrder.getSubTotal().add(subOrder.getDeliveryFee()));
+    BigDecimal refundAmount = subOrder.getSubTotal().add(subOrder.getDeliveryFee());
+    BigDecimal payableAmount = order.getOrderTotalAmount().subtract(refundAmount);
     order.setPayableAmount(payableAmount);
     order.setOrderResult(OrderResult.PARTIAL_SUCCESS);
     if(order.getPaymentMethod().equals(PaymentMethod.BANK_TRANSFER)) {
-        refundService.handleRefundWhenSubOrderReject( subOrder,  order);
+        refundService.handleRefundWhenSubOrderReject( subOrder,  order,user, refundAmount);
     }
         return null;
 

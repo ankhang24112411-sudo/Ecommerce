@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -19,6 +20,7 @@ import java.time.Instant;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@SuperBuilder
 @Entity
 @Table(name ="tbl_refund")
 public class RefundEntity extends AbstractEntity<String> implements Serializable {
@@ -50,7 +52,8 @@ public class RefundEntity extends AbstractEntity<String> implements Serializable
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     @Column(name = "refund_status", columnDefinition = "payment_status")
     private RefundStatus status;
-    @Column(name = "refund_reason", nullable = false, precision = 15, scale = 2)
+
+    @Column(name = "refund_reason")
 
     private String reason;
     @Column(name = "provider_reference")
