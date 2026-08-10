@@ -42,8 +42,8 @@ public class PaymentEntity  extends AbstractEntity<String> implements Serializab
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     @Column(name = "payment_status", columnDefinition = "payment_status")
     private PaymentStatus paymentStatus;
-
-    @Column(name ="refunded_amount")
-    private Integer refundedAmount;
+//TODO DELETE
+//    @Column(name ="refunded_amount")
+//    private Integer refundedAmount;
 
 }

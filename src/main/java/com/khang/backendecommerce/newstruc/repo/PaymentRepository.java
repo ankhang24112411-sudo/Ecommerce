@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -19,4 +20,6 @@ public interface PaymentRepository extends JpaRepository<PaymentEntity,String> {
             }
     )
     Optional<PaymentEntity> findByPaymentReferenceAndUser_Id(String paymentReference , String userId);
+
+    List<PaymentEntity> findByUser_IdAndOrder_Id(String userId , String orderId);
 }

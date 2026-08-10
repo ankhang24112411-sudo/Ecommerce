@@ -92,7 +92,6 @@ public class OrderEntity extends AbstractEntity<String> implements Serializable 
         subOrders.add(subOrder);
         subOrder.setOrder(this);
     }
-    //TODO add to DBS
     @Column(name = "address")
     private String address;
 

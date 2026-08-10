@@ -5,6 +5,7 @@ import com.khang.backendecommerce.infrastructure.common.entity.abstractentity.Pa
 import com.khang.backendecommerce.infrastructure.common.enums.InventoryStatus;
 import com.khang.backendecommerce.infrastructure.common.enums.OrderResult;
 import com.khang.backendecommerce.infrastructure.common.enums.OrderStatus;
+import com.khang.backendecommerce.infrastructure.common.enums.PaymentMethod;
 import com.khang.backendecommerce.infrastructure.configuration.CurrentUserProvider;
 import com.khang.backendecommerce.infrastructure.exception.ApplicationErrors;
 import com.khang.backendecommerce.newstruc.dto.response.store.OrderItemInSubOrderResponse;
@@ -12,8 +13,10 @@ import com.khang.backendecommerce.newstruc.dto.response.store.SubOrderPendingRes
 import com.khang.backendecommerce.newstruc.dto.response.store.SubOrderStatusResponse;
 import com.khang.backendecommerce.newstruc.entity.*;
 import com.khang.backendecommerce.newstruc.repo.SubOrderRepository;
+import com.khang.backendecommerce.newstruc.service.RefundService;
 import com.khang.backendecommerce.newstruc.service.SubOrderManagementService;
 import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.Order;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,7 +38,7 @@ import java.util.stream.Collectors;
 public class SubOrderManagementServiceImpl implements SubOrderManagementService {
    private final CurrentUserProvider currentUserProvider;
    private final SubOrderRepository subOrderRepo;
-
+   private final RefundService refundService;
     @Override
     public BaseResponse<?> getAllPendingSuborders(Pageable pageable) {
         UserEntity user  = currentUserProvider.getCurrentUser();
@@ -86,11 +89,14 @@ public class SubOrderManagementServiceImpl implements SubOrderManagementService 
              inventory.updateQuantityWhenSubOrderRejectOrRefund(orderItem.getQuantity());
       });
     OrderEntity order = subOrder.getOrder();
-    BigDecimal payableAmount = order.getOrderTotalAmount().min(subOrder.getSubTotal().add(subOrder.getDeliveryFee()));
+    BigDecimal payableAmount = order.getOrderTotalAmount().subtract(subOrder.getSubTotal().add(subOrder.getDeliveryFee()));
     order.setPayableAmount(payableAmount);
     order.setOrderResult(OrderResult.PARTIAL_SUCCESS);
-
+    if(order.getPaymentMethod().equals(PaymentMethod.BANK_TRANSFER)) {
+        refundService.handleRefundWhenSubOrderReject( subOrder,  order);
+    }
         return null;
+
     }
 
     private PageResponse<?> convertToPageResponse(Page<SubOrderEntity> pendingSubOrder, Pageable pageable) {
