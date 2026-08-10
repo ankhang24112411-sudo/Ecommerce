@@ -60,9 +60,7 @@ public class OrderServiceImpl implements OrderService{
     }
     public void deleteCartAfterOrderAndCOD(CartEntity cart){
       cartItemRepo.deleteAllByCart_Id(cart.getId());
-      cart.setSubtotal(BigDecimal.ZERO);
       cart.getCartItemList().clear();
-      cart.setTotalAmount(BigDecimal.ZERO);
       cart.setDiscount(null);
     }
     @Override
@@ -189,6 +187,7 @@ public class OrderServiceImpl implements OrderService{
                        .store(firstItem.product().getStore())
                        .deliveryRoute(firstItem.deliveryRoute())
                        .deliveryFee(firstItem.deliveryFee())
+                       .createdAt(Instant.now())
                        .build();
 
                List<OrderItem> orderItemList = storeItems.stream()
@@ -251,7 +250,7 @@ public class OrderServiceImpl implements OrderService{
         orderEntity.setDiscountTotalAmount(discountCalculate);
         orderEntity.setOrderTotalAmount(totalFinalAmount);
         orderEntity.setOrderCode(generateOrderCode());
-
+        orderEntity.setAddress(user.getAddress());
         if(paymentMethod.equals(PaymentMethod.COD)){
             return handleOrderCODpaymentMethod(cart ,orderEntity, subOrderList);
         }
@@ -334,28 +333,33 @@ public class OrderServiceImpl implements OrderService{
         Map<String, CartItemEntity> cartItemsByProductId =
                 cartItemListInCart.stream().collect(Collectors.toMap(item -> item.getProduct().getId(), item -> item));
 
-     for(var orderItem : orderItemListInOrder){
+     for(var orderItem : orderItemListInOrder) {
          ProductEntity product = orderItem.getProduct();
          int quantityInOrder = orderItem.getQuantity();
          InventoryEntity inventory = orderItem.getInventory();
+
          inventory.updateReservedQuantityAndAvailableQuantity(quantityInOrder);
 
          CartItemEntity cartItem = cartItemsByProductId.get(product.getId());
-         Integer quantityInCart = cartItem.getQuantity();
-         if(quantityInCart == null){
+         if(cartItem == null){
              continue;
          }
-
-        else if(quantityInCart == quantityInOrder){
+         Integer quantityInCart = cartItem.getQuantity();
+         if (quantityInCart == null) {
+             continue;
+         }
+         else if (quantityInCart == quantityInOrder) {
              cart.removeCartItem(cartItem);
          }
-         // TODO : handle situation that quantity in cart not matching the quantity when checked out in order
-         if(quantityInCart > quantityInOrder) {
+
+        else   if (quantityInCart > quantityInOrder) {
              cartItem.setQuantity(quantityInCart - quantityInOrder);
          }
+         if (quantityInCart <= quantityInOrder){
+             cart.removeCartItem(cartItem);
+         }
      }
-//     List<InventoryEntity> inventoryInOrder = productListInOrder.stream().map(product -> product.getInventoryList())
-//        deleteCartAfterOrder(cart);
+
     }
 
 }

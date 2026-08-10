@@ -11,14 +11,14 @@ import java.math.BigDecimal;
 public class CartItemResponse {
     private String image;
     private String name ;
-    private BigDecimal subtotal;
+    private BigDecimal unitPrice;
     private Integer quantity;
     private InventoryStatus inventoryStatus;
     @Builder
-    public CartItemResponse(String image, String name, BigDecimal subtotal, Integer quantity, InventoryStatus inventoryStatus) {
+    public CartItemResponse(String image, String name, BigDecimal unitPrice, Integer quantity, InventoryStatus inventoryStatus) {
         this.image = image;
         this.name = name;
-        this.subtotal = subtotal;
+        this.unitPrice = unitPrice;
         this.quantity = quantity;
         this.inventoryStatus = inventoryStatus;
     }

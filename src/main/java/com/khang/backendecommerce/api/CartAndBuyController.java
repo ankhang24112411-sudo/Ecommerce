@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/checking-out")
+@RequestMapping("v1/checking-out")
 @Validated
 @Slf4j
 @Tag(name ="CART- AND - BUY - CONTROLLER")

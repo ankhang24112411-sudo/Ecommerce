@@ -39,7 +39,7 @@ public interface InventoryRepository extends JpaRepository<InventoryEntity,Strin
    from InventoryEntity inventory
    where inventory.product.id in :productIds
 """)
-   List<InventoryEntity> findAllInventoryCandidates(@Param("productIds") Collection<String> productIds);
+    List<InventoryEntity> findAllInventoryCandidates(@Param("productIds") Collection<String> productIds);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @EntityGraph(
@@ -53,7 +53,7 @@ public interface InventoryRepository extends JpaRepository<InventoryEntity,Strin
    from InventoryEntity inventory
    where inventory.product.id in :productIds
 """)
-    List<InventoryEntity>findAllInventoryCandidatesWithoutLock (@Param("productIds") Collection<String> productIds);
+    List<InventoryEntity> findAllInventoryCandidatesWithoutLock(@Param("productIds") Collection<String> productIds);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @EntityGraph(
@@ -68,6 +68,7 @@ public interface InventoryRepository extends JpaRepository<InventoryEntity,Strin
    where inventory.product.id =: productId
    and inventory.availableQuantity -  inventory.reservedQuantity >= quantity
 """)
-    List<InventoryEntity> findAllInventoryCandidatesWithEnoughStock(@Param("productId") String productId , int quantity);
+    List<InventoryEntity> findAllInventoryCandidatesWithEnoughStock(@Param("productId") String productId, int quantity);
+}
 
 

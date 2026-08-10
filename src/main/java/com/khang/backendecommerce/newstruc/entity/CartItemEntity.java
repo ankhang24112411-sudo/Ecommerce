@@ -29,8 +29,9 @@ public class CartItemEntity extends AbstractEntity<String> implements Serializab
     @Column(name = "quantity")
     private Integer quantity;
 
-    @Column(name = "subtotal")
-    private BigDecimal subtotal;
+
+//    @Column(name = "subtotal")
+//    private BigDecimal subtotal;
 
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
@@ -38,12 +39,14 @@ public class CartItemEntity extends AbstractEntity<String> implements Serializab
     private InventoryStatus inventoryStatus;
 //TODO new in dbs
 
+//     @Column(name = "unite_price")
+//    private BigDecimal unitPrice;
 //    @ManyToOne(fetch = FetchType.LAZY)
 //    @JoinColumn(name = "inventory_id")
 //    private InventoryEntity inventory;
 
 
-
+//
 //    @ManyToOne(fetch = FetchType.LAZY)
 //    @JoinColumn(name = "delivery_fee")
 //    private BigDecimal deliveryFee;

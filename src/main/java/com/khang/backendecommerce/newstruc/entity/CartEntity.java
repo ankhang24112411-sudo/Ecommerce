@@ -25,12 +25,12 @@ public class CartEntity extends AbstractEntity<String> implements Serializable {
 
 
 
-    @Column(name ="subtotal" , precision = 12 , scale = 2)
-    private BigDecimal subtotal = BigDecimal.ZERO;
+//    @Column(name ="subtotal" , precision = 12 , scale = 2)
+//    private BigDecimal subtotal = BigDecimal.ZERO;
 
 
-    @Column(name = "total_amount" , precision = 12 , scale = 2)
-    private BigDecimal totalAmount = BigDecimal.ZERO;
+//    @Column(name = "total_amount" , precision = 12 , scale = 2)
+//    private BigDecimal totalAmount = BigDecimal.ZERO;
 
         @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "discount_id")
@@ -47,6 +47,6 @@ public class CartEntity extends AbstractEntity<String> implements Serializable {
         cartItem.setCart(null);
     }
     //TODO ADD TO DBS
-    @Column(name = "delivery_amount")
-    private BigDecimal deliveryFee;
+//    @Column(name = "delivery_amount")
+//    private BigDecimal deliveryFee;
 }

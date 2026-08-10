@@ -4,6 +4,7 @@ import com.khang.backendecommerce.infrastructure.common.entity.abstractentity.Ab
 import com.khang.backendecommerce.infrastructure.common.enums.OrderStatus;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -15,10 +16,9 @@ import java.util.List;
 
 @Getter
 @Setter
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
 @Entity
+@SuperBuilder
+@NoArgsConstructor
 @Table(name ="tbl_sub_order")
 public class SubOrderEntity extends AbstractEntity<String> implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)

@@ -47,5 +47,17 @@ where cartItem.cart.id = :cartId
         order by cartItem.id
         """)
     List<CartItemEntity> findAllCartItem(@Param("cartId") String cartId);
-
+    @EntityGraph(
+            type = EntityGraph.EntityGraphType.FETCH,
+            attributePaths = {
+                    "product"
+            }
+    )
+    @Query("""
+        select cartItem
+        from CartItemEntity cartItem
+        where cartItem.cart.id = :cartId
+        order by cartItem.id
+        """)
+    List<CartItemEntity> findAllCartItemInGetAllWithProduct(@Param("cartId") String cartId);
 }

@@ -66,6 +66,8 @@ public class OrderEntity extends AbstractEntity<String> implements Serializable 
     @Column(name = "payment_status", columnDefinition = "payment_status" )
     private PaymentStatus paymentStatus;
 
+
+
     @Column(name = "delivered_at")
     private Instant deliveredAt;
 
@@ -89,4 +91,7 @@ public class OrderEntity extends AbstractEntity<String> implements Serializable 
         subOrders.add(subOrder);
         subOrder.setOrder(this);
     }
+    //TODO add to DBS
+    @Column(name = "address")
+    private String address;
 }

@@ -40,7 +40,7 @@ Select cart
 From CartEntity cart
 where CartEntity.user.id =:userId
 """)
-    Optional<CartEntity> findCartAndCartItemsByUserId(@Param("userId") String userId);
+    CartEntity findCartAndCartItemsByUserId(@Param("userId") String userId);
 
 //@Query(value = """
 //

@@ -65,15 +65,7 @@ public class StoreFrontServiceImpl implements StoreFrontService {
                     builder.with(matcher.group(1), matcher.group(2), matcher.group(4), matcher.group(3), matcher.group(5));
                 }
             }
-
-
-            Page<ProductEntity> products =
-                    productRepo.findAll(
-                            Objects.requireNonNull(
-                                    builder.build()
-                            ),
-                            pageable
-                    );
+            Page<ProductEntity> products = productRepo.findAll(Objects.requireNonNull(builder.build()), pageable);
             return BaseResponse.ofSuccess(PageResponse.of(products.getContent(), pageable, products.getTotalElements())
             );
         }
