@@ -8,6 +8,10 @@ import com.khang.backendecommerce.infrastructure.common.enums.OrderStatus;
 import com.khang.backendecommerce.infrastructure.common.enums.PaymentMethod;
 import com.khang.backendecommerce.infrastructure.configuration.CurrentUserProvider;
 import com.khang.backendecommerce.infrastructure.exception.ApplicationErrors;
+import com.khang.backendecommerce.newstruc.domain.order.OrderResultCalculation;
+import com.khang.backendecommerce.newstruc.domain.suborder.SubOrderState;
+import com.khang.backendecommerce.newstruc.domain.suborder.config.SubOrderStateContext;
+import com.khang.backendecommerce.newstruc.domain.suborder.config.SubOrderStateService;
 import com.khang.backendecommerce.newstruc.dto.response.store.OrderItemInSubOrderResponse;
 import com.khang.backendecommerce.newstruc.dto.response.store.SubOrderPendingResponse;
 import com.khang.backendecommerce.newstruc.dto.response.store.SubOrderStatusResponse;
@@ -39,6 +43,9 @@ public class SubOrderManagementServiceImpl implements SubOrderManagementService 
    private final CurrentUserProvider currentUserProvider;
    private final SubOrderRepository subOrderRepo;
    private final RefundService refundService;
+   private final SubOrderStateContext subOrderStateContext;
+   private final SubOrderStateService subOrderStateService;
+   private final OrderResultCalculation orderResultCalculation;
     @Override
     public BaseResponse<?> getAllPendingSuborders(Pageable pageable) {
         UserEntity user  = currentUserProvider.getCurrentUser();
@@ -60,13 +67,14 @@ public class SubOrderManagementServiceImpl implements SubOrderManagementService 
       UserEntity user = validateShopOwnerToSuborder( subOrderId);
 
       SubOrderEntity subOrder = subOrderRepo.findSubOrder(user.getId(), subOrderId);
-      if(!subOrder.getOrderStatus().equals(OrderStatus.PENDING)){
-          throw ApplicationErrors.INVALID_ORDER_STATUS;
-      }
-      subOrder.setOrderStatus(OrderStatus.CONFIRMED);
+
+       subOrderStateService.confirm(subOrder);
+        OrderEntity order = subOrder.getOrder();
+        order.setOrderResult(orderResultCalculation.calculate(order.getSubOrders()));
+
         return SubOrderStatusResponse.builder()
                 .subOrderId(subOrderId)
-                .orderStatus(OrderStatus.CONFIRMED)
+                .orderStatus(subOrder.getOrderStatus())
                 .confirmedAt(Instant.now())
                 .build();
     }
@@ -76,28 +84,37 @@ public class SubOrderManagementServiceImpl implements SubOrderManagementService 
     public SubOrderStatusResponse rejectSubOrders(String subOrderId) {
         UserEntity user = validateShopOwnerToSuborder( subOrderId);
         SubOrderEntity subOrder = subOrderRepo.findSubOrder(user.getId(), subOrderId);
-      if(!subOrder.getOrderStatus().equals(OrderStatus.PENDING)){
-          throw ApplicationErrors.INVALID_ORDER_STATUS;
-      }
+//      if(!subOrder.getOrderStatus().equals(OrderStatus.PENDING)){
+//          throw ApplicationErrors.INVALID_ORDER_STATUS;
+//      }
+//
+//      subOrder.setOrderStatus(OrderStatus.FAILED);
+        subOrderStateService.reject(subOrder);
 
-      subOrder.setOrderStatus(OrderStatus.FAILED);
-      subOrder.setRejectedAt(Instant.now());
+
+        subOrder.setRejectedAt(Instant.now());
       subOrder.setRejectionReason("REJECT FROM SHOP OWNER");
        subOrder.getOrderItems()
               .forEach(orderItem ->{
              InventoryEntity inventory =  orderItem.getInventory();
              inventory.updateQuantityWhenSubOrderRejectOrRefund(orderItem.getQuantity());
       });
+
     OrderEntity order = subOrder.getOrder();
-    BigDecimal refundAmount = subOrder.getSubTotal().add(subOrder.getDeliveryFee());
+    order.setOrderResult(orderResultCalculation.calculate(order.getSubOrders()));
+
+
+        BigDecimal refundAmount = subOrder.getSubTotal().add(subOrder.getDeliveryFee());
     BigDecimal payableAmount = order.getOrderTotalAmount().subtract(refundAmount);
     order.setPayableAmount(payableAmount);
-    order.setOrderResult(OrderResult.PARTIAL_SUCCESS);
     if(order.getPaymentMethod().equals(PaymentMethod.BANK_TRANSFER)) {
         refundService.handleRefundWhenSubOrderReject( subOrder,  order,user, refundAmount);
     }
-        return null;
-
+        return SubOrderStatusResponse.builder()
+                .subOrderId(subOrderId)
+                .orderStatus(subOrder.getOrderStatus())
+                .confirmedAt(Instant.now())
+                .build();
     }
 
     private PageResponse<?> convertToPageResponse(Page<SubOrderEntity> pendingSubOrder, Pageable pageable) {

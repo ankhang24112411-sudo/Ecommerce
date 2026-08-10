@@ -37,7 +37,7 @@ public class CartItemEntity extends AbstractEntity<String> implements Serializab
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     @Column(name = "inventory_status", columnDefinition = "inventory_status")
     private InventoryStatus inventoryStatus;
-//TODO new in dbs
+//TODO DELETE IN DBS
 
 //     @Column(name = "unite_price")
 //    private BigDecimal unitPrice;

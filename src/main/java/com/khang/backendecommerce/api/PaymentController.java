@@ -21,6 +21,7 @@ public class PaymentController {
     public ResponseEntity<BaseResponse<String>> mockingWebhooks(@RequestBody MockPaymentWebhookRequest request){
         return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(paymentService.mockWebhooks(request), "ok"));
     }
+    @PostMapping("/refund")
     public ResponseEntity<BaseResponse<?>> mockingWebhooksRefundPayment(@RequestBody MockRefundWebhookRequest request){
         return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(paymentService.mockingWebhooksRefundPayment(request), "ok"));
     }

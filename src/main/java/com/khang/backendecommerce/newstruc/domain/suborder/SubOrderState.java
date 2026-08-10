@@ -30,12 +30,12 @@ public interface SubOrderState {
     default void reattempt(SubOrderEntity subOrder) {
         throw invalidActioning(subOrder, "REATTEMPT");
     }
+    default void reject(SubOrderEntity subOrder){
 
+    }
     OrderStatus getCurrentState(SubOrderEntity subOrder);
 
-    private RuntimeException invalidActioning(
-            SubOrderEntity subOrder,
-            String action) {
+    private RuntimeException invalidActioning(SubOrderEntity subOrder, String action) {
         return new IllegalStateException("Action " + action + " is not allowed when SubOrder status is " + subOrder.getOrderStatus());
     }
 }
