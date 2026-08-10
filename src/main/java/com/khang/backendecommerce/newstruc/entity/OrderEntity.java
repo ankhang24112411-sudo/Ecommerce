@@ -1,6 +1,7 @@
 package com.khang.backendecommerce.newstruc.entity;
 
 import com.khang.backendecommerce.infrastructure.common.entity.abstractentity.AbstractEntity;
+import com.khang.backendecommerce.infrastructure.common.enums.OrderResult;
 import com.khang.backendecommerce.infrastructure.common.enums.OrderStatus;
 import com.khang.backendecommerce.infrastructure.common.enums.PaymentMethod;
 import com.khang.backendecommerce.infrastructure.common.enums.PaymentStatus;
@@ -94,4 +95,12 @@ public class OrderEntity extends AbstractEntity<String> implements Serializable 
     //TODO add to DBS
     @Column(name = "address")
     private String address;
+
+    @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    @Column(name = "order_result", columnDefinition = "order_result")
+    private OrderResult orderResult;
+
+    @Column(name ="payable_amount")
+    private BigDecimal payableAmount;
 }

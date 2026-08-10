@@ -1,5 +1,6 @@
 package com.khang.backendecommerce.newstruc.domain.order.service;
 
+import com.khang.backendecommerce.infrastructure.common.enums.OrderResult;
 import com.khang.backendecommerce.infrastructure.common.enums.OrderStatus;
 import com.khang.backendecommerce.infrastructure.common.enums.PaymentMethod;
 import com.khang.backendecommerce.infrastructure.common.enums.PaymentStatus;
@@ -249,8 +250,10 @@ public class OrderServiceImpl implements OrderService{
         orderEntity.setDeliveryFee(totalDeliveryAmountNoDuplicate);
         orderEntity.setDiscountTotalAmount(discountCalculate);
         orderEntity.setOrderTotalAmount(totalFinalAmount);
+        orderEntity.setPayableAmount(totalFinalAmount);
         orderEntity.setOrderCode(generateOrderCode());
         orderEntity.setAddress(user.getAddress());
+        orderEntity.setOrderResult(OrderResult.PENDING);
         if(paymentMethod.equals(PaymentMethod.COD)){
             return handleOrderCODpaymentMethod(cart ,orderEntity, subOrderList);
         }

@@ -31,6 +31,7 @@ public class PaymentServiceImpl implements PaymentService {
         UserEntity user = currentUserProvider.getCurrentUser();
         PaymentEntity payment = paymentRepo.findByPaymentReferenceAndUser_Id(request.paymentReference(), request.userId())
                 .orElseThrow(() -> ApplicationErrors.PAYMENT_REFERENCE_CODE_NOT_FOUND);
+//        if(payment.)
         OrderEntity order = payment.getOrder();
         switch (request.paymentStatus()){
             case FAILED ->  {

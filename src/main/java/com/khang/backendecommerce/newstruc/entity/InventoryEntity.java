@@ -60,4 +60,8 @@ public class InventoryEntity extends AbstractEntity<String> implements Serializa
     public void updateQuantityWhenPaymentSuccessOrCOD(int orderQuantity){
         reservedQuantity -=orderQuantity;
     }
+    public void updateQuantityWhenSubOrderRejectOrRefund(int orderQuantity){
+        availableQuantity +=orderQuantity;
+    }
+
 }
