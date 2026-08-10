@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface StoreRepository extends JpaRepository<StoreEntity,String> {
-//    boolean existsByOwner_Id(String userId);
+    boolean existsByOwner_Id(String userId);
 }

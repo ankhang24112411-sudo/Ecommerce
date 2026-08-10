@@ -18,11 +18,11 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("v1/seller/suborder-management")
 @Validated
 @Slf4j
-@Tag(name ="SUB-ORDER-MANAGEMENT")
+@Tag(name ="SUB-ORDER-MANAGEMENT-CONTROLLER")
 @RequiredArgsConstructor
 public class SubOrderManagementController {
     private final SubOrderManagementService subOrderManagementService;
-    @GetMapping
+    @GetMapping("/")
     public ResponseEntity<BaseResponse<?>> getAllPendingSuborders(Pageable pageable){
         return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(subOrderManagementService.getAllPendingSuborders(pageable), "success"));
     }
@@ -32,10 +32,10 @@ public class SubOrderManagementController {
     }
         @PatchMapping("/{subOrderId}/reject")
         public ResponseEntity<BaseResponse<?>> rejectSubOrders(@PathVariable(required = true)  String subOrderId){
-            return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(subOrderManagementService.rejectSubOrders(subOrderId), "confirm sub-order successfully"));
+            return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(subOrderManagementService.rejectSubOrders(subOrderId), "reject sub-order successfully"));
     }
-    @GetMapping
-    public ResponseEntity<BaseResponse<?>> getTodayDashboard(Pageable pageable){
-        return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(subOrderManagementService.getAllPendingSuborders(pageable), "success"));
+    @GetMapping("/dashboard")
+    public ResponseEntity<BaseResponse<?>> getTodayDashboard(){
+        return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(subOrderManagementService.getTodayDashboard(), "success"));
     }
 }

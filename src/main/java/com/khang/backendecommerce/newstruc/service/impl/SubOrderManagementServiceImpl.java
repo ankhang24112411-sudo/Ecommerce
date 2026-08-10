@@ -15,6 +15,7 @@ import com.khang.backendecommerce.newstruc.domain.suborder.config.SubOrderStateS
 import com.khang.backendecommerce.newstruc.dto.response.store.OrderItemInSubOrderResponse;
 import com.khang.backendecommerce.newstruc.dto.response.store.SubOrderPendingResponse;
 import com.khang.backendecommerce.newstruc.dto.response.store.SubOrderStatusResponse;
+import com.khang.backendecommerce.newstruc.dto.response.store.TotalSubOrderDailyDashboard;
 import com.khang.backendecommerce.newstruc.entity.*;
 import com.khang.backendecommerce.newstruc.repo.SubOrderRepository;
 import com.khang.backendecommerce.newstruc.service.RefundService;
@@ -32,6 +33,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -115,6 +118,18 @@ public class SubOrderManagementServiceImpl implements SubOrderManagementService 
                 .orderStatus(subOrder.getOrderStatus())
                 .confirmedAt(Instant.now())
                 .build();
+    }
+
+    @Override
+    public TotalSubOrderDailyDashboard getTodayDashboard() {
+        String userId = currentUserProvider.getCurrentUser().getId();
+        ZoneId zone = ZoneId.of("Europe/Berlin");
+
+        LocalDate today = LocalDate.now();
+        Instant start = today.atStartOfDay(zone).toInstant();
+        Instant end = today.plusDays(1).atStartOfDay(zone).toInstant();
+
+        return subOrderRepo.getTodayDashboard(userId,start,end);
     }
 
     private PageResponse<?> convertToPageResponse(Page<SubOrderEntity> pendingSubOrder, Pageable pageable) {

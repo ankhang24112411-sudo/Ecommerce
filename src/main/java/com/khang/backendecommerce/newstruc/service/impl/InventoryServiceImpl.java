@@ -1,9 +1,13 @@
 package com.khang.backendecommerce.newstruc.service.impl;
 
+import com.khang.backendecommerce.infrastructure.configuration.CurrentUserProvider;
 import com.khang.backendecommerce.infrastructure.exception.ApplicationErrors;
 import com.khang.backendecommerce.newstruc.dto.response.InventoryNewCartContext;
+import com.khang.backendecommerce.newstruc.dto.response.store.CreateProductRequest;
+import com.khang.backendecommerce.newstruc.dto.response.store.ProductResponse;
 import com.khang.backendecommerce.newstruc.entity.*;
 import com.khang.backendecommerce.newstruc.repo.DeliveryFeeRepository;
+import com.khang.backendecommerce.newstruc.repo.StoreRepository;
 import com.khang.backendecommerce.newstruc.service.DeliveryService;
 import com.khang.backendecommerce.newstruc.repo.InventoryRepository;
 import com.khang.backendecommerce.newstruc.service.InventoryService;
@@ -23,7 +27,9 @@ public class InventoryServiceImpl implements InventoryService {
     private final InventoryRepository inventoryRepo;
     private final DeliveryService deliveryService;
    private final DeliveryFeeRepository deliveryFeeRepo;
-
+   private final CurrentUserProvider currentUserProvider;
+  private final StoreRepository storeRepo;
+  private final WarehouseRepository warehouseRepo;
 //    public void checkProductQuantityUpdate(int quantityUpdate, int inventoryQuantity ) {
 //
 //    }
@@ -65,6 +71,14 @@ public class InventoryServiceImpl implements InventoryService {
         return inventoriesByProductId;
     }
 
+    @Override
+    public ProductResponse createProduct(CreateProductRequest request) {
+    UserEntity user = currentUserProvider.getCurrentUser();
+    if(!storeRepo.existsByOwner_Id(user.getId())){
+        throw ApplicationErrors.ACCESS_DENIED;
+    }
+    WarehouseEntity warehouse = ware
+    }
 
 
     @Override
