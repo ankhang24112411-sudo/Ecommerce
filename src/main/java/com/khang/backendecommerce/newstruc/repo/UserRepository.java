@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface UserRepository extends JpaRepository<UserEntity, Long> {
+public interface UserRepository extends JpaRepository<UserEntity, String> {
     Optional<UserEntity> findByEmail(String email);
     @Query("""
         SELECT DISTINCT u
@@ -36,4 +36,5 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
  where user.id = :userId
 """)
     Optional<UserEntity> findByIdWithState(@Param("userId") String userId);
+
 }

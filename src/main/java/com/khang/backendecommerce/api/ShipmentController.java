@@ -2,6 +2,7 @@ package com.khang.backendecommerce.api;
 
 import com.khang.backendecommerce.infrastructure.common.dto.response.BaseResponse;
 import com.khang.backendecommerce.newstruc.dto.request.MockRefundWebhookRequest;
+import com.khang.backendecommerce.newstruc.dto.request.ShipperPickingRequest;
 import com.khang.backendecommerce.newstruc.service.TrackingService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -21,8 +22,8 @@ public class ShipmentController {
     private final TrackingService TrackingService ;
 
     @PostMapping("/{trackingCode}/pickup")
-    public ResponseEntity<BaseResponse<?>> pickup(@RequestParam String trackingCode) {
-        return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(TrackingService.picking(trackingCode), "ok"));
+    public ResponseEntity<BaseResponse<?>> pickup(@RequestParam String trackingCode, @RequestBody ShipperPickingRequest request) {
+        return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(TrackingService.picking(trackingCode, request), "ok"));
     }
     @PostMapping("/{trackingCode}/shipping")
     public ResponseEntity<BaseResponse<?>> shipping(@RequestParam String trackingCode){
@@ -32,8 +33,17 @@ public class ShipmentController {
     public ResponseEntity<BaseResponse<?>> completed(@RequestParam String trackingCode){
         return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(TrackingService.completed(trackingCode), "ok"));
     }
+    @PostMapping("/{trackingCode}/firstReattempt")
+    public ResponseEntity<BaseResponse<?>> firstReattempt(@RequestParam String trackingCode, String message){
+        return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(TrackingService.firstReattempt(trackingCode), "ok"));
+    }
     @PostMapping("/{trackingCode}/reattempt")
     public ResponseEntity<BaseResponse<?>> reattempt(@RequestParam String trackingCode){
         return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(TrackingService.reattempt(trackingCode), "ok"));
     }
+    @PostMapping("/{trackingCode}/reattempt")
+    public ResponseEntity<BaseResponse<?>> failed(@RequestParam String trackingCode){
+        return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(TrackingService.failed(trackingCode), "ok"));
+    }
+
 }

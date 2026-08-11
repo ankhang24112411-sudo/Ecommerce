@@ -11,8 +11,12 @@ public class ShippingState implements SubOrderState {
     public void delivered(SubOrderEntity subOrder) {
         subOrder.setOrderStatus(OrderStatus.DELIVERED);
     }
+    public void firstReattempt(SubOrderEntity subOrder){
+        subOrder.setOrderStatus(OrderStatus.REATTEMPT);
+    }
 
-    @Override
+
+       @Override
     public void failed(SubOrderEntity subOrder) {
         subOrder.setOrderStatus(OrderStatus.FAILED);
     }

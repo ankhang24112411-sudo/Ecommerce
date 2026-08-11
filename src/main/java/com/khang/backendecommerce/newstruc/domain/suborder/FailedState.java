@@ -8,20 +8,21 @@ import org.springframework.stereotype.Component;
 public class FailedState implements SubOrderState {
 
     public boolean reattemptMaximum(SubOrderEntity subOrder){
-        return subOrder.getAttemptCount() > 2;
+        return subOrder.getAttemptCount() >= 3;
     }
     @Override
     public void returning(SubOrderEntity subOrder) {
-        if(reattemptMaximum(subOrder)){
-            subOrder.setOrderStatus(OrderStatus.FAILED);
-        }
+
         subOrder.setOrderStatus(OrderStatus.RETURNING);
     }
 
-    @Override
-    public void reattempt(SubOrderEntity subOrder) {
-        subOrder.setOrderStatus(OrderStatus.REATTEMPT);
-    }
+//    @Override
+//    public void reattempt(SubOrderEntity subOrder) {
+//        if(reattemptMaximum(subOrder)){
+//            subOrder.setOrderStatus(OrderStatus.FAILED);
+//        }
+//        subOrder.setOrderStatus(OrderStatus.REATTEMPT);
+//    }
 
     @Override
     public OrderStatus getCurrentState(SubOrderEntity subOrder) {
