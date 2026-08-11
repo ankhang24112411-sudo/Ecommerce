@@ -162,5 +162,28 @@ public class TrackingServiceImpl implements TrackingService {
                 .location(deliveryTrackingLog.getLocation())
                 .build();
     }
+
+    @Override
+    public TrackingSubOrderResponse firstReattempt(String trackingCode, String message) {
+        SubOrderEntity subOrder = subOrderRepo.findByTrackingCode(trackingCode);
+        OrderEntity order = subOrder.getOrder();
+
+        DeliveryEntity delivery = trackingRepository.findBySubOrder_Id(subOrder.getId());
+        subOrderStateService.firstReattempt(subOrder);
+
+        DeliveryTrackingLog deliveryTrackingLog = deliveryTrackingLogFactory.create(delivery,subOrder,delivery.getReceiverAddress());
+        deliveryTrackingLog.setMessage(message);
+
+        trackingRepository.save(delivery);
+        trackingLogRepository.save(deliveryTrackingLog);
+        return TrackingSubOrderResponse.builder()
+                .orderCode(order.getOrderCode()).
+                trackingCode(subOrder.getTrackingCode())
+                .message(deliveryTrackingLog.getMessage())
+                .updatedAt(deliveryTrackingLog.getCreatedAt())
+                .status(subOrder.getOrderStatus())
+                .location(deliveryTrackingLog.getLocation())
+                .build();
     }
+}
 

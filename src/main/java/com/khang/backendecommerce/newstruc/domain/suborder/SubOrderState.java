@@ -26,7 +26,9 @@ public interface SubOrderState {
     default void returning(SubOrderEntity subOrder) {
         throw invalidActioning(subOrder, "RETURNING");
     }
+    default void firstReattempt(SubOrderEntity subOrder){
 
+    }
     default void reattempt(SubOrderEntity subOrder) {
         throw invalidActioning(subOrder, "REATTEMPT");
     }

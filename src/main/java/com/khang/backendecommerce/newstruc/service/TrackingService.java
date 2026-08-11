@@ -19,5 +19,5 @@ public interface TrackingService {
 
     TrackingSubOrderResponse failed(String trackingCode,String message);
 
-    TrackingSubOrderResponse firstReattempt(String trackingCode);
+    TrackingSubOrderResponse firstReattempt(String trackingCode, String message);
 }

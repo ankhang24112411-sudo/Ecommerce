@@ -8,8 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
-import tools.jackson.databind.ser.jdk.StringSerializer;
-
+import org.apache.kafka.common.serialization.StringSerializer;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,5 +32,13 @@ public class KafkaProducerConfig {
     @Bean
     public NewTopic confirmAccount(){
         return new NewTopic("confirm-account-topic" , 3 ,(short) 1);
+    }
+    @Bean
+    public NewTopic deliveryNotificationTopic() {
+        return new NewTopic(
+                "delivery-notification-topic",
+                3,
+                (short) 1
+        );
     }
 }
