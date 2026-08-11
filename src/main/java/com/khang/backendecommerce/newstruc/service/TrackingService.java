@@ -11,4 +11,8 @@ public interface TrackingService {
     TrackingSubOrderResponse picking(String trackingCode);
 
     TrackingSubOrderResponse shipping(String trackingCode);
+
+    TrackingSubOrderResponse completed(String trackingCode);
+
+    TrackingSubOrderResponse reattempt(String trackingCode);
 }

@@ -58,7 +58,7 @@ public class TrackingServiceImpl implements TrackingService {
         OrderEntity order = subOrder.getOrder();
         DeliveryEntity delivery = trackingRepository.findBySubOrder_Id(subOrder.getId());
         subOrderStateService.startPicking(subOrder);
-        DeliveryTrackingLog deliveryTrackingLog = deliveryTrackingLogFactory.create(delivery,subOrder,"STORE");
+        DeliveryTrackingLog deliveryTrackingLog = deliveryTrackingLogFactory.create(delivery,subOrder,"WAREHOUSE");
 
         trackingRepository.save(delivery);
         trackingLogRepository.save(deliveryTrackingLog);
@@ -66,7 +66,50 @@ public class TrackingServiceImpl implements TrackingService {
                 .orderCode(order.getOrderCode()).
                 trackingCode(subOrder.getTrackingCode())
                 .message(deliveryTrackingLog.getMessage())
+                .updatedAt(deliveryTrackingLog.getCreatedAt())
+                .status(subOrder.getOrderStatus())
                 .location("STORE")
                 .build();
+    }
+
+    @Override
+    public TrackingSubOrderResponse shipping(String trackingCode) {
+        SubOrderEntity subOrder = subOrderRepo.findByTrackingCode(trackingCode);
+        OrderEntity order = subOrder.getOrder();
+        DeliveryEntity delivery = trackingRepository.findBySubOrder_Id(subOrder.getId());
+        subOrderStateService.startShipping(subOrder);
+        DeliveryTrackingLog deliveryTrackingLog = deliveryTrackingLogFactory.create(delivery,subOrder,"WAREHOUSE");
+
+        trackingRepository.save(delivery);
+        trackingLogRepository.save(deliveryTrackingLog);
+        return TrackingSubOrderResponse.builder()
+                .orderCode(order.getOrderCode()).
+                trackingCode(subOrder.getTrackingCode())
+                .message(deliveryTrackingLog.getMessage())
+                .updatedAt(deliveryTrackingLog.getCreatedAt())
+                .status(subOrder.getOrderStatus())
+                .location(deliveryTrackingLog.getLocation())
+                .build();
+    }
+
+    @Override
+    public TrackingSubOrderResponse completed(String trackingCode) {
+        SubOrderEntity subOrder = subOrderRepo.findByTrackingCode(trackingCode);
+        OrderEntity order = subOrder.getOrder();
+        DeliveryEntity delivery = trackingRepository.findBySubOrder_Id(subOrder.getId());
+        subOrderStateService.delivered(subOrder);
+        DeliveryTrackingLog deliveryTrackingLog = deliveryTrackingLogFactory.create(delivery,subOrder,delivery.getReceiverAddress());
+
+        trackingRepository.save(delivery);
+        trackingLogRepository.save(deliveryTrackingLog);
+        return TrackingSubOrderResponse.builder()
+                .orderCode(order.getOrderCode()).
+                trackingCode(subOrder.getTrackingCode())
+                .message(deliveryTrackingLog.getMessage())
+                .updatedAt(deliveryTrackingLog.getCreatedAt())
+                .status(subOrder.getOrderStatus())
+                .location(deliveryTrackingLog.getLocation())
+                .build();
+
     }
 }

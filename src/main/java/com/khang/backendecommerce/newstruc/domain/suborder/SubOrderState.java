@@ -30,6 +30,9 @@ public interface SubOrderState {
     default void reattempt(SubOrderEntity subOrder) {
         throw invalidActioning(subOrder, "REATTEMPT");
     }
+
+
+
     default void reject(SubOrderEntity subOrder){
 
     }

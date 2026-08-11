@@ -24,8 +24,16 @@ public class ShipmentController {
     public ResponseEntity<BaseResponse<?>> pickup(@RequestParam String trackingCode) {
         return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(TrackingService.picking(trackingCode), "ok"));
     }
-    @PostMapping("/{trackingCode}/pickup")
+    @PostMapping("/{trackingCode}/shipping")
     public ResponseEntity<BaseResponse<?>> shipping(@RequestParam String trackingCode){
         return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(TrackingService.shipping(trackingCode), "ok"));
+    }
+    @PostMapping("/{trackingCode}/completed")
+    public ResponseEntity<BaseResponse<?>> completed(@RequestParam String trackingCode){
+        return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(TrackingService.completed(trackingCode), "ok"));
+    }
+    @PostMapping("/{trackingCode}/reattempt")
+    public ResponseEntity<BaseResponse<?>> reattempt(@RequestParam String trackingCode){
+        return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(TrackingService.reattempt(trackingCode), "ok"));
     }
 }

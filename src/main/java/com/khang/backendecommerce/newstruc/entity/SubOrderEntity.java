@@ -69,4 +69,8 @@ public class SubOrderEntity extends AbstractEntity<String> implements Serializab
 
     @Column(name = "suborder_code")
     private String suborderCode;
+
+    @Column(name = "attempt_count")
+    private Integer attemptCount;
+
 }

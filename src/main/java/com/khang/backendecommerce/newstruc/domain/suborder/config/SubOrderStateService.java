@@ -48,6 +48,7 @@ public class SubOrderStateService {
         SubOrderState state = stateContext.getState(subOrder);
         state.reattempt(subOrder);
     }
+
     @Transactional
     public void reject(SubOrderEntity subOrder){
         SubOrderState state = stateContext.getState(subOrder);
