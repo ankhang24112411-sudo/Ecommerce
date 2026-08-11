@@ -9,36 +9,27 @@ import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
 import org.apache.kafka.common.serialization.StringSerializer;
+import org.springframework.kafka.support.serializer.JacksonJsonSerializer;
+
 import java.util.HashMap;
 import java.util.Map;
 
 @Configuration
 public class KafkaProducerConfig {
+
     @Value("${spring.kafka.bootstrap-servers}")
     private String bootstrapServers;
-    @Bean
-    public ProducerFactory<String, String> producerFactory(){
-        Map<String, Object> config = new HashMap<>();
-        config.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
-        config.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-        config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
 
-        return new DefaultKafkaProducerFactory<>(config);
-    }
     @Bean
-    public KafkaTemplate<String, String> kafkaTemplate() {
+    public ProducerFactory<String, Object> producerFactory() {
+
+        Map<String, Object> props = new HashMap<>();
+        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
+        return new DefaultKafkaProducerFactory<>(props, new StringSerializer(), new JacksonJsonSerializer<>());
+    }
+
+    @Bean
+    public KafkaTemplate<String, Object> kafkaTemplate() {
         return new KafkaTemplate<>(producerFactory());
-    }
-    @Bean
-    public NewTopic confirmAccount(){
-        return new NewTopic("confirm-account-topic" , 3 ,(short) 1);
-    }
-    @Bean
-    public NewTopic deliveryNotificationTopic() {
-        return new NewTopic(
-                "delivery-notification-topic",
-                3,
-                (short) 1
-        );
     }
 }
