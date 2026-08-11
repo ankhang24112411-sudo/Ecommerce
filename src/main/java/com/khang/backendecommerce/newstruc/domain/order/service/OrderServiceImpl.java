@@ -59,6 +59,11 @@ public class OrderServiceImpl implements OrderService{
         String randomPart = UUID.randomUUID().toString().replace("-", "").substring(0, 8).toUpperCase();
         return "ORD-" + date + "-" + randomPart;
     }
+    private String generateSubOrderCode() {
+        String date = LocalDate.now().format(ORDER_CODE_FORMAT);
+        String randomPart = UUID.randomUUID().toString().replace("-", "").substring(0, 8).toUpperCase();
+        return "SUBORD-" + date + "-" + randomPart;
+    }
     public void deleteCartAfterOrderAndCOD(CartEntity cart){
       cartItemRepo.deleteAllByCart_Id(cart.getId());
       cart.getCartItemList().clear();
@@ -141,8 +146,8 @@ public class OrderServiceImpl implements OrderService{
                                         );
                                     }).toList();
                             return new SubOrderResponse(
-                                    subOrder.getId(),
                                     subOrder.getStoreName(),
+                                    subOrder.getSuborderCode(),
                                     subOrder.getOrderStatus(),
                                     subOrder.getSubTotal(),
                                     subOrder.getDeliveryFee(),
@@ -189,6 +194,7 @@ public class OrderServiceImpl implements OrderService{
                        .deliveryRoute(firstItem.deliveryRoute())
                        .deliveryFee(firstItem.deliveryFee())
                        .createdAt(Instant.now())
+                       .suborderCode(generateSubOrderCode())
                        .build();
 
                List<OrderItem> orderItemList = storeItems.stream()

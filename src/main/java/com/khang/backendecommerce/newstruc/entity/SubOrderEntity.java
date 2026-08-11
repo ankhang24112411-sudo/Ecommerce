@@ -64,4 +64,9 @@ public class SubOrderEntity extends AbstractEntity<String> implements Serializab
         orderItems.add(orderItem);
         orderItem.setSubOrder(this);
     }
+    @Column(name = "tracking_code")
+    private String trackingCode;
+
+    @Column(name = "suborder_code")
+    private String suborderCode;
 }

@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -15,6 +16,7 @@ import java.math.BigDecimal;
 
 @Getter
 @Setter
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
@@ -35,15 +37,12 @@ public class DeliveryTrackingLog extends AbstractEntity<String> implements Seria
     private String location ;
 
 
-    @Enumerated(EnumType.STRING)
-    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
-    @Column(name = "old_status", columnDefinition = "order_status")
-    private OrderStatus oldStatus;
+
 
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     @Column(name = "new_status", columnDefinition = "order_status")
-    private OrderStatus newStatus;
+    private OrderStatus status;
 
     @Column(name = "receiver_name")
     private String receiverName;
@@ -56,7 +55,6 @@ public class DeliveryTrackingLog extends AbstractEntity<String> implements Seria
 
     @Column(name = "total_amount")
     private BigDecimal totalAmount;
-//TODO
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sub_order_id")
     private SubOrderEntity subOrder;

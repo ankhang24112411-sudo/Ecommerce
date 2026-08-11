@@ -20,6 +20,7 @@ import com.khang.backendecommerce.newstruc.entity.*;
 import com.khang.backendecommerce.newstruc.repo.SubOrderRepository;
 import com.khang.backendecommerce.newstruc.service.RefundService;
 import com.khang.backendecommerce.newstruc.service.SubOrderManagementService;
+import com.khang.backendecommerce.newstruc.service.TrackingService;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Order;
 import lombok.NonNull;
@@ -49,6 +50,8 @@ public class SubOrderManagementServiceImpl implements SubOrderManagementService 
    private final SubOrderStateContext subOrderStateContext;
    private final SubOrderStateService subOrderStateService;
    private final OrderResultCalculation orderResultCalculation;
+
+   private final TrackingService trackingService;
     @Override
     public BaseResponse<?> getAllPendingSuborders(Pageable pageable) {
         UserEntity user  = currentUserProvider.getCurrentUser();
@@ -74,6 +77,8 @@ public class SubOrderManagementServiceImpl implements SubOrderManagementService 
        subOrderStateService.confirm(subOrder);
         OrderEntity order = subOrder.getOrder();
         order.setOrderResult(orderResultCalculation.calculate(order.getSubOrders()));
+
+        trackingService.createTrackingAndTrackingLog(user, subOrder,order);
 
         return SubOrderStatusResponse.builder()
                 .subOrderId(subOrderId)

@@ -1,15 +1,14 @@
 package com.khang.backendecommerce.newstruc.service.impl;
 
+import com.khang.backendecommerce.infrastructure.common.enums.InventoryStatus;
 import com.khang.backendecommerce.infrastructure.configuration.CurrentUserProvider;
 import com.khang.backendecommerce.infrastructure.exception.ApplicationErrors;
 import com.khang.backendecommerce.newstruc.dto.response.InventoryNewCartContext;
 import com.khang.backendecommerce.newstruc.dto.response.store.CreateProductRequest;
 import com.khang.backendecommerce.newstruc.dto.response.store.ProductResponse;
 import com.khang.backendecommerce.newstruc.entity.*;
-import com.khang.backendecommerce.newstruc.repo.DeliveryFeeRepository;
-import com.khang.backendecommerce.newstruc.repo.StoreRepository;
+import com.khang.backendecommerce.newstruc.repo.*;
 import com.khang.backendecommerce.newstruc.service.DeliveryService;
-import com.khang.backendecommerce.newstruc.repo.InventoryRepository;
 import com.khang.backendecommerce.newstruc.service.InventoryService;
 
 import lombok.RequiredArgsConstructor;
@@ -29,7 +28,10 @@ public class InventoryServiceImpl implements InventoryService {
    private final DeliveryFeeRepository deliveryFeeRepo;
    private final CurrentUserProvider currentUserProvider;
   private final StoreRepository storeRepo;
+  private final CategoryRepository categoryRepo;
+  private final ProductRepository productRepo;
   private final WarehouseRepository warehouseRepo;
+  private final ProductImageRepository productImageRepo;
 //    public void checkProductQuantityUpdate(int quantityUpdate, int inventoryQuantity ) {
 //
 //    }
@@ -77,7 +79,49 @@ public class InventoryServiceImpl implements InventoryService {
     if(!storeRepo.existsByOwner_Id(user.getId())){
         throw ApplicationErrors.ACCESS_DENIED;
     }
-    WarehouseEntity warehouse = ware
+        StoreEntity store = storeRepo.findByOwner_Id(user.getId())
+                .orElseThrow(() -> ApplicationErrors.ACCESS_DENIED);
+
+        CategoryEntity category = categoryRepo.findById(request.categoryId())
+                .orElseThrow(() -> ApplicationErrors.CATEGORY_NOT_FOUND);
+
+        ProductEntity product = ProductEntity.builder()
+                .name(request.name())
+                .sku(request.sku())
+                .price(request.price())
+                .description(request.description())
+                .store(store)
+                .category(category)
+                .build();
+
+        productRepo.save(product);
+
+    List<InventoryEntity> inventories = request.inventories().stream()
+            .map(inventrequest -> {
+
+        WarehouseEntity warehouse = warehouseRepo.findById(inventrequest.warehouseId()).orElseThrow(() -> ApplicationErrors.WAREHOUSE_NOT_FOUND);
+
+        return InventoryEntity.builder()
+                .product(product)
+                .sku(product.getSku())
+                .description(product.getDescription())
+                .warehouse(warehouse)
+                .availableQuantity(inventrequest.quantity())
+                .reservedQuantity(0)
+                .inventoryStatus(InventoryStatus.IN_STOCK).build();
+    }).collect(Collectors.toList());
+
+     inventoryRepo.saveAll(inventories);
+    List<ProductImageEntity> productImages = request.images()
+            .stream()
+            .map(productImageRequest -> {
+                return ProductImageEntity.builder()
+                        .product(product).image(productImageRequest.image()).primary(productImageRequest.primary()).displayOrder(productImageRequest.displayOrder()).build();
+            }).collect(Collectors.toList());
+        productImageRepo.saveAll(productImages);
+        return ProductResponse.builder()
+                .id(product.getId()).name(product.getName()).price(product.getPrice()).build()
+                ;
     }
 
 
@@ -87,8 +131,10 @@ public class InventoryServiceImpl implements InventoryService {
                 .map(item -> item.getProduct().getId())
                 .toList();
         List<InventoryEntity> inventoryLists = inventoryRepo.findAllInventoryCandidates(productIds)
+
                 .stream()
                 .filter( inventory-> inventory.getAvailableQuantity() > 0)
+
                 .toList();
         Map<String,List<InventoryEntity>> inventoryByProduct = inventoryLists.stream()
                 .collect(Collectors.groupingBy(inventory -> inventory.getProduct().getId()));

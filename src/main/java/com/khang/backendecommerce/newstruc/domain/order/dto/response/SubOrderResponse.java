@@ -6,10 +6,9 @@ import java.math.BigDecimal;
 import java.util.List;
 
 public record SubOrderResponse(
-        String subOrderId,
 
         String storeName,
-
+        String subOrderCode,
         OrderStatus status,
 
         BigDecimal subTotal,

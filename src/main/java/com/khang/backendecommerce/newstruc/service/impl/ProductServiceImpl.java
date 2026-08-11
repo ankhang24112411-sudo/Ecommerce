@@ -50,12 +50,17 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public List<FeaturedProductResponse> getFeaturedProduct() {
         List<String> productIds = productRepo.getFeaturedProduct(PageRequest.of(0,5));
-        Map<String, ProductImageEntity>  productImageEntityByProductId = productImageRepo.getFeaturedProductImage(productIds).stream()
+        Map<String, ProductImageEntity>  productImageEntityByProductId = productImageRepo
+                .getFeaturedProductImage(productIds).stream()
+                .filter(productImageEntity -> productImageEntity.getPrimary() == 1)
                 .collect(Collectors
                         .toMap(productImageEntity -> productImageEntity.getProduct().getId(), Function.identity()));
+
+
         return productImageEntityByProductId.entrySet().stream()
                 .map( productImageEntityById -> {
                     ProductImageEntity productImage = productImageEntityById.getValue();
+
                     ProductEntity product = productRepo.findById(productImageEntityById.getKey()).orElseThrow(() -> ApplicationErrors.PRODUCT_NOT_FOUND);
                            return FeaturedProductResponse.builder()
                             .id(productImageEntityById.getKey())

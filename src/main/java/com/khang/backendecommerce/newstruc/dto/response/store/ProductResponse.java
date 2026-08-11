@@ -1,7 +1,9 @@
 package com.khang.backendecommerce.newstruc.dto.response.store;
 
-import java.math.BigDecimal;
+import lombok.Builder;
 
+import java.math.BigDecimal;
+@Builder
 public record ProductResponse(
         String id,
         String name,
