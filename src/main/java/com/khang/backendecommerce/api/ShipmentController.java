@@ -1,0 +1,31 @@
+package com.khang.backendecommerce.api;
+
+import com.khang.backendecommerce.infrastructure.common.dto.response.BaseResponse;
+import com.khang.backendecommerce.newstruc.dto.request.MockRefundWebhookRequest;
+import com.khang.backendecommerce.newstruc.service.TrackingService;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("v1/shipper/tracking")
+@Validated
+@Slf4j
+@Tag(name ="SUB-ORDER-MANAGEMENT-CONTROLLER")
+@RequiredArgsConstructor
+public class ShipmentController {
+    private final TrackingService TrackingService ;
+
+    @PostMapping("/{trackingCode}/pickup")
+    public ResponseEntity<BaseResponse<?>> pickup(@RequestParam String trackingCode) {
+        return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(TrackingService.picking(trackingCode), "ok"));
+    }
+    @PostMapping("/{trackingCode}/pickup")
+    public ResponseEntity<BaseResponse<?>> shipping(@RequestParam String trackingCode){
+        return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(TrackingService.shipping(trackingCode), "ok"));
+    }
+}

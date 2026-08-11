@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface TrackingRepository extends JpaRepository<DeliveryEntity,String> {
+    DeliveryEntity findBySubOrder_Id(String subOrderId);
 }

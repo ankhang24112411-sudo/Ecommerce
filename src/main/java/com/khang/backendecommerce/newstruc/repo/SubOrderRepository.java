@@ -66,4 +66,11 @@ public interface SubOrderRepository extends JpaRepository<SubOrderEntity , Strin
            
 """)
     TotalSubOrderDailyDashboard getTodayDashboard(String sellerId,  Instant fromDate,Instant toDate);
+    @EntityGraph (
+            attributePaths = {
+                    "order"
+            }
+    )
+    SubOrderEntity findByTrackingCode(String trackingCode);
+
 }

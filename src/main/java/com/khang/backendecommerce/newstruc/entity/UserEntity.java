@@ -39,7 +39,7 @@ public class UserEntity extends AbstractEntity<String> implements UserDetails,Se
     private LocalDate birthDay;
 
     @Column(name = "phone")
-    private String phone;
+    private Long phone;
 
     @Column(name = "address")
     private String address;

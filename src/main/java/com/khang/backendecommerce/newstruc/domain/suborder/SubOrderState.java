@@ -33,6 +33,7 @@ public interface SubOrderState {
     default void reject(SubOrderEntity subOrder){
 
     }
+    OrderStatus getCurrentState(SubOrderEntity subOrder);
     private RuntimeException invalidActioning(SubOrderEntity subOrder, String action) {
         return new IllegalStateException("Action " + action+" is not allowed when SubOrder status is"+ subOrder.getOrderStatus());
     }

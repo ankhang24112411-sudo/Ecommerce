@@ -10,8 +10,8 @@ import java.util.List;
 
 public class OrderResultCalculation{
 
-    public OrderResult calculate(List<SubOrderEntity> subOrders) {
-        if (subOrders == null || subOrders.isEmpty()) {
+       public OrderResult calculate(List<SubOrderEntity> subOrders) {
+           if (subOrders == null || subOrders.isEmpty()) {
             return OrderResult.PENDING;
         }
         boolean allDelivered = subOrders.stream().allMatch(subOrder->subOrder.getOrderStatus()== OrderStatus.DELIVERED);

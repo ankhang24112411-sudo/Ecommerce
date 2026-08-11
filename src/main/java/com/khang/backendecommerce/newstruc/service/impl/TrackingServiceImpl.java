@@ -2,7 +2,10 @@ package com.khang.backendecommerce.newstruc.service.impl;
 
 import com.khang.backendecommerce.newstruc.domain.order.OrderResultCalculation;
 import com.khang.backendecommerce.newstruc.domain.suborder.config.SubOrderStateService;
+import com.khang.backendecommerce.newstruc.domain.trackinglog.DeliveryTrackingLogFactory;
+import com.khang.backendecommerce.newstruc.dto.response.TrackingSubOrderResponse;
 import com.khang.backendecommerce.newstruc.entity.*;
+import com.khang.backendecommerce.newstruc.repo.SubOrderRepository;
 import com.khang.backendecommerce.newstruc.repo.TrackingLogRepository;
 import com.khang.backendecommerce.newstruc.repo.TrackingRepository;
 import com.khang.backendecommerce.newstruc.service.TrackingService;
@@ -22,6 +25,8 @@ public class TrackingServiceImpl implements TrackingService {
     private final TrackingLogRepository trackingLogRepository;
     private final OrderResultCalculation orderResultCalculation;
     private final SubOrderStateService subOrderStateService;
+    private final SubOrderRepository subOrderRepo;
+    private final DeliveryTrackingLogFactory deliveryTrackingLogFactory;
     private static final DateTimeFormatter ORDER_CODE_FORMAT =
             DateTimeFormatter.ofPattern("yyyyMMdd");
 
@@ -42,19 +47,26 @@ public class TrackingServiceImpl implements TrackingService {
                 .receiverName(order.getCustomerName())
                 .receiverAddress(order.getAddress()).build();
 
-        DeliveryTrackingLog deliveryTrackingLog = DeliveryTrackingLog.builder()
-                .delivery(delivery)
-                .trackingCode(trackingCode)
-                .message("Payment confirmed. Order is being prepared at warehouse")
-                .location("WAREHOUSE")
-                .status(order.getOrderStatus())
-                .receiverName(order.getCustomerName())
-                .receiverAddress(order.getAddress())
-                .receiverPhone(user.getPhone())
-                .subOrder(subOrder)
-                .order(order)
-                .build();
+        DeliveryTrackingLog deliveryTrackingLog = deliveryTrackingLogFactory.create(delivery,subOrder,"STORE");
         trackingRepository.save(delivery);
         trackingLogRepository.save(deliveryTrackingLog);
      }
+
+    @Override
+    public TrackingSubOrderResponse picking(String trackingCode) {
+        SubOrderEntity subOrder = subOrderRepo.findByTrackingCode(trackingCode);
+        OrderEntity order = subOrder.getOrder();
+        DeliveryEntity delivery = trackingRepository.findBySubOrder_Id(subOrder.getId());
+        subOrderStateService.startPicking(subOrder);
+        DeliveryTrackingLog deliveryTrackingLog = deliveryTrackingLogFactory.create(delivery,subOrder,"STORE");
+
+        trackingRepository.save(delivery);
+        trackingLogRepository.save(deliveryTrackingLog);
+        return TrackingSubOrderResponse.builder()
+                .orderCode(order.getOrderCode()).
+                trackingCode(subOrder.getTrackingCode())
+                .message(deliveryTrackingLog.getMessage())
+                .location("STORE")
+                .build();
+    }
 }

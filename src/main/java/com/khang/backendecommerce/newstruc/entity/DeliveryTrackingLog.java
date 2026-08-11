@@ -51,7 +51,7 @@ public class DeliveryTrackingLog extends AbstractEntity<String> implements Seria
     private String receiverAddress;
 
     @Column(name = "receiver_phone")
-    private String receiverPhone;
+    private Long receiverPhone;
 
     @Column(name = "total_amount")
     private BigDecimal totalAmount;
