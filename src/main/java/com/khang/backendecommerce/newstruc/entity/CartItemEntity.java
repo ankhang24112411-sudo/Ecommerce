@@ -4,6 +4,7 @@ import com.khang.backendecommerce.infrastructure.common.entity.abstractentity.Ab
 import com.khang.backendecommerce.infrastructure.common.enums.InventoryStatus;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -12,7 +13,7 @@ import java.math.BigDecimal;
 
 @Getter
 @Setter
-@Builder
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity

@@ -4,6 +4,7 @@ import com.khang.backendecommerce.infrastructure.common.entity.abstractentity.Ab
 import com.khang.backendecommerce.infrastructure.common.enums.Gender;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 import org.springframework.security.core.GrantedAuthority;
@@ -19,7 +20,7 @@ import java.util.Set;
 @Getter
 @Setter
 @Entity
-@Builder
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name ="tbl_user")
@@ -63,6 +64,7 @@ public class UserEntity extends AbstractEntity<String> implements UserDetails,Se
     @JoinColumn(name = "state_id")
     private StateEntity state;
 
+    @Builder.Default
     @OneToMany(mappedBy = "user")
     private Set<UserHasRole> roles = new HashSet<>();
     public String getFullName(){

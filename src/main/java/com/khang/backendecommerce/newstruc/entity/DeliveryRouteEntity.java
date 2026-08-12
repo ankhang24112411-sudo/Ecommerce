@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 import java.io.Serializable;
 @Getter
@@ -13,6 +14,8 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@SuperBuilder
+
 @Table(name ="tbl_delivery_route")
 public class DeliveryRouteEntity extends AbstractEntity<String> implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)

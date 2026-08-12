@@ -1,5 +1,6 @@
 package com.khang.backendecommerce.newstruc.service.impl;
 
+import com.khang.backendecommerce.infrastructure.common.enums.OrderStatus;
 import com.khang.backendecommerce.newstruc.dto.event.SubOrderStatusEvent;
 import com.sendgrid.Method;
 import com.sendgrid.Request;
@@ -34,8 +35,6 @@ import com.sendgrid.helpers.mail.objects.Email;
 public class MailService {
     private final SendGrid sendGrid;
 
-    @Value("${sendgrid.api-key}")
-    private String apiKey;
 
     @Value("${sendgrid.from-email}")
     private String from;
@@ -43,91 +42,109 @@ public class MailService {
     @Value("${sendgrid.template-id}")
     private String templateId;
 
-    @Value("${sendgrid.verification-link}")
-    private String verificationLink;
-    public void sendOrderStatusMail(SubOrderStatusEvent event) {
-//
-//        Email fromEmail = new Email(from, "Khang Store");
-//        Email toEmail = new Email(event.customerEmail());
-//
-//        Mail mail = new Mail();
-//        mail.setFrom(fromEmail);
-//        mail.setTemplateId(templateId);
-//
-//        Personalization personalization = new Personalization();
-//        personalization.addTo(toEmail);
-//
-//        personalization.addDynamicTemplateData(
-//                "customerName",
-//                event.customerName()
-//        );
-//
-//        personalization.addDynamicTemplateData(
-//                "orderCode",
-//                event.orderCode()
-//        );
-//
-//        personalization.addDynamicTemplateData(
-//                "subOrderCode",
-//                event.subOrderCode()
-//        );
-//
-//        personalization.addDynamicTemplateData(
-//                "trackingCode",
-//                event.trackingCode()
-//        );
-//
-//
-//
-//
-//        personalization.addDynamicTemplateData(
-//                "status",
-//                event.status().name()
-//        );
-//
-//        personalization.addDynamicTemplateData(
-//                "updatedAt",
-//                event.updatedAt().toString()
-//        );
-//
-//        // Nội dung thay đổi theo status
-//        if (event.status() == SubOrderStatus.SHIPPING) {
-//
-//            personalization.addDynamicTemplateData(
-//                    "title",
-//                    "Đơn hàng đang trên đường giao"
-//            );
-//
-//            personalization.addDynamicTemplateData(
-//                    "message",
-//                    "Shipper đã nhận hàng và đang giao đến bạn."
-//            );
-//        }
-//
-//        if (event.status() == SubOrderStatus.DELIVERED) {
-//
-//            personalization.addDynamicTemplateData(
-//                    "title",
-//                    "Giao hàng thành công"
-//            );
-//
-//            personalization.addDynamicTemplateData(
-//                    "message",
-//                    "Cảm ơn bạn đã mua hàng tại Khang Store."
-//            );
-//        }
-//
-//        mail.addPersonalization(personalization);
-//
-//        send(mail);
-//    }
-    }
-    public void send(String to, String subject , String text)  {
-        Email fromEmail = new Email(from);
-        Email toEmail = new Email(to);
 
-        Content content = new Content("text/plain", text);
-        Mail mail = new Mail(fromEmail, subject, toEmail,content);
+
+    @Value("${sendgrid.order-status-template-id}")
+    private String orderStatusTemplateId;
+
+    public void sendOrderStatusMail(SubOrderStatusEvent event) {
+        Mail mail = new Mail();
+
+        mail.setFrom(new Email(from, "Khang Store"));
+        mail.setTemplateId(orderStatusTemplateId);
+
+        Personalization personalization = new Personalization();
+
+        personalization.addTo(
+                new Email(event.customerEmail())
+        );
+
+        // DATA CÓ SẴN TRONG EVENT
+        personalization.addDynamicTemplateData(
+                "orderId",
+                event.orderId()
+        );
+
+        personalization.addDynamicTemplateData(
+                "orderCode",
+                event.orderCode()
+        );
+
+        personalization.addDynamicTemplateData(
+                "subOrderId",
+                event.subOrderId()
+        );
+
+        personalization.addDynamicTemplateData(
+                "subOrderCode",
+                event.subOrderCode()
+        );
+
+        personalization.addDynamicTemplateData(
+                "trackingCode",
+                event.trackingCode()
+        );
+
+        personalization.addDynamicTemplateData(
+                "customerName",
+                event.customerName()
+        );
+
+        personalization.addDynamicTemplateData(
+                "customerEmail",
+                event.customerEmail()
+        );
+
+        personalization.addDynamicTemplateData(
+                "status",
+                event.status().name()
+        );
+
+
+        // DATA CHO GIAO DIỆN MAIL
+        if (event.status() == OrderStatus.SHIPPING) {
+
+            personalization.addDynamicTemplateData(
+                    "subject",
+                    "Đơn hàng đang được giao"
+            );
+
+            personalization.addDynamicTemplateData(
+                    "title",
+                    "Đơn hàng đang trên đường đến bạn"
+            );
+
+            personalization.addDynamicTemplateData(
+                    "message",
+                    "Shipper đã lấy hàng và đang giao đơn hàng đến bạn."
+            );
+        }
+
+        if (event.status() == OrderStatus.DELIVERED) {
+
+            personalization.addDynamicTemplateData(
+                    "subject",
+                    "Giao hàng thành công"
+            );
+
+            personalization.addDynamicTemplateData(
+                    "title",
+                    "Đơn hàng đã được giao thành công"
+            );
+
+            personalization.addDynamicTemplateData(
+                    "message",
+                    "Cảm ơn bạn đã mua hàng tại Khang Store."
+            );
+        }
+
+        mail.addPersonalization(personalization);
+
+        send(mail);
+    }
+
+
+    private void send(Mail mail) {
 
         Request request = new Request();
 
@@ -136,57 +153,22 @@ public class MailService {
             request.setEndpoint("mail/send");
             request.setBody(mail.build());
 
-            Response response = new SendGrid(from).api(request);
-            if(response.getStatusCode() == 202){
-                log.info("Email send successfully");
+            Response response = sendGrid.api(request);
+
+            if (response.getStatusCode() == 202) {
+                log.info("Email sent successfully");
+            } else {
+                log.error(
+                        "Email failed - status: {}, body: {}",
+                        response.getStatusCode(),
+                        response.getBody()
+                );
             }
-            else{
-                log.error("Email send failed");
-            }
+
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
-//    public void sendVerificationEmail(String to, String name) throws IOException {
-//        log.info("Sending verification email for name={}", name);
-//
-//        Email fromEmail = new Email(from, "Khang Nguyen");
-//        Email toEmail = new Email(to);
-//        String subject = "Xác thực tài khoản";
-//
-//        // Generate secret code and save to db
-//        String secretCode = UUID.randomUUID().toString();
-//        log.info("secretCode = {}", secretCode);
-//
-//        // TOD0 save secretCode to db
-//
-//        // Tạo dynamic template data
-//        Map<String, String> dynamicTemplateData = new HashMap<>();
-//        dynamicTemplateData.put("name", name);
-//        dynamicTemplateData.put("verification_link", verificationLink + "?secretCode=" + secretCode);
-//
-//        Mail mail = new Mail();
-//        mail.setFrom(fromEmail);
-//        mail.setSubject(subject);
-//        Personalization personalization = new Personalization();
-//        personalization.addTo(toEmail);
-//
-//        // Add dynamic template data
-//        dynamicTemplateData.forEach(personalization::addDynamicTemplateData);
-//
-//        mail.addPersonalization(personalization);
-//        mail.setTemplateId(templateId); // Template ID từ SendGrid
-//
-//        Request request = new Request();
-//        request.setMethod(Method.POST);
-//        request.setEndpoint("mail/send");
-//        request.setBody(mail.build());
-//        Response response = sendGrid.api(request);
-//        if (response.getStatusCode() == 202) {
-//            log.info("Verification sent successfully");
-//        } else {
-//            log.error("Verification sent failed");
-//        }
-//    }
+    }
 
-}
+

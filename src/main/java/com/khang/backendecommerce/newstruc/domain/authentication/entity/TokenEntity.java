@@ -3,11 +3,12 @@ package com.khang.backendecommerce.newstruc.domain.authentication.entity;
 import com.khang.backendecommerce.infrastructure.common.entity.abstractentity.AbstractEntity;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 @Getter
 @Setter
 @Entity
-@Builder
+@SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name= "tbl_token")

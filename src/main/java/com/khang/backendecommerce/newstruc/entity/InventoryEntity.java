@@ -20,6 +20,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+
 @Table(name ="tbl_inventory")
 public class InventoryEntity extends AbstractEntity<String> implements Serializable {
 

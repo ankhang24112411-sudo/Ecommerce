@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -19,6 +20,8 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@SuperBuilder
+
 @Table(name ="tbl_return_item")
 public class ReturnItemEntity extends AbstractEntity<String> implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)

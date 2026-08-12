@@ -25,7 +25,7 @@ public class UserServiceImpl implements UserService {
     private final NewUserMapper userMapper;
     // Không inject từ Spring
     private final PasswordEncoder passwordEncoder ;
-    private final KafkaTemplate<String,String> kafkaTemplate;
+
     @Override
     public UserDetailsService userDetailsService() {
         return username ->  userRepo.findByUsernameWithRoles(username).orElseThrow(() ->  new UsernameNotFoundException("Username not found"));
@@ -41,10 +41,10 @@ public class UserServiceImpl implements UserService {
      user.setPassword(passwordEncoder.encode(request.getPassword()));
      user.setCreatedBy(user.getId());
      userRepo.save(user);
-     if( user != null){
-         String message = String.format("email=%,id=%s,code=%s", user.getEmail(),user.getId(),"code@123");
-         kafkaTemplate.send("confirm-account-topic", message);
-     }
+//     if( user != null){
+//         String message = String.format("email=%,id=%s,code=%s", user.getEmail(),user.getId(),"code@123");
+//         kafkaTemplate.send("confirm-account-topic", message);
+//     }
         return "User account";
     }
 

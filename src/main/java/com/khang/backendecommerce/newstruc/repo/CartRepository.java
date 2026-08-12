@@ -38,7 +38,7 @@ where tc.user_id = :userId
     @Query("""
 Select cart
 From CartEntity cart
-where CartEntity.user.id =:userId
+where cart.user.id =:userId
 """)
     CartEntity findCartAndCartItemsByUserId(@Param("userId") String userId);
 

@@ -5,6 +5,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -14,7 +15,7 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Builder
+@SuperBuilder
 @Table(name ="banner")
 public class BannerEntity extends AbstractEntity<String> implements Serializable {
     @Column(name = "title")
@@ -26,7 +27,7 @@ public class BannerEntity extends AbstractEntity<String> implements Serializable
     @Column(name = "image_url")
     private String imageUrl;
 
-    @Column(name = "image_url")
+    @Column(name = "target_url")
     private String targetUrl;
 
     @Column(name = "button_text")

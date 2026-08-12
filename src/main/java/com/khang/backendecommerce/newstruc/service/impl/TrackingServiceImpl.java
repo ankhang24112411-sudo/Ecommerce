@@ -67,7 +67,10 @@ public class TrackingServiceImpl implements TrackingService {
         SubOrderEntity subOrder = subOrderRepo.findByTrackingCode(trackingCode);
         OrderEntity order = subOrder.getOrder();
         DeliveryEntity delivery = trackingRepository.findBySubOrder_Id(subOrder.getId());
+
         subOrderStateService.startPicking(subOrder);
+        order.setOrderResult(orderResultCalculation.calculate(order.getSubOrders()));
+
         DeliveryTrackingLog deliveryTrackingLog = deliveryTrackingLogFactory.create(delivery,subOrder,"WAREHOUSE");
 
         trackingRepository.save(delivery);
@@ -87,7 +90,10 @@ public class TrackingServiceImpl implements TrackingService {
         SubOrderEntity subOrder = subOrderRepo.findByTrackingCode(trackingCode);
         OrderEntity order = subOrder.getOrder();
         DeliveryEntity delivery = trackingRepository.findBySubOrder_Id(subOrder.getId());
+
         subOrderStateService.startShipping(subOrder);
+        order.setOrderResult(orderResultCalculation.calculate(order.getSubOrders()));
+
         DeliveryTrackingLog deliveryTrackingLog = deliveryTrackingLogFactory.create(delivery,subOrder,"WAREHOUSE");
 
         trackingRepository.save(delivery);
@@ -118,7 +124,10 @@ public class TrackingServiceImpl implements TrackingService {
         SubOrderEntity subOrder = subOrderRepo.findByTrackingCode(trackingCode);
         OrderEntity order = subOrder.getOrder();
         DeliveryEntity delivery = trackingRepository.findBySubOrder_Id(subOrder.getId());
+
         subOrderStateService.delivered(subOrder);
+        order.setOrderResult(orderResultCalculation.calculate(order.getSubOrders()));
+
         DeliveryTrackingLog deliveryTrackingLog = deliveryTrackingLogFactory.create(delivery,subOrder,delivery.getReceiverAddress());
 
         trackingRepository.save(delivery);
@@ -150,7 +159,10 @@ public class TrackingServiceImpl implements TrackingService {
         SubOrderEntity subOrder = subOrderRepo.findByTrackingCode(trackingCode);
         OrderEntity order = subOrder.getOrder();
         DeliveryEntity delivery = trackingRepository.findBySubOrder_Id(subOrder.getId());
+
         subOrderStateService.reattempt(subOrder);
+        order.setOrderResult(orderResultCalculation.calculate(order.getSubOrders()));
+
         DeliveryTrackingLog deliveryTrackingLog = deliveryTrackingLogFactory.create(delivery,subOrder,delivery.getReceiverAddress());
 
         trackingRepository.save(delivery);
@@ -170,6 +182,8 @@ public class TrackingServiceImpl implements TrackingService {
         SubOrderEntity subOrder = subOrderRepo.findByTrackingCode(trackingCode);
         subOrder.setOrderStatus(OrderStatus.FAILED);
         OrderEntity order = subOrder.getOrder();
+        order.setOrderResult(orderResultCalculation.calculate(order.getSubOrders()));
+
         DeliveryEntity delivery = trackingRepository.findBySubOrder_Id(subOrder.getId());
 
         DeliveryTrackingLog deliveryTrackingLog = deliveryTrackingLogFactory.create(delivery,subOrder,delivery.getReceiverAddress());
@@ -193,7 +207,9 @@ public class TrackingServiceImpl implements TrackingService {
         OrderEntity order = subOrder.getOrder();
 
         DeliveryEntity delivery = trackingRepository.findBySubOrder_Id(subOrder.getId());
+
         subOrderStateService.firstReattempt(subOrder);
+        order.setOrderResult(orderResultCalculation.calculate(order.getSubOrders()));
 
         DeliveryTrackingLog deliveryTrackingLog = deliveryTrackingLogFactory.create(delivery,subOrder,delivery.getReceiverAddress());
         deliveryTrackingLog.setMessage(message);

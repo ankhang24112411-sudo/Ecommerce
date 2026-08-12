@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -17,6 +18,8 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@SuperBuilder
+
 @Table(name ="tbl_return")
 public class ReturnEntity extends AbstractEntity<String> implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)

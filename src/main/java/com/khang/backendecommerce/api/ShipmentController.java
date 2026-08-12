@@ -42,8 +42,8 @@ public class ShipmentController {
         return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(TrackingService.reattempt(trackingCode), "ok"));
     }
     @PostMapping("/{trackingCode}/reattempt")
-    public ResponseEntity<BaseResponse<?>> failed(@RequestParam String trackingCode){
-        return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(TrackingService.failed(trackingCode), "ok"));
+    public ResponseEntity<BaseResponse<?>> failed(@RequestParam String trackingCode,String message){
+        return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(TrackingService.failed(trackingCode, message), "ok"));
     }
 
 }

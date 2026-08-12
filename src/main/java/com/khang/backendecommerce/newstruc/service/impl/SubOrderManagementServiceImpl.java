@@ -70,15 +70,15 @@ public class SubOrderManagementServiceImpl implements SubOrderManagementService 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public SubOrderStatusResponse confirmSubOrdersStatus( String subOrderId) {
-      UserEntity user = validateShopOwnerToSuborder( subOrderId);
-
-      SubOrderEntity subOrder = subOrderRepo.findSubOrder(user.getId(), subOrderId);
+        SubOrderEntity subOrder = subOrderRepo.findById(subOrderId).orElseThrow(() -> ApplicationErrors.SUB_ORDER_NOT_FOUND);
+//      UserEntity user = validateShopOwnerToSuborder( subOrderId);
+//      SubOrderEntity subOrder = subOrderRepo.findSubOrder(user.getId(), subOrderId);
 
        subOrderStateService.confirm(subOrder);
         OrderEntity order = subOrder.getOrder();
         order.setOrderResult(orderResultCalculation.calculate(order.getSubOrders()));
 
-        trackingService.createTrackingAndTrackingLog(user, subOrder,order);
+        trackingService.createTrackingAndTrackingLog(null, subOrder,order);
 
         return SubOrderStatusResponse.builder()
                 .subOrderId(subOrderId)

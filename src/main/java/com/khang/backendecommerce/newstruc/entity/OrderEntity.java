@@ -7,6 +7,7 @@ import com.khang.backendecommerce.infrastructure.common.enums.PaymentMethod;
 import com.khang.backendecommerce.infrastructure.common.enums.PaymentStatus;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -21,7 +22,8 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Builder
+@SuperBuilder
+
 @Table(name ="tbl_order")
 public class OrderEntity extends AbstractEntity<String> implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)

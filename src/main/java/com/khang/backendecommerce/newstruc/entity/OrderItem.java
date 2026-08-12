@@ -3,6 +3,7 @@ package com.khang.backendecommerce.newstruc.entity;
 import com.khang.backendecommerce.infrastructure.common.entity.abstractentity.AbstractEntity;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -12,7 +13,7 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Builder
+@SuperBuilder
 @Table(name ="tbl_order_item")
 public class OrderItem extends AbstractEntity<String> implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)

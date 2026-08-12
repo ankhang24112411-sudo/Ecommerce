@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -20,6 +21,8 @@ import java.time.Instant;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@SuperBuilder
+
 @Table(name ="tbl_discount")
 public class DiscountEntity extends AbstractEntity<String> implements Serializable {
     @Column(name ="discount_name")

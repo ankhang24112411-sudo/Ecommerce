@@ -4,12 +4,14 @@ import com.khang.backendecommerce.infrastructure.common.entity.abstractentity.Ab
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.io.Serializable;
 @Getter
 @Setter
 @Entity
-@Builder
+@SuperBuilder
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name ="tbl_state")

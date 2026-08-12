@@ -3,13 +3,14 @@ package com.khang.backendecommerce.newstruc.entity;
 import com.khang.backendecommerce.infrastructure.common.entity.abstractentity.AbstractEntity;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.io.Serializable;
 
 @Getter
 @Setter
 @Entity
-@Builder
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name ="tbl_store")

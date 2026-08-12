@@ -31,8 +31,7 @@ sendgrid:
   api-key: ${SENDGRID_API_KEY}
   from-email: ${SENDGRID_FROM_EMAIL}
   template-id: ${SENDGRID_TEMPLATE_ID:d-a52ec2a1f7a84f06a2e08bbe9cae3215}
-  verification-link: ${SENDGRID_VERIFICATION_LINK:http://localhost:8080/user/confirm-email}
-
+  order-status-template-id: d-5cd1cc21e7f547c98aa5326813d689aa
 springdoc:
   api-docs:
     enabled: true

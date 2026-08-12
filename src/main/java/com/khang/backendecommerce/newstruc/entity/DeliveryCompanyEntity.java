@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -17,6 +18,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @Entity
 @Table(name ="tbl_delivery_company")
+@SuperBuilder
 
 public class DeliveryCompanyEntity extends AbstractEntity<String> implements Serializable {
     @Column(name = "name")

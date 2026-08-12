@@ -208,7 +208,7 @@ public class OrderServiceImpl implements OrderService{
                                .sku(item.product().getSku())
                                .unitPrice(item.unitPrice())
                                .quantity(item.quantity())
-                               .build()).toList();
+                               .build()).collect(Collectors.toList());
 
                orderItemList.forEach(subOrder::addOrderItems);
 

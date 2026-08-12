@@ -5,6 +5,7 @@ import com.khang.backendecommerce.infrastructure.common.enums.PaymentMethod;
 import com.khang.backendecommerce.infrastructure.common.enums.PaymentStatus;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -16,7 +17,7 @@ import java.time.Instant;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Builder
+@SuperBuilder
 @Table(name ="tbl_payment")
 public class PaymentEntity  extends AbstractEntity<String> implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)

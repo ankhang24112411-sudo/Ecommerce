@@ -3,6 +3,7 @@ package com.khang.backendecommerce.newstruc.entity;
 import com.khang.backendecommerce.infrastructure.common.entity.abstractentity.AbstractEntity;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -14,7 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Builder
+@SuperBuilder
 @Table(name ="tbl_cart")
 public class CartEntity extends AbstractEntity<String> implements Serializable {
 

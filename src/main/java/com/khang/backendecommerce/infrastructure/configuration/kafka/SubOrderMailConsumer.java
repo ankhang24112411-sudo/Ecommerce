@@ -1,7 +1,6 @@
-package com.khang.backendecommerce.infrastructure.configuration;
+package com.khang.backendecommerce.infrastructure.configuration.kafka;
 
 import com.khang.backendecommerce.infrastructure.common.enums.OrderStatus;
-import com.khang.backendecommerce.infrastructure.configuration.kafka.KafkaTopics;
 import com.khang.backendecommerce.newstruc.dto.event.SubOrderStatusEvent;
 import com.khang.backendecommerce.newstruc.service.impl.MailService;
 import lombok.RequiredArgsConstructor;

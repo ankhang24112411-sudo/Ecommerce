@@ -16,7 +16,7 @@ from OrderItem oi
 join oi.product p
 join p.category c
 group by c.id
-order by sum(oi.subtotal) DESC
+order by sum(oi.unitPrice.oi.quantity) DESC
 
 """)
     List<CategoryEntity> getFeaturedCategory(Pageable pageable);
