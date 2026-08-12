@@ -1,4 +1,4 @@
-package com.khang.backendecommerce.infrastructure.configuration;
+package com.khang.backendecommerce.infrastructure.configuration.kafka;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.core.KafkaTemplate;

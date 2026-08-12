@@ -212,13 +212,22 @@
         </dependency>
         <!-- ==================== Thymeleaf / JavaMailSender ==================== -->
 
-
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
+        </dependency>
         <!-- ==================== Sendgrid ==================== -->
         <dependency>
             <groupId>com.sendgrid</groupId>
             <artifactId>sendgrid-java</artifactId>
             <version>4.10.3</version>
         </dependency>
+        <!-- ==================== WEBSOCKET ==================== -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-websocket</artifactId>
+        </dependency>
+
     </dependencies>
 
     <!-- Maven profiles -->

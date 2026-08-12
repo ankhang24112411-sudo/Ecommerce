@@ -6,6 +6,7 @@ import com.khang.backendecommerce.newstruc.entity.InventoryEntity;
 import com.khang.backendecommerce.newstruc.entity.ProductEntity;
 import com.khang.backendecommerce.newstruc.entity.StoreEntity;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.criteria.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -21,6 +22,8 @@ import static com.khang.backendecommerce.infrastructure.util.AppConst.SEARCH_SPE
 @Component
 @Slf4j
 public class SearchRepository {
+    @PersistenceContext
+
     private EntityManager entityManager;
 //    public BaseResponse<?> searchProductByCriteriaWithJoin(Pageable pageable, String[] product, String[] store) {
 //        log.info("-------------- searchUserByCriteriaWithJoin --------------");
@@ -592,5 +595,5 @@ public class SearchRepository {
                     .getSingleResult();
         }
     }
-}
+
 

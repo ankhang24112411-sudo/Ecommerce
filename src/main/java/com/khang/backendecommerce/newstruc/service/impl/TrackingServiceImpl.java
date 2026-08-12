@@ -1,10 +1,13 @@
 package com.khang.backendecommerce.newstruc.service.impl;
 
 import com.khang.backendecommerce.infrastructure.common.enums.OrderStatus;
+import com.khang.backendecommerce.infrastructure.configuration.kafka.KafkaProducerService;
+import com.khang.backendecommerce.infrastructure.configuration.kafka.KafkaTopics;
 import com.khang.backendecommerce.infrastructure.exception.ApplicationErrors;
 import com.khang.backendecommerce.newstruc.domain.order.OrderResultCalculation;
 import com.khang.backendecommerce.newstruc.domain.suborder.config.SubOrderStateService;
 import com.khang.backendecommerce.newstruc.domain.trackinglog.DeliveryTrackingLogFactory;
+import com.khang.backendecommerce.newstruc.dto.event.SubOrderStatusEvent;
 import com.khang.backendecommerce.newstruc.dto.request.ShipperPickingRequest;
 import com.khang.backendecommerce.newstruc.dto.response.TrackingSubOrderResponse;
 import com.khang.backendecommerce.newstruc.entity.*;
@@ -14,12 +17,10 @@ import com.khang.backendecommerce.newstruc.repo.TrackingRepository;
 import com.khang.backendecommerce.newstruc.repo.UserRepository;
 import com.khang.backendecommerce.newstruc.service.TrackingService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Optional;
 import java.util.UUID;
 
 
@@ -33,6 +34,7 @@ public class TrackingServiceImpl implements TrackingService {
     private final SubOrderRepository subOrderRepo;
     private final DeliveryTrackingLogFactory deliveryTrackingLogFactory;
     private final UserRepository userRepo;
+    private final KafkaProducerService kafkaProducerService;
     private static final DateTimeFormatter ORDER_CODE_FORMAT =
             DateTimeFormatter.ofPattern("yyyyMMdd");
 
@@ -90,6 +92,17 @@ public class TrackingServiceImpl implements TrackingService {
 
         trackingRepository.save(delivery);
         trackingLogRepository.save(deliveryTrackingLog);
+        SubOrderStatusEvent event = new SubOrderStatusEvent(
+                        order.getId(),
+                        order.getOrderCode(),
+                        subOrder.getId(),
+                        subOrder.getSuborderCode(),
+                        subOrder.getTrackingCode(),
+                        order.getCustomerName(),
+                        order.getCustomer().getEmail(),
+                        subOrder.getOrderStatus());
+
+        kafkaProducerService.send(KafkaTopics.SUBORDER_STATUS, subOrder.getId(), event);
         return TrackingSubOrderResponse.builder()
                 .orderCode(order.getOrderCode()).
                 trackingCode(subOrder.getTrackingCode())
@@ -110,6 +123,17 @@ public class TrackingServiceImpl implements TrackingService {
 
         trackingRepository.save(delivery);
         trackingLogRepository.save(deliveryTrackingLog);
+        SubOrderStatusEvent event = new SubOrderStatusEvent(
+                order.getId(),
+                order.getOrderCode(),
+                subOrder.getId(),
+                subOrder.getSuborderCode(),
+                subOrder.getTrackingCode(),
+                order.getCustomerName(),
+                order.getCustomer().getEmail(),
+                subOrder.getOrderStatus());
+
+        kafkaProducerService.send(KafkaTopics.SUBORDER_STATUS, subOrder.getId(), event);
         return TrackingSubOrderResponse.builder()
                 .orderCode(order.getOrderCode()).
                 trackingCode(subOrder.getTrackingCode())

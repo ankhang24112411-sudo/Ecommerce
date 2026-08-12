@@ -1,4 +1,4 @@
-package com.khang.backendecommerce.infrastructure.configuration;
+package com.khang.backendecommerce.infrastructure.configuration.kafka;
 
 import org.apache.kafka.clients.admin.NewTopic;
 import org.springframework.context.annotation.Bean;

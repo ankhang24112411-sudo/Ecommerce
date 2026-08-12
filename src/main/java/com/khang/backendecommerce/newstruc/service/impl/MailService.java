@@ -1,5 +1,6 @@
 package com.khang.backendecommerce.newstruc.service.impl;
 
+import com.khang.backendecommerce.newstruc.dto.event.SubOrderStatusEvent;
 import com.sendgrid.Method;
 import com.sendgrid.Request;
 import com.sendgrid.Response;
@@ -44,6 +45,83 @@ public class MailService {
 
     @Value("${sendgrid.verification-link}")
     private String verificationLink;
+    public void sendOrderStatusMail(SubOrderStatusEvent event) {
+//
+//        Email fromEmail = new Email(from, "Khang Store");
+//        Email toEmail = new Email(event.customerEmail());
+//
+//        Mail mail = new Mail();
+//        mail.setFrom(fromEmail);
+//        mail.setTemplateId(templateId);
+//
+//        Personalization personalization = new Personalization();
+//        personalization.addTo(toEmail);
+//
+//        personalization.addDynamicTemplateData(
+//                "customerName",
+//                event.customerName()
+//        );
+//
+//        personalization.addDynamicTemplateData(
+//                "orderCode",
+//                event.orderCode()
+//        );
+//
+//        personalization.addDynamicTemplateData(
+//                "subOrderCode",
+//                event.subOrderCode()
+//        );
+//
+//        personalization.addDynamicTemplateData(
+//                "trackingCode",
+//                event.trackingCode()
+//        );
+//
+//
+//
+//
+//        personalization.addDynamicTemplateData(
+//                "status",
+//                event.status().name()
+//        );
+//
+//        personalization.addDynamicTemplateData(
+//                "updatedAt",
+//                event.updatedAt().toString()
+//        );
+//
+//        // Nội dung thay đổi theo status
+//        if (event.status() == SubOrderStatus.SHIPPING) {
+//
+//            personalization.addDynamicTemplateData(
+//                    "title",
+//                    "Đơn hàng đang trên đường giao"
+//            );
+//
+//            personalization.addDynamicTemplateData(
+//                    "message",
+//                    "Shipper đã nhận hàng và đang giao đến bạn."
+//            );
+//        }
+//
+//        if (event.status() == SubOrderStatus.DELIVERED) {
+//
+//            personalization.addDynamicTemplateData(
+//                    "title",
+//                    "Giao hàng thành công"
+//            );
+//
+//            personalization.addDynamicTemplateData(
+//                    "message",
+//                    "Cảm ơn bạn đã mua hàng tại Khang Store."
+//            );
+//        }
+//
+//        mail.addPersonalization(personalization);
+//
+//        send(mail);
+//    }
+    }
     public void send(String to, String subject , String text)  {
         Email fromEmail = new Email(from);
         Email toEmail = new Email(to);

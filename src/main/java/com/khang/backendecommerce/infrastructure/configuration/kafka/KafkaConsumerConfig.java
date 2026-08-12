@@ -1,4 +1,4 @@
-package com.khang.backendecommerce.infrastructure.configuration;
+package com.khang.backendecommerce.infrastructure.configuration.kafka;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
