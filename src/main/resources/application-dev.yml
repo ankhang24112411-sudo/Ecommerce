@@ -19,6 +19,13 @@ spring:
     properties:
       hibernate:
         format_sql: true
+
+  batch:
+    jdbc:
+      initialize-schema: always
+    job:
+      enabled: false
+
   kafka:
     bootstrap-servers: localhost:29092
   redis:

@@ -19,6 +19,7 @@ import com.khang.backendecommerce.newstruc.service.TrackingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.UUID;
@@ -128,6 +129,7 @@ public class TrackingServiceImpl implements TrackingService {
         subOrderStateService.delivered(subOrder);
         order.setOrderResult(orderResultCalculation.calculate(order.getSubOrders()));
 
+        delivery.setCompletedAt(Instant.now());
         DeliveryTrackingLog deliveryTrackingLog = deliveryTrackingLogFactory.create(delivery,subOrder,delivery.getReceiverAddress());
 
         trackingRepository.save(delivery);

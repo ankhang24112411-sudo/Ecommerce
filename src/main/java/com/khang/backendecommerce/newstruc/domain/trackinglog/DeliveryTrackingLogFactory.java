@@ -20,7 +20,8 @@ public class DeliveryTrackingLogFactory {
                 .message(resolveMessage(subOrder.getOrderStatus()))
                 .location(location)
                 .status(subOrder.getOrderStatus())
-
+                .subOrder(subOrder)
+                .order(order)
                 .receiverName(order.getCustomerName())
                 .receiverAddress(order.getAddress())
                 .receiverPhone(order.getCustomer().getPhone()).build();

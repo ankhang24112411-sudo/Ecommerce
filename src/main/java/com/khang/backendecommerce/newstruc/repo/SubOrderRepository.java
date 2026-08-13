@@ -28,7 +28,7 @@ public interface SubOrderRepository extends JpaRepository<SubOrderEntity , Strin
     JOIN so.store s
     JOIN s.owner o
     WHERE o.id = :sellerId
-      AND so.status = 'PENDING'
+      AND so.orderStatus = 'PENDING'
 """)
     Page<SubOrderEntity> findPendingBySellerId(@Param("sellerId") String sellerId, Pageable pageable);
 
@@ -48,7 +48,7 @@ public interface SubOrderRepository extends JpaRepository<SubOrderEntity , Strin
     WHERE o.id = :sellerId
       AND so.id = :subOrderId
 """)
-        SubOrderEntity findSubOrder(@Param("sellerId") String sellerId, @Param("orderId") String subOrderId);
+        SubOrderEntity findSubOrder(@Param("sellerId") String sellerId, @Param("subOrderId") String subOrderId);
 
     @Query("""
   select

@@ -9,6 +9,7 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,7 +50,7 @@ public class DeliveryEntity extends AbstractEntity<String> implements Serializab
     private String receiverAddress;
 
     @Column(name = "completed_at")
-    private String completedAt;
+    private Instant completedAt;
 
     @OneToMany(mappedBy = "delivery")
     private List<DeliveryTrackingLog> deliveryTrackingLogList = new ArrayList<>();

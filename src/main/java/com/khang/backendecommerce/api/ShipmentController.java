@@ -21,28 +21,28 @@ import org.springframework.web.bind.annotation.*;
 public class ShipmentController {
     private final TrackingService TrackingService ;
 
-    @PostMapping("/{trackingCode}/pickup")
-    public ResponseEntity<BaseResponse<?>> pickup(@RequestParam String trackingCode, @RequestBody ShipperPickingRequest request) {
+    @PatchMapping("/{trackingCode}/pickup")
+    public ResponseEntity<BaseResponse<?>> pickup(@PathVariable String trackingCode, @RequestBody ShipperPickingRequest request) {
         return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(TrackingService.picking(trackingCode, request), "ok"));
     }
-    @PostMapping("/{trackingCode}/shipping")
-    public ResponseEntity<BaseResponse<?>> shipping(@RequestParam String trackingCode){
+    @PatchMapping("/{trackingCode}/shipping")
+    public ResponseEntity<BaseResponse<?>> shipping(@PathVariable String trackingCode){
         return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(TrackingService.shipping(trackingCode), "ok"));
     }
-    @PostMapping("/{trackingCode}/completed")
-    public ResponseEntity<BaseResponse<?>> completed(@RequestParam String trackingCode){
+    @PatchMapping("/{trackingCode}/completed")
+    public ResponseEntity<BaseResponse<?>> completed(@PathVariable String trackingCode){
         return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(TrackingService.completed(trackingCode), "ok"));
     }
-    @PostMapping("/{trackingCode}/firstReattempt")
-    public ResponseEntity<BaseResponse<?>> firstReattempt(@RequestParam String trackingCode, String message){
+    @PatchMapping("/{trackingCode}/firstReattempt")
+    public ResponseEntity<BaseResponse<?>> firstReattempt(@PathVariable String trackingCode, String message){
         return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(TrackingService.firstReattempt(trackingCode,message), "ok"));
     }
-    @PostMapping("/{trackingCode}/reattempt")
-    public ResponseEntity<BaseResponse<?>> reattempt(@RequestParam String trackingCode){
+    @PatchMapping("/{trackingCode}/reattempt")
+    public ResponseEntity<BaseResponse<?>> reattempt(@PathVariable String trackingCode){
         return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(TrackingService.reattempt(trackingCode), "ok"));
     }
-    @PostMapping("/{trackingCode}/reattempt")
-    public ResponseEntity<BaseResponse<?>> failed(@RequestParam String trackingCode,String message){
+    @PatchMapping("/{trackingCode}/failed")
+    public ResponseEntity<BaseResponse<?>> failed(@PathVariable String trackingCode,String message){
         return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(TrackingService.failed(trackingCode, message), "ok"));
     }
 

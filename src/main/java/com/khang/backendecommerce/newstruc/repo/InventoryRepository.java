@@ -65,10 +65,10 @@ public interface InventoryRepository extends JpaRepository<InventoryEntity,Strin
     @Query("""
    select inventory
    from InventoryEntity inventory
-   where inventory.product.id = : productId
+   where inventory.product.id = :productId
    and inventory.availableQuantity -  inventory.reservedQuantity >= :quantity
 """)
-    List<InventoryEntity> findAllInventoryCandidatesWithEnoughStock(@Param("productId") String productId, int quantity);
+    List<InventoryEntity> findAllInventoryCandidatesWithEnoughStock(@Param("productId") String productId,@Param("quantity") int quantity);
 }
 
 

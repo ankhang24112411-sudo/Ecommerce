@@ -34,7 +34,7 @@ public class KafkaConsumerConfig {
 
         JacksonJsonDeserializer<Object> jsonDeserializer = new JacksonJsonDeserializer<>();
 
-        jsonDeserializer.trustedPackages("com.khang.backendecommerce");
+        jsonDeserializer.trustedPackages("com.khang.backendecommerce.newstruc.dto.event");
 
         return new DefaultKafkaConsumerFactory<>(props, new StringDeserializer(), jsonDeserializer);
     }

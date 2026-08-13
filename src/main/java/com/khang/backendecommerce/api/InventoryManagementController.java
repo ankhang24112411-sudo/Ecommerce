@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("v1/seller/suborder-management")
+@RequestMapping("v1/seller/inventory-management")
 @Validated
 @Slf4j
 @Tag(name ="SUB-ORDER-MANAGEMENT-CONTROLLER")
@@ -27,4 +27,5 @@ public class InventoryManagementController {
     public ResponseEntity<BaseResponse<?>> createNewProduct(@RequestBody CreateProductRequest request){
         return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(inventoryService.createProduct(request), "success"));
     }
+
 }

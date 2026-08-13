@@ -41,7 +41,7 @@ public class InventoryEntity extends AbstractEntity<String> implements Serializa
     @Column(name = "available_quantity", nullable = false)
     private Integer availableQuantity;
 
-    @Column(name = "reserved_quantity ", nullable = false)
+    @Column(name = "reserved_quantity", nullable = false)
     private Integer reservedQuantity;
 
     @Enumerated(EnumType.STRING)

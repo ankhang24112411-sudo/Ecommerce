@@ -75,6 +75,7 @@ public class SubOrderManagementServiceImpl implements SubOrderManagementService 
 //      SubOrderEntity subOrder = subOrderRepo.findSubOrder(user.getId(), subOrderId);
 
        subOrderStateService.confirm(subOrder);
+       subOrder.setConfirmedAt(Instant.now());
         OrderEntity order = subOrder.getOrder();
         order.setOrderResult(orderResultCalculation.calculate(order.getSubOrders()));
 

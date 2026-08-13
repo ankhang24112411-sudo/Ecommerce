@@ -20,7 +20,7 @@ public interface ProductRepository extends JpaRepository<ProductEntity,String>, 
     @Query("""
 select product
 from ProductEntity product
-where ProductEntity.id =:productId
+where product.id =:productId
 """)
     Optional<ProductEntity> findProductAndShopByProductId(@Param("productId") String productId);
 
@@ -33,17 +33,17 @@ group by p.id
 order by sum(i.quantity) desc
 """)
     List<String> getFeaturedProduct(Pageable pageable);
-
-    @Query("""
-select p
-from OrderEntity oe
-join oe.subOrders so
-join fetch so.orderItems oi
-join oi.product p
-join fetch p.inventoryList i
-where oe.id =:orderId
-""")
-    List<ProductEntity> getAllProductByOrderId(@Param("orderId") String orderId);
+//
+//    @Query("""
+//select p
+//from OrderEntity oe
+//join oe.subOrders so
+//join so.orderItems oi
+//join oi.product p
+//join fetch p.inventoryList i
+//where oe.id =:orderId
+//""")
+//    List<ProductEntity> getAllProductByOrderId(@Param("orderId") String orderId);
 }
 
 
