@@ -9,7 +9,7 @@ public record FeaturedProductResponse(
         String id,
         String name,
         String primaryImageURL,
-BigDecimal unitPrice
+        BigDecimal unitPrice
 //        String storeName
 ) {
 }

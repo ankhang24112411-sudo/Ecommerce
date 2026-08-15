@@ -20,7 +20,7 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name ="tbl_delivery_tracking_log")
+@Table(name = "tbl_delivery_tracking_log")
 public class DeliveryTrackingLog extends AbstractEntity<String> implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "delivery_id")
@@ -34,9 +34,7 @@ public class DeliveryTrackingLog extends AbstractEntity<String> implements Seria
     private String message;
 
     @Column(name = "location")
-    private String location ;
-
-
+    private String location;
 
 
     @Enumerated(EnumType.STRING)

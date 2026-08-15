@@ -21,6 +21,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
 import static org.springframework.http.HttpHeaders.REFERER;
 
 
@@ -36,20 +37,21 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final UserService userService;
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
+
     @Override
     public TokenResponse authenticate(SignInRequest request) {
 
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
-      var user =  userRepo.findByUsername(request.getUsername()).orElseThrow(() -> new UsernameNotFoundException("Cannot find user"));
+        var user = userRepo.findByUsername(request.getUsername()).orElseThrow(() -> new UsernameNotFoundException("Cannot find user"));
 
-      String accessToken = jwtService.generateToken(user);
-      String refreshToken = jwtService.generateRefreshToken(user);
+        String accessToken = jwtService.generateToken(user);
+        String refreshToken = jwtService.generateRefreshToken(user);
 
-      tokenService.save(TokenEntity.builder()
-              .username(user.getUsername())
-              .accessToken(accessToken)
-              .refreshToken(refreshToken)
-              .build());
+        tokenService.save(TokenEntity.builder()
+                .username(user.getUsername())
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .build());
         return TokenResponse.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
@@ -60,7 +62,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public TokenResponse refresh(HttpServletRequest request) {
         String refreshToken = request.getHeader("x-token");
-        if(StringUtils.isBlank(refreshToken)){
+        if (StringUtils.isBlank(refreshToken)) {
             throw ApplicationErrors.INVALID_TOKEN;
         }
         // extract user from Token
@@ -69,7 +71,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         //check it to DBS
         Optional<UserEntity> user = userRepo.findByUsername(userName);
 
-        if(!jwtService.isValid(refreshToken,TokenType.REFRESH_TOKEN, user.get())) {
+        if (!jwtService.isValid(refreshToken, TokenType.REFRESH_TOKEN, user.get())) {
             throw ApplicationErrors.INVALID_TOKEN;
         }
         String accessToken = jwtService.generateToken(user.get());
@@ -83,10 +85,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public String logout(HttpServletRequest request) {
         final String token = request.getHeader(REFERER);
-        if(StringUtils.isBlank(token)){
+        if (StringUtils.isBlank(token)) {
             throw ApplicationErrors.INVALID_TOKEN;
         }
-        final String userName = jwtService.extractUsername(token,TokenType.ACCESS_TOKEN);
+        final String userName = jwtService.extractUsername(token, TokenType.ACCESS_TOKEN);
         tokenService.delete(userName);
 
         return "Log out successful";
@@ -123,20 +125,20 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     public String changePassword(ResetPasswordDTO request) {
         final String userName = jwtService.extractUsername(request.getSecretKey(), TokenType.RESET_TOKEN);
         var user = userService.getByUsername(userName);
-       if(!request.getConfirmPassword().equals(request.getPassword())){
-           throw ApplicationErrors.PASSWORD_NOT_MATCHED;
-       }
-       user.setPassword(passwordEncoder.encode(request.getPassword()));
-       userService.saveUser(user);
+        if (!request.getConfirmPassword().equals(request.getPassword())) {
+            throw ApplicationErrors.PASSWORD_NOT_MATCHED;
+        }
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        userService.saveUser(user);
         return "Password changed successfully";
     }
 
 
-    private UserEntity validateToken(String token){
-        var userName = jwtService.extractUsername(token , TokenType.RESET_TOKEN);
+    private UserEntity validateToken(String token) {
+        var userName = jwtService.extractUsername(token, TokenType.RESET_TOKEN);
 
         var user = userService.getByUsername(userName);
-        if(!user.isEnabled()){
+        if (!user.isEnabled()) {
             throw ApplicationErrors.USER_ACCOUNT_DISABLED;
 
         }

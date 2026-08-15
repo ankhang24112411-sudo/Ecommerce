@@ -19,21 +19,24 @@ import java.util.List;
 @RequestMapping("/cart")
 @Validated
 @Slf4j
-@Tag(name ="CART - CONTROLLER")
+@Tag(name = "CART - CONTROLLER")
 @RequiredArgsConstructor
 public class CartController {
     private final CartService cartService;
+
     @GetMapping("/")
-      public ResponseEntity<List<CartItemResponse>> getAllCartItems(){
-          return new ResponseEntity<>(cartService.getAllCartItems() , HttpStatus.OK);
-      }
+    public ResponseEntity<List<CartItemResponse>> getAllCartItems() {
+        return new ResponseEntity<>(cartService.getAllCartItems(), HttpStatus.OK);
+    }
+
     @PatchMapping("/{itemId}/quantity")
     public ResponseEntity<CartItemPriceResponse> updateCartItemQuantity(@PathVariable @NonNull String itemId,
-                                                                        @RequestBody CartItemQuantityUpdate request){
-        return new ResponseEntity<>(cartService.updateCartItemQuantity(itemId, request.getQuantity()) , HttpStatus.ACCEPTED);
+                                                                        @RequestBody CartItemQuantityUpdate request) {
+        return new ResponseEntity<>(cartService.updateCartItemQuantity(itemId, request.getQuantity()), HttpStatus.ACCEPTED);
     }
+
     @DeleteMapping("/{itemId}/delete")
-    public ResponseEntity<String> deleteCartItem(@PathVariable @NonNull String itemId){
-        return new ResponseEntity<>(cartService.deleteCartItems(itemId) , HttpStatus.OK);
+    public ResponseEntity<String> deleteCartItem(@PathVariable @NonNull String itemId) {
+        return new ResponseEntity<>(cartService.deleteCartItems(itemId), HttpStatus.OK);
     }
 }

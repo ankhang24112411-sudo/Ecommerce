@@ -17,12 +17,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class PaymentController {
     private final PaymentService paymentService;
+
     @PostMapping("/")
-    public ResponseEntity<BaseResponse<String>> mockingWebhooks(@RequestBody MockPaymentWebhookRequest request){
+    public ResponseEntity<BaseResponse<String>> mockingWebhooks(@RequestBody MockPaymentWebhookRequest request) {
         return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(paymentService.mockWebhooks(request), "ok"));
     }
+
     @PostMapping("/refund")
-    public ResponseEntity<BaseResponse<?>> mockingWebhooksRefundPayment(@RequestBody MockRefundWebhookRequest request){
+    public ResponseEntity<BaseResponse<?>> mockingWebhooksRefundPayment(@RequestBody MockRefundWebhookRequest request) {
         return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(paymentService.mockingWebhooksRefundPayment(request), "ok"));
     }
 }

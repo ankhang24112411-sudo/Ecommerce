@@ -16,8 +16,9 @@ public class PendingState implements SubOrderState {
     public OrderStatus getCurrentState(SubOrderEntity subOrder) {
         return subOrder.getOrderStatus();
     }
+
     @Override
-    public void reject(SubOrderEntity subOrder){
+    public void reject(SubOrderEntity subOrder) {
         subOrder.setOrderStatus(OrderStatus.FAILED);
     }
 }

@@ -16,33 +16,38 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("v1/shipper/tracking")
 @Validated
 @Slf4j
-@Tag(name ="SUB-ORDER-MANAGEMENT-CONTROLLER")
+@Tag(name = "SUB-ORDER-MANAGEMENT-CONTROLLER")
 @RequiredArgsConstructor
 public class ShipmentController {
-    private final TrackingService TrackingService ;
+    private final TrackingService TrackingService;
 
     @PatchMapping("/{trackingCode}/pickup")
     public ResponseEntity<BaseResponse<?>> pickup(@PathVariable String trackingCode, @RequestBody ShipperPickingRequest request) {
         return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(TrackingService.picking(trackingCode, request), "ok"));
     }
+
     @PatchMapping("/{trackingCode}/shipping")
-    public ResponseEntity<BaseResponse<?>> shipping(@PathVariable String trackingCode){
+    public ResponseEntity<BaseResponse<?>> shipping(@PathVariable String trackingCode) {
         return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(TrackingService.shipping(trackingCode), "ok"));
     }
+
     @PatchMapping("/{trackingCode}/completed")
-    public ResponseEntity<BaseResponse<?>> completed(@PathVariable String trackingCode){
+    public ResponseEntity<BaseResponse<?>> completed(@PathVariable String trackingCode) {
         return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(TrackingService.completed(trackingCode), "ok"));
     }
+
     @PatchMapping("/{trackingCode}/firstReattempt")
-    public ResponseEntity<BaseResponse<?>> firstReattempt(@PathVariable String trackingCode, String message){
-        return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(TrackingService.firstReattempt(trackingCode,message), "ok"));
+    public ResponseEntity<BaseResponse<?>> firstReattempt(@PathVariable String trackingCode, String message) {
+        return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(TrackingService.firstReattempt(trackingCode, message), "ok"));
     }
+
     @PatchMapping("/{trackingCode}/reattempt")
-    public ResponseEntity<BaseResponse<?>> reattempt(@PathVariable String trackingCode){
+    public ResponseEntity<BaseResponse<?>> reattempt(@PathVariable String trackingCode) {
         return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(TrackingService.reattempt(trackingCode), "ok"));
     }
+
     @PatchMapping("/{trackingCode}/failed")
-    public ResponseEntity<BaseResponse<?>> failed(@PathVariable String trackingCode,String message){
+    public ResponseEntity<BaseResponse<?>> failed(@PathVariable String trackingCode, String message) {
         return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(TrackingService.failed(trackingCode, message), "ok"));
     }
 

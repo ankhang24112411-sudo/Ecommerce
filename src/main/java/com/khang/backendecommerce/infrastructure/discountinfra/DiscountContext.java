@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 
 @Builder
 public record DiscountContext(
-        BigDecimal subtotal ,
+        BigDecimal subtotal,
         BigDecimal deliveryAmount
 ) {
 }

@@ -15,16 +15,16 @@ import java.util.Optional;
 public interface CartRepository extends JpaRepository<CartEntity, String> {
 
     @Query(value = """
-
-            select p.image, p.name , tci.subtotal , tci.quantity,
-                   cast(tci.inventory_status as VARCHAR)
-from tbl_cart tc\s
-join tbl_cart_item tci\s
-on tc.id = tci.cart_id\s
-join tbl_product p
-on tci.product_id = p.id
-where tc.user_id = :userId
-""" , nativeQuery = true)
+            
+                        select p.image, p.name , tci.subtotal , tci.quantity,
+                               cast(tci.inventory_status as VARCHAR)
+            from tbl_cart tc\s
+            join tbl_cart_item tci\s
+            on tc.id = tci.cart_id\s
+            join tbl_product p
+            on tci.product_id = p.id
+            where tc.user_id = :userId
+            """, nativeQuery = true)
     List<CartItemResponse> getAllCartItems(@Param("userId") String userId);
 
     CartEntity findByUser_Id(String id);
@@ -36,10 +36,10 @@ where tc.user_id = :userId
             }, type = EntityGraph.EntityGraphType.FETCH
     )
     @Query("""
-Select cart
-From CartEntity cart
-where cart.user.id =:userId
-""")
+            Select cart
+            From CartEntity cart
+            where cart.user.id =:userId
+            """)
     CartEntity findCartAndCartItemsByUserId(@Param("userId") String userId);
 
 //@Query(value = """
@@ -76,12 +76,12 @@ where cart.user.id =:userId
 //""")
 //      Optional<CartEntity> findForCheckout(@Param("customerId") String customerId);
 
-@Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("""
-      select cart
-      from CartEntity cart 
-      where cart.user.id = :userId
-""")
+                  select cart
+                  from CartEntity cart 
+                  where cart.user.id = :userId
+            """)
     Optional<CartEntity> findByIdForUpdate(@Param("userId") String userId);
 
 

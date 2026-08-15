@@ -24,11 +24,11 @@ import java.util.List;
 @Entity
 @SuperBuilder
 
-@Table(name ="tbl_order")
+@Table(name = "tbl_order")
 public class OrderEntity extends AbstractEntity<String> implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_id")
-    private UserEntity customer ;
+    private UserEntity customer;
 
 //    @ManyToOne(fetch = FetchType.LAZY)
 //    @JoinColumn(name = "order_discount_id")
@@ -42,33 +42,32 @@ public class OrderEntity extends AbstractEntity<String> implements Serializable 
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "state_id")
-    private StateEntity state ;
+    private StateEntity state;
 
-    @Column(name ="sub_total" , precision = 12 , scale = 2)
+    @Column(name = "sub_total", precision = 12, scale = 2)
     private BigDecimal subtotal = BigDecimal.ZERO;
 
-    @Column(name ="discount_quantity")
+    @Column(name = "discount_quantity")
     private Integer discountQuantity;
 
-    @Column(name ="discount_value" ,  precision = 12 , scale = 2)
+    @Column(name = "discount_value", precision = 12, scale = 2)
     private BigDecimal discountValue = BigDecimal.ZERO;
 
-    @Column(name ="discount_amount" ,  precision = 12 , scale = 2)
+    @Column(name = "discount_amount", precision = 12, scale = 2)
     private BigDecimal discountTotalAmount = BigDecimal.ZERO;
 
-    @Column(name ="total_amount" ,  precision = 12 , scale = 2)
+    @Column(name = "total_amount", precision = 12, scale = 2)
     private BigDecimal orderTotalAmount = BigDecimal.ZERO;
 
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
-    @Column(name = "payment_method", columnDefinition = "payment_method" )
+    @Column(name = "payment_method", columnDefinition = "payment_method")
     private PaymentMethod paymentMethod;
 
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
-    @Column(name = "payment_status", columnDefinition = "payment_status" )
+    @Column(name = "payment_status", columnDefinition = "payment_status")
     private PaymentStatus paymentStatus;
-
 
 
     @Column(name = "delivered_at")
@@ -76,7 +75,7 @@ public class OrderEntity extends AbstractEntity<String> implements Serializable 
 
     @Column(name = "confirmed_at")
     private Instant confirmedAt;
-    @Column(name ="delivery_fee")
+    @Column(name = "delivery_fee")
     private BigDecimal deliveryFee;
     @Column(name = "cancelled_at")
     private Instant cancelledAt;
@@ -90,10 +89,11 @@ public class OrderEntity extends AbstractEntity<String> implements Serializable 
     @Column(name = "order_status", columnDefinition = "order_status")
     private OrderStatus orderStatus;
 
-    public void addSubOrder(SubOrderEntity subOrder){
+    public void addSubOrder(SubOrderEntity subOrder) {
         subOrders.add(subOrder);
         subOrder.setOrder(this);
     }
+
     @Column(name = "address")
     private String address;
 
@@ -102,6 +102,6 @@ public class OrderEntity extends AbstractEntity<String> implements Serializable 
     @Column(name = "order_result", columnDefinition = "order_result")
     private OrderResult orderResult;
 
-    @Column(name ="payable_amount")
+    @Column(name = "payable_amount")
     private BigDecimal payableAmount;
 }

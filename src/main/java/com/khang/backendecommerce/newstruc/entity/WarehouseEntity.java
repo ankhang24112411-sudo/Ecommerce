@@ -17,10 +17,10 @@ import java.io.Serializable;
 @Entity
 @SuperBuilder
 
-@Table(name ="tbl_warehouse")
+@Table(name = "tbl_warehouse")
 public class WarehouseEntity extends AbstractEntity<String> implements Serializable {
     @Column(name = "name")
-    private String name ;
+    private String name;
 
     @Column(name = "description")
     private String description;

@@ -15,4 +15,5 @@ public record CreateProductRequest(
         String description,
         List<ProductImageRequest> images,
         List<CreateInventoryRequest> inventories
-) {}
+) {
+}

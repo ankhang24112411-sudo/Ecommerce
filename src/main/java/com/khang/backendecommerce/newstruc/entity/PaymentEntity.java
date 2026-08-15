@@ -18,25 +18,24 @@ import java.time.Instant;
 @AllArgsConstructor
 @Entity
 @SuperBuilder
-@Table(name ="tbl_payment")
-public class PaymentEntity  extends AbstractEntity<String> implements Serializable {
+@Table(name = "tbl_payment")
+public class PaymentEntity extends AbstractEntity<String> implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private UserEntity user ;
+    private UserEntity user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id")
-    private OrderEntity order ;
+    private OrderEntity order;
 
-    @Column(name ="transaction_code")
+    @Column(name = "transaction_code")
     private String transactionCode;
 
-    @Column(name ="paid_at")
+    @Column(name = "paid_at")
     private Instant failedAt;
 
-    @Column(name ="payment_reference")
+    @Column(name = "payment_reference")
     private String paymentReference;
-
 
 
     @Enumerated(EnumType.STRING)

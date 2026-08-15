@@ -19,19 +19,19 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name ="tbl_delivery")
+@Table(name = "tbl_delivery")
 public class DeliveryEntity extends AbstractEntity<String> implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "delivery_shipper_id")
-    private UserEntity shipper ;
+    private UserEntity shipper;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id")
-    private OrderEntity order ;
+    private OrderEntity order;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_id")
-    private UserEntity customer ;
+    private UserEntity customer;
 
 //    @ManyToOne(fetch = FetchType.LAZY)
 //    @JoinColumn(name = "company_id")

@@ -6,13 +6,13 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 
-public record ProductImageRequest (
+public record ProductImageRequest(
 
 
-     String image,
+        String image,
 
-     Integer primary,
+        Integer primary,
 
-     Integer displayOrder
-){
+        Integer displayOrder
+) {
 }

@@ -14,30 +14,29 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @Entity
 @SuperBuilder
-@Table(name ="tbl_order_item")
+@Table(name = "tbl_order_item")
 public class OrderItem extends AbstractEntity<String> implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sub_order_id")
-    private SubOrderEntity subOrder ;
+    private SubOrderEntity subOrder;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
-    private ProductEntity product ;
+    private ProductEntity product;
 
 
-
-    @Column(name ="product_name")
+    @Column(name = "product_name")
     private String productName;
 
-    @Column(name ="sku")
+    @Column(name = "sku")
     private String sku;
 
-    @Column(name ="unit_price")
+    @Column(name = "unit_price")
     private BigDecimal unitPrice = BigDecimal.ZERO;
 
-    @Column(name ="quantity")
+    @Column(name = "quantity")
     private Integer quantity;
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name= "inventory_id")
+    @JoinColumn(name = "inventory_id")
     private InventoryEntity inventory;
 }

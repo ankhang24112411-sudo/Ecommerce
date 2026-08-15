@@ -7,9 +7,10 @@ import org.springframework.stereotype.Component;
 @Component
 public class FailedState implements SubOrderState {
 
-    public boolean reattemptMaximum(SubOrderEntity subOrder){
+    public boolean reattemptMaximum(SubOrderEntity subOrder) {
         return subOrder.getAttemptCount() >= 3;
     }
+
     @Override
     public void returning(SubOrderEntity subOrder) {
 

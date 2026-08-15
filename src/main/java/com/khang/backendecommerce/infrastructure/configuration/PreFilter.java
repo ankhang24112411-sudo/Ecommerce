@@ -40,20 +40,20 @@ public class PreFilter extends OncePerRequestFilter {
         log.info("--------PreFilter--------");
         log.info("Request : method={}, uri={}, servletPath={}", request.getMethod(), request.getRequestURI(), request.getServletPath());
         final String authorization = request.getHeader(AUTHORIZATION);
-        log.info("Authorization: {}" ,authorization);
-        if(StringUtils.isBlank(authorization) || !authorization.startsWith(BEARER_PREFIX)){
-            filterChain.doFilter(request,response);
+        log.info("Authorization: {}", authorization);
+        if (StringUtils.isBlank(authorization) || !authorization.startsWith(BEARER_PREFIX)) {
+            filterChain.doFilter(request, response);
             return;
 
         }
         final String token = authorization.substring(BEARER_PREFIX.length());
-        final String userName = jwtService.extractUsername(token , TokenType.ACCESS_TOKEN);
+        final String userName = jwtService.extractUsername(token, TokenType.ACCESS_TOKEN);
 
-        if(StringUtils.isNotEmpty(userName) && SecurityContextHolder.getContext().getAuthentication() == null){
+        if (StringUtils.isNotEmpty(userName) && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = userService.userDetailsService().loadUserByUsername(userName);
-            if (jwtService.isValid(token ,TokenType.ACCESS_TOKEN, userDetails)){
+            if (jwtService.isValid(token, TokenType.ACCESS_TOKEN, userDetails)) {
                 SecurityContext context = SecurityContextHolder.createEmptyContext();
-                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails,null , userDetails.getAuthorities());
+                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 context.setAuthentication(authentication);
                 SecurityContextHolder.setContext(context);
@@ -62,10 +62,11 @@ public class PreFilter extends OncePerRequestFilter {
         Authentication authentication =
                 SecurityContextHolder.getContext().getAuthentication();
         log.info("Authentication: {}", authentication);
-        filterChain.doFilter(request,response);
+        filterChain.doFilter(request, response);
 
         log.info("After chain - status: {}", response.getStatus());
     }
+
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         boolean isCreateUserRequest =

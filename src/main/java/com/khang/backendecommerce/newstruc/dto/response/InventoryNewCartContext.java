@@ -6,9 +6,8 @@ import com.khang.backendecommerce.newstruc.entity.InventoryEntity;
 
 import java.math.BigDecimal;
 
-public record InventoryNewCartContext (
+public record InventoryNewCartContext(
         InventoryEntity inventory,
         DeliveryFeeEntity deliveryFee
-)
-{
+) {
 }

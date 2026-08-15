@@ -7,5 +7,5 @@ import com.khang.backendecommerce.newstruc.entity.UserEntity;
 import java.math.BigDecimal;
 
 public interface RefundService {
-  void handleRefundWhenSubOrderReject(SubOrderEntity subOrder, OrderEntity order, UserEntity user, BigDecimal refundAmount);
+    void handleRefundWhenSubOrderReject(SubOrderEntity subOrder, OrderEntity order, UserEntity user, BigDecimal refundAmount);
 }

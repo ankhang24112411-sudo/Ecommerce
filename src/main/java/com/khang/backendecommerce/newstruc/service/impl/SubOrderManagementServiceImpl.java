@@ -44,42 +44,45 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Slf4j(topic = "CART - SERVICE")
 public class SubOrderManagementServiceImpl implements SubOrderManagementService {
-   private final CurrentUserProvider currentUserProvider;
-   private final SubOrderRepository subOrderRepo;
-   private final RefundService refundService;
-   private final SubOrderStateContext subOrderStateContext;
-   private final SubOrderStateService subOrderStateService;
-   private final OrderResultCalculation orderResultCalculation;
+    private final CurrentUserProvider currentUserProvider;
+    private final SubOrderRepository subOrderRepo;
+    private final RefundService refundService;
+    private final SubOrderStateContext subOrderStateContext;
+    private final SubOrderStateService subOrderStateService;
+    private final OrderResultCalculation orderResultCalculation;
 
-   private final TrackingService trackingService;
+    private final TrackingService trackingService;
+
     @Override
     public BaseResponse<?> getAllPendingSuborders(Pageable pageable) {
-        UserEntity user  = currentUserProvider.getCurrentUser();
-        Page<SubOrderEntity> pendingSubOrder = subOrderRepo.findPendingBySellerId(user.getId(),  pageable);
-        PageResponse<?> page =  convertToPageResponse(pendingSubOrder, pageable);
-        return    BaseResponse.ofSuccess(page);
+        UserEntity user = currentUserProvider.getCurrentUser();
+        Page<SubOrderEntity> pendingSubOrder = subOrderRepo.findPendingBySellerId(user.getId(), pageable);
+        PageResponse<?> page = convertToPageResponse(pendingSubOrder, pageable);
+        return BaseResponse.ofSuccess(page);
 
     }
-    private UserEntity validateShopOwnerToSuborder(String subOrderId){
+
+    private UserEntity validateShopOwnerToSuborder(String subOrderId) {
         UserEntity user = currentUserProvider.getCurrentUser();
-        if(!subOrderRepo.existsByIdAndStore_Owner_Id(subOrderId, user.getId())){
+        if (!subOrderRepo.existsByIdAndStore_Owner_Id(subOrderId, user.getId())) {
             throw ApplicationErrors.ACCESS_DENIED;
         }
         return user;
     }
+
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public SubOrderStatusResponse confirmSubOrdersStatus( String subOrderId) {
+    public SubOrderStatusResponse confirmSubOrdersStatus(String subOrderId) {
         SubOrderEntity subOrder = subOrderRepo.findById(subOrderId).orElseThrow(() -> ApplicationErrors.SUB_ORDER_NOT_FOUND);
 //      UserEntity user = validateShopOwnerToSuborder( subOrderId);
 //      SubOrderEntity subOrder = subOrderRepo.findSubOrder(user.getId(), subOrderId);
 
-       subOrderStateService.confirm(subOrder);
-       subOrder.setConfirmedAt(Instant.now());
+        subOrderStateService.confirm(subOrder);
+        subOrder.setConfirmedAt(Instant.now());
         OrderEntity order = subOrder.getOrder();
         order.setOrderResult(orderResultCalculation.calculate(order.getSubOrders()));
 
-        trackingService.createTrackingAndTrackingLog(null, subOrder,order);
+        trackingService.createTrackingAndTrackingLog(null, subOrder, order);
 
         return SubOrderStatusResponse.builder()
                 .subOrderId(subOrderId)
@@ -91,7 +94,7 @@ public class SubOrderManagementServiceImpl implements SubOrderManagementService 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public SubOrderStatusResponse rejectSubOrders(String subOrderId) {
-        UserEntity user = validateShopOwnerToSuborder( subOrderId);
+        UserEntity user = validateShopOwnerToSuborder(subOrderId);
         SubOrderEntity subOrder = subOrderRepo.findSubOrder(user.getId(), subOrderId);
 //      if(!subOrder.getOrderStatus().equals(OrderStatus.PENDING)){
 //          throw ApplicationErrors.INVALID_ORDER_STATUS;
@@ -102,23 +105,23 @@ public class SubOrderManagementServiceImpl implements SubOrderManagementService 
 
 
         subOrder.setRejectedAt(Instant.now());
-      subOrder.setRejectionReason("REJECT FROM SHOP OWNER");
-       subOrder.getOrderItems()
-              .forEach(orderItem ->{
-             InventoryEntity inventory =  orderItem.getInventory();
-             inventory.updateQuantityWhenSubOrderRejectOrRefund(orderItem.getQuantity());
-      });
+        subOrder.setRejectionReason("REJECT FROM SHOP OWNER");
+        subOrder.getOrderItems()
+                .forEach(orderItem -> {
+                    InventoryEntity inventory = orderItem.getInventory();
+                    inventory.updateQuantityWhenSubOrderRejectOrRefund(orderItem.getQuantity());
+                });
 
-    OrderEntity order = subOrder.getOrder();
-    order.setOrderResult(orderResultCalculation.calculate(order.getSubOrders()));
+        OrderEntity order = subOrder.getOrder();
+        order.setOrderResult(orderResultCalculation.calculate(order.getSubOrders()));
 
 
         BigDecimal refundAmount = subOrder.getSubTotal().add(subOrder.getDeliveryFee());
-    BigDecimal payableAmount = order.getOrderTotalAmount().subtract(refundAmount);
-    order.setPayableAmount(payableAmount);
-    if(order.getPaymentMethod().equals(PaymentMethod.BANK_TRANSFER)) {
-        refundService.handleRefundWhenSubOrderReject( subOrder,  order,user, refundAmount);
-    }
+        BigDecimal payableAmount = order.getOrderTotalAmount().subtract(refundAmount);
+        order.setPayableAmount(payableAmount);
+        if (order.getPaymentMethod().equals(PaymentMethod.BANK_TRANSFER)) {
+            refundService.handleRefundWhenSubOrderReject(subOrder, order, user, refundAmount);
+        }
         return SubOrderStatusResponse.builder()
                 .subOrderId(subOrderId)
                 .orderStatus(subOrder.getOrderStatus())
@@ -135,38 +138,38 @@ public class SubOrderManagementServiceImpl implements SubOrderManagementService 
         Instant start = today.atStartOfDay(zone).toInstant();
         Instant end = today.plusDays(1).atStartOfDay(zone).toInstant();
 
-        return subOrderRepo.getTodayDashboard(userId,start,end);
+        return subOrderRepo.getTodayDashboard(userId, start, end);
     }
 
     private PageResponse<?> convertToPageResponse(Page<SubOrderEntity> pendingSubOrder, Pageable pageable) {
-        List<OrderItemInSubOrderResponse> responses= pendingSubOrder.stream()
+        List<OrderItemInSubOrderResponse> responses = pendingSubOrder.stream()
                 .flatMap(subOrder -> subOrder.getOrderItems()
-                                .stream().map(orderItem ->
-                                     OrderItemInSubOrderResponse.builder()
-                                            .productName(orderItem.getProductName())
-                                            .quantity(orderItem.getQuantity())
-                                            .inventoryStatus(orderItem.getInventory().getInventoryStatus())
-                                            .totalAmount(orderItem.getUnitPrice().multiply(BigDecimal.valueOf(orderItem.getQuantity())))
-                                            .build()
-                                )
+                        .stream().map(orderItem ->
+                                OrderItemInSubOrderResponse.builder()
+                                        .productName(orderItem.getProductName())
+                                        .quantity(orderItem.getQuantity())
+                                        .inventoryStatus(orderItem.getInventory().getInventoryStatus())
+                                        .totalAmount(orderItem.getUnitPrice().multiply(BigDecimal.valueOf(orderItem.getQuantity())))
+                                        .build()
+                        )
                 ).toList();
-     List<SubOrderPendingResponse> responseList = pendingSubOrder.stream()
-             .map(subOrder -> {
-                 OrderEntity order = subOrder.getOrder();
-                 BigDecimal totalAmount = subOrder.getOrderItems().stream().map(orderItem -> {
-                    return orderItem.getUnitPrice().multiply(BigDecimal.valueOf(orderItem.getQuantity()));
-                 }).reduce(BigDecimal.ZERO,BigDecimal::add);
-                 return SubOrderPendingResponse.builder()
-                         .orderId(order.getId())
-                         .orderCode(order.getOrderCode())
-                         .createdAt(order.getCreatedAt())
-                         .customerName(order.getCustomerName())
-                         .items(responses)
-                         .shippingAddress(order.getAddress())
-                         .totalAmount(totalAmount).paymentMethod(order.getPaymentMethod()).paymentStatus(order.getPaymentStatus())
-                         .build();
-             }).toList();
-     long total = responses.size();
-        return PageResponse.of(responseList,pageable,total);
+        List<SubOrderPendingResponse> responseList = pendingSubOrder.stream()
+                .map(subOrder -> {
+                    OrderEntity order = subOrder.getOrder();
+                    BigDecimal totalAmount = subOrder.getOrderItems().stream().map(orderItem -> {
+                        return orderItem.getUnitPrice().multiply(BigDecimal.valueOf(orderItem.getQuantity()));
+                    }).reduce(BigDecimal.ZERO, BigDecimal::add);
+                    return SubOrderPendingResponse.builder()
+                            .orderId(order.getId())
+                            .orderCode(order.getOrderCode())
+                            .createdAt(order.getCreatedAt())
+                            .customerName(order.getCustomerName())
+                            .items(responses)
+                            .shippingAddress(order.getAddress())
+                            .totalAmount(totalAmount).paymentMethod(order.getPaymentMethod()).paymentStatus(order.getPaymentStatus())
+                            .build();
+                }).toList();
+        long total = responses.size();
+        return PageResponse.of(responseList, pageable, total);
     }
 }

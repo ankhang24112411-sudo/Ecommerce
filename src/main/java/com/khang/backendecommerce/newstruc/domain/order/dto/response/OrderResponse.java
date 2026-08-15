@@ -10,19 +10,19 @@ import java.time.Instant;
 import java.util.List;
 
 @Builder
-public record OrderResponse (
+public record OrderResponse(
 
-    String orderCode,
-    OrderStatus orderStatus,
-    PaymentStatus paymentStatus,
-    String paymentReference,
-    BigDecimal subtotal,
-    BigDecimal deliveryAmount,
-    BigDecimal discountAmount,
-    BigDecimal totalAmount,
+        String orderCode,
+        OrderStatus orderStatus,
+        PaymentStatus paymentStatus,
+        String paymentReference,
+        BigDecimal subtotal,
+        BigDecimal deliveryAmount,
+        BigDecimal discountAmount,
+        BigDecimal totalAmount,
 
-    Instant createdAt,
-    List<SubOrderResponse> subOrders
+        Instant createdAt,
+        List<SubOrderResponse> subOrders
 
-)
-{}
+) {
+}

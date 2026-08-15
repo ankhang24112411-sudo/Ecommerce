@@ -12,7 +12,7 @@ public interface ProductService {
 
     ProductEntity findProductById(String productId);
 
-     ProductEntity findProductByIdWithShop(String productId);
+    ProductEntity findProductByIdWithShop(String productId);
 
     List<FeaturedProductResponse> getFeaturedProduct();
 

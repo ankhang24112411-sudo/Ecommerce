@@ -12,24 +12,25 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 import java.io.Serializable;
+
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name ="tbl_delivery_company")
+@Table(name = "tbl_delivery_company")
 @SuperBuilder
 
 public class DeliveryCompanyEntity extends AbstractEntity<String> implements Serializable {
     @Column(name = "name")
-    private String name ;
+    private String name;
 
     @Column(name = "description")
     private String description;
 
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
-    @Column(name = "delivery_company_status", columnDefinition = "delivery_company_status" )
+    @Column(name = "delivery_company_status", columnDefinition = "delivery_company_status")
     private DeliveryCompanyStatus companyStatus;
 
 

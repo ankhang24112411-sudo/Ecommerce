@@ -9,6 +9,7 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 import java.io.Serializable;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -16,21 +17,21 @@ import java.io.Serializable;
 @Entity
 @SuperBuilder
 
-@Table(name ="tbl_delivery_route")
+@Table(name = "tbl_delivery_route")
 public class DeliveryRouteEntity extends AbstractEntity<String> implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "state_from_id")
-    private StateEntity stateFrom ;
+    private StateEntity stateFrom;
 
     @Column(name = "state_from_name")
-    private String stateFromName ;
+    private String stateFromName;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "state_to_id")
-    private StateEntity stateTo ;
+    private StateEntity stateTo;
 
     @Column(name = "state_to_name")
-    private String stateToName ;
+    private String stateToName;
 
 
 }

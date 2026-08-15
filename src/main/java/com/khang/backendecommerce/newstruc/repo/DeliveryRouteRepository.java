@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface DeliveryRouteRepository extends JpaRepository<DeliveryRouteEntity,String> {
+public interface DeliveryRouteRepository extends JpaRepository<DeliveryRouteEntity, String> {
     Optional<DeliveryRouteEntity> findByStateFrom_IdAndStateTo_Id(String stateFromId, String stateToId);
 
 }

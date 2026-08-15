@@ -2,12 +2,12 @@ package com.khang.backendecommerce.infrastructure.exception;
 
 public class ApplicationErrors {
 
-    public static final ApplicationException CART_CHANGED_DURING_CHECKOUT =new ApplicationException(
+    public static final ApplicationException CART_CHANGED_DURING_CHECKOUT = new ApplicationException(
             401111,
             401,
             "Cart items changed during checkout"
-    ) ;
-    public static final Exception INVENTORY_NOT_ENOUGH_STOCK =new ApplicationException(
+    );
+    public static final Exception INVENTORY_NOT_ENOUGH_STOCK = new ApplicationException(
             401001,
             401,
             "Username or password is incorrect"

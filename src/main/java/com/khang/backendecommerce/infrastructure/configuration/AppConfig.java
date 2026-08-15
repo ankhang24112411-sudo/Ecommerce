@@ -30,6 +30,7 @@ public class AppConfig {
     private final UserService userService;
     private final PreFilter preFilter;
     private String[] WHITE_LIST = {"/auth/**"};
+
     @Bean
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {
@@ -51,8 +52,9 @@ public class AppConfig {
                 webSecurity.ignoring()
                         .requestMatchers("/actuator/**", "/v3/**", "/webjars/**", "/swagger-ui*/*swagger-initializer.js", "/swagger-ui*/**");
     }
+
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception{
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
 
@@ -60,16 +62,17 @@ public class AppConfig {
     public static PasswordEncoder getPasswordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
-        // nur AccessTokenAPI kein Token zwingen
+                // nur AccessTokenAPI kein Token zwingen
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests.requestMatchers("/auth/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/user", "/user/").permitAll()
-                                .requestMatchers("/error").permitAll()
-                                .requestMatchers(HttpMethod.POST, "/api/v1/payment/webhooks/mock").permitAll()
-                                .anyRequest().authenticated()
-                        )
+                        .requestMatchers("/error").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/payment/webhooks/mock").permitAll()
+                        .anyRequest().authenticated()
+                )
                 .sessionManagement(manager -> manager.sessionCreationPolicy(STATELESS))
                 .authenticationProvider(provider()).addFilterBefore(preFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
@@ -80,10 +83,12 @@ public class AppConfig {
 //                        .anyRequest().permitAll()).build();
 
     }
+
     @Bean
     public SendGrid sendGrid(@Value("${sendgrid.api-key}") String apiKey) {
         return new SendGrid(apiKey);
     }
+
     @Bean
     public AuthenticationProvider provider() {
         DaoAuthenticationProvider provider =

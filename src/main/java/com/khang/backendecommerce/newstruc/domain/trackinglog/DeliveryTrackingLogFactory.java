@@ -26,18 +26,19 @@ public class DeliveryTrackingLogFactory {
                 .receiverAddress(order.getAddress())
                 .receiverPhone(order.getCustomer().getPhone()).build();
     }
-            private String resolveMessage(OrderStatus status) {
-                return switch (status) {
-                    case CONFIRMED -> "Order confirmed";
-                    case PICKING -> "Warehouse is preparing your order";
-                    case SHIPPING -> "Order is being delivered";
-                    case DELIVERED -> "Order delivered successfully";
-                    case FAILED -> "Delivery failed";
-                    case RETURNING -> "Order is being returned";
-                    case REATTEMPT -> "Order will be delivered again";
-                    default -> "Order status updated";
-                };
-            }
 
+    private String resolveMessage(OrderStatus status) {
+        return switch (status) {
+            case CONFIRMED -> "Order confirmed";
+            case PICKING -> "Warehouse is preparing your order";
+            case SHIPPING -> "Order is being delivered";
+            case DELIVERED -> "Order delivered successfully";
+            case FAILED -> "Delivery failed";
+            case RETURNING -> "Order is being returned";
+            case REATTEMPT -> "Order will be delivered again";
+            default -> "Order status updated";
+        };
     }
+
+}
 

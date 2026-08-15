@@ -38,7 +38,6 @@ public enum ErrorCode {
     CART_ITEM_ALREADY_EXISTS("CART_ITEM_ALREADY_EXISTS", "Product already exists in the cart", HttpStatus.CONFLICT),
 
 
-
     INVALID_CART_ITEM("INVALID_CART_ITEM", "Cart item is not valid", HttpStatus.BAD_REQUEST),
 
     INVALID_QUANTITY("INVALID_QUANTITY", "Quantity is not valid", HttpStatus.BAD_REQUEST),

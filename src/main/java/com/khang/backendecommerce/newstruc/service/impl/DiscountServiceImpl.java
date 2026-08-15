@@ -28,19 +28,20 @@ public class DiscountServiceImpl implements DiscountService {
     private final DiscountRepository discountRepository;
     private final DiscountCustomerRepository discountCustomerRepo;
     private final DiscountFactory discountFactory;
+
     @Override
     public DiscountCustomerEntity checkDiscountValidationFromUser(String userId, String discountName) {
-        DiscountEntity discount = discountRepository.findByDiscountName(discountName).orElseThrow(() ->  ApplicationErrors.DISCOUNT_NOT_FOUND);
+        DiscountEntity discount = discountRepository.findByDiscountName(discountName).orElseThrow(() -> ApplicationErrors.DISCOUNT_NOT_FOUND);
         checkDateDiscount(discount);
-        DiscountCustomerEntity discountCustomer =   discountCustomerRepo.findByCustomer_IdAndDiscount_DiscountName(userId, discountName).orElseThrow(() ->  ApplicationErrors.DISCOUNT_NOT_FOUND);
-        if(discountCustomer.getDiscountQuantity() <= 0){
+        DiscountCustomerEntity discountCustomer = discountCustomerRepo.findByCustomer_IdAndDiscount_DiscountName(userId, discountName).orElseThrow(() -> ApplicationErrors.DISCOUNT_NOT_FOUND);
+        if (discountCustomer.getDiscountQuantity() <= 0) {
             throw ApplicationErrors.DISCOUNT_NOT_HAVE;
         }
         return discountCustomer;
     }
 
     @Override
-    public void checkDateDiscount( DiscountEntity discount) {
+    public void checkDateDiscount(DiscountEntity discount) {
         if (Instant.now().isAfter(discount.getValidTo()) || discount.getDiscountStatus() == DiscountStatus.INVALID || discount.getDiscountStatus() == DiscountStatus.OUT_OF_DATE) {
             throw ApplicationErrors.DISCOUNT_EXPIRED;
         }
@@ -54,11 +55,12 @@ public class DiscountServiceImpl implements DiscountService {
 //    }
 
     @Override
-    public BigDecimal calculateDiscount(DiscountCustomerEntity discount, DiscountContext context ) {
+    public BigDecimal calculateDiscount(DiscountCustomerEntity discount, DiscountContext context) {
         DiscountEntity discountSource = discount.getDiscount();
-        DiscountStrategy strategy = discountFactory.getStrategy(discountSource.getDiscountType() );
-        return strategy.calculate(discountSource , context);
+        DiscountStrategy strategy = discountFactory.getStrategy(discountSource.getDiscountType());
+        return strategy.calculate(discountSource, context);
     }
+
     @Override
     public boolean isSameDiscount(CartEntity cart, String discountName) {
         return Optional.ofNullable(cart.getDiscount())
@@ -70,7 +72,7 @@ public class DiscountServiceImpl implements DiscountService {
 
     @Override
     public DiscountEntity findAndCheckDiscountCustomer(DiscountCustomerEntity discount) {
-    return null;
+        return null;
     }
 
     @Override

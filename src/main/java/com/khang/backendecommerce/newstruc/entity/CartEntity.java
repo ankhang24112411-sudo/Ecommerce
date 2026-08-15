@@ -16,14 +16,13 @@ import java.util.List;
 @AllArgsConstructor
 @Entity
 @SuperBuilder
-@Table(name ="tbl_cart")
+@Table(name = "tbl_cart")
 public class CartEntity extends AbstractEntity<String> implements Serializable {
 
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private UserEntity user;
-
 
 
 //    @Column(name ="subtotal" , precision = 12 , scale = 2)
@@ -33,17 +32,18 @@ public class CartEntity extends AbstractEntity<String> implements Serializable {
 //    @Column(name = "total_amount" , precision = 12 , scale = 2)
 //    private BigDecimal totalAmount = BigDecimal.ZERO;
 
-        @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "discount_id")
-    private DiscountCustomerEntity discount ;
-    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL,orphanRemoval = true)
+    private DiscountCustomerEntity discount;
+    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CartItemEntity> cartItemList = new ArrayList<>();
 
-    public void addCartItem(CartItemEntity cartItem){
+    public void addCartItem(CartItemEntity cartItem) {
         cartItemList.add(cartItem);
         cartItem.setCart(this);
     }
-    public void removeCartItem(CartItemEntity cartItem){
+
+    public void removeCartItem(CartItemEntity cartItem) {
         cartItemList.remove(cartItem);
         cartItem.setCart(null);
     }

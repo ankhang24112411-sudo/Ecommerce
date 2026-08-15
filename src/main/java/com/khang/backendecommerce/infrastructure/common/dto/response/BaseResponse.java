@@ -22,16 +22,20 @@ public class BaseResponse<T> {
 
     private T data;
     private Metadata meta = new Metadata();
+
     public BaseResponse() {
     }
+
     public BaseResponse(int code, String message) {
         this.meta.code = code;
         this.meta.message = message;
     }
+
     public BaseResponse(T data, String message) {
         this.data = data;
         this.meta.message = message;
     }
+
     public BaseResponse(int code, T data, String message) {
         this.data = data;
         this.meta.code = code;

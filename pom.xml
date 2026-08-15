@@ -227,9 +227,18 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-websocket</artifactId>
         </dependency>
-
+        <!-- ==================== WEBSOCKET ==================== -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-batch</artifactId>
+        </dependency>
     </dependencies>
-
+    <!-- ==================== MYBATIS PLUS ==================== -->
+    <dependency>
+        <groupId>com.baomidou</groupId>
+        <artifactId>mybatis-plus-boot-starter</artifactId>
+        <version>3.5.5</version>
+    </dependency>
     <!-- Maven profiles -->
     <profiles>
 

@@ -12,11 +12,12 @@ import java.util.Set;
 
 public interface OrderService {
     OrderResponse placeOrder(OrderRequest request);
+
     public List<AllocatedItem> findAllocateAndLock(List<CartItemEntity> cartItemList,
                                                    Map<String, List<InventoryEntity>> inventoriesByProduct,
                                                    Set<String> warehouseIds,
                                                    Map<String, DeliveryFeeEntity> deliveryFeeEntityByWarehouseStateId,
-                                                   String userStateId,  PaymentMethod paymentMethod);
+                                                   String userStateId, PaymentMethod paymentMethod);
 
     void deleteCartAndUpdateInventoryAfterPaymentSuccess(UserEntity user, OrderEntity order, PaymentEntity payment);
 }

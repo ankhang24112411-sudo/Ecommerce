@@ -22,7 +22,7 @@ import java.time.Instant;
 @AllArgsConstructor
 @SuperBuilder
 @Entity
-@Table(name ="tbl_refund")
+@Table(name = "tbl_refund")
 public class RefundEntity extends AbstractEntity<String> implements Serializable {
 
     @ManyToOne(fetch = FetchType.LAZY)

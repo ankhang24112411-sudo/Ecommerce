@@ -4,6 +4,7 @@ import com.khang.backendecommerce.infrastructure.common.enums.InventoryStatus;
 import lombok.Builder;
 
 import java.math.BigDecimal;
+
 @Builder
 public record OrderItemInSubOrderResponse(
         String productName,

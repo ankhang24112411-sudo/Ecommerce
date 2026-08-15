@@ -8,7 +8,7 @@ import java.util.List;
 
 import static com.khang.backendecommerce.newstruc.repo.specification.SearchOperation.*;
 
-public final  class ProductSpecificationsBuilder {
+public final class ProductSpecificationsBuilder {
 
     public final List<SpecSearchCriteria> params;
 

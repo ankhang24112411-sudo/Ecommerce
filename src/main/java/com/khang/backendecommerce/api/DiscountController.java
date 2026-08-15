@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/user")
 @Validated
 @Slf4j
-@Tag(name ="Discount Controller")
+@Tag(name = "Discount Controller")
 @RequiredArgsConstructor
 public class DiscountController {
 }

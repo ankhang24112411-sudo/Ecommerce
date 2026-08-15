@@ -24,23 +24,23 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepo;
     private final NewUserMapper userMapper;
     // Không inject từ Spring
-    private final PasswordEncoder passwordEncoder ;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public UserDetailsService userDetailsService() {
-        return username ->  userRepo.findByUsernameWithRoles(username).orElseThrow(() ->  new UsernameNotFoundException("Username not found"));
+        return username -> userRepo.findByUsernameWithRoles(username).orElseThrow(() -> new UsernameNotFoundException("Username not found"));
 
     }
 
     @Override
     public String addUser(UserCreationRequest request) {
         log.info("Username nhận được: " + request.getUsername());
-      ValidationUtils.throwIf(userRepo.existsByUsername(request.getUsername()),() -> ApplicationErrors.USER_NOT_FOUND);
-      ValidationUtils.throwIf(userRepo.existsByEmail(request.getEmail()),() -> ApplicationErrors.EMAIL_NOT_FOUND);
-     UserEntity user = userMapper.toUser(request);
-     user.setPassword(passwordEncoder.encode(request.getPassword()));
-     user.setCreatedBy(user.getId());
-     userRepo.save(user);
+        ValidationUtils.throwIf(userRepo.existsByUsername(request.getUsername()), () -> ApplicationErrors.USER_NOT_FOUND);
+        ValidationUtils.throwIf(userRepo.existsByEmail(request.getEmail()), () -> ApplicationErrors.EMAIL_NOT_FOUND);
+        UserEntity user = userMapper.toUser(request);
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setCreatedBy(user.getId());
+        userRepo.save(user);
 //     if( user != null){
 //         String message = String.format("email=%,id=%s,code=%s", user.getEmail(),user.getId(),"code@123");
 //         kafkaTemplate.send("confirm-account-topic", message);
@@ -60,7 +60,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void saveUser(UserEntity user) {
-         userRepo.save(user);
+        userRepo.save(user);
     }
 
 

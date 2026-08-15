@@ -23,8 +23,8 @@ import java.util.Set;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name ="tbl_user")
-public class UserEntity extends AbstractEntity<String> implements UserDetails,Serializable {
+@Table(name = "tbl_user")
+public class UserEntity extends AbstractEntity<String> implements UserDetails, Serializable {
     @Column(name = "first_name")
     private String firstName;
 
@@ -51,10 +51,10 @@ public class UserEntity extends AbstractEntity<String> implements UserDetails,Se
     @Column(name = "email")
     private String email;
 
-    @Column (name = "username")
+    @Column(name = "username")
     private String username;
 
-    @Column (name = "password")
+    @Column(name = "password")
     private String password;
 
     @OneToOne(mappedBy = "user")
@@ -67,9 +67,11 @@ public class UserEntity extends AbstractEntity<String> implements UserDetails,Se
     @Builder.Default
     @OneToMany(mappedBy = "user")
     private Set<UserHasRole> roles = new HashSet<>();
-    public String getFullName(){
+
+    public String getFullName() {
         return firstName.concat(" ").concat(lastName);
     }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return roles.stream()
@@ -86,7 +88,7 @@ public class UserEntity extends AbstractEntity<String> implements UserDetails,Se
 
     @Override
     public boolean isAccountNonLocked() {
-       return true;
+        return true;
     }
 
     @Override

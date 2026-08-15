@@ -7,6 +7,7 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import java.io.Serializable;
+
 @Getter
 @Setter
 @Entity
@@ -14,7 +15,7 @@ import java.io.Serializable;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name ="tbl_state")
+@Table(name = "tbl_state")
 public class StateEntity extends AbstractEntity<String> implements Serializable {
     private String name;
 }

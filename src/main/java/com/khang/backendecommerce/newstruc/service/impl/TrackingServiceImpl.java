@@ -43,11 +43,12 @@ public class TrackingServiceImpl implements TrackingService {
         String date = LocalDate.now().format(ORDER_CODE_FORMAT);
         String randomPart = UUID.randomUUID().toString().replace("-", "").substring(0, 8).toUpperCase();
         return "SUBORD-" + date + "-" + randomPart;
-}
+    }
+
     @Override
     public void createTrackingAndTrackingLog(UserEntity user, SubOrderEntity subOrder, OrderEntity order) {
-     String trackingCode = generateSubTrackingCode();
-     subOrder.setTrackingCode(trackingCode);
+        String trackingCode = generateSubTrackingCode();
+        subOrder.setTrackingCode(trackingCode);
         DeliveryEntity delivery = DeliveryEntity.builder()
                 .order(order)
                 .subOrder(subOrder)
@@ -56,10 +57,10 @@ public class TrackingServiceImpl implements TrackingService {
                 .receiverName(order.getCustomerName())
                 .receiverAddress(order.getAddress()).build();
 
-        DeliveryTrackingLog deliveryTrackingLog = deliveryTrackingLogFactory.create(delivery,subOrder,"STORE");
+        DeliveryTrackingLog deliveryTrackingLog = deliveryTrackingLogFactory.create(delivery, subOrder, "STORE");
         trackingRepository.save(delivery);
         trackingLogRepository.save(deliveryTrackingLog);
-     }
+    }
 
     @Override
     public TrackingSubOrderResponse picking(String trackingCode, ShipperPickingRequest request) {
@@ -72,7 +73,7 @@ public class TrackingServiceImpl implements TrackingService {
         subOrderStateService.startPicking(subOrder);
         order.setOrderResult(orderResultCalculation.calculate(order.getSubOrders()));
 
-        DeliveryTrackingLog deliveryTrackingLog = deliveryTrackingLogFactory.create(delivery,subOrder,"WAREHOUSE");
+        DeliveryTrackingLog deliveryTrackingLog = deliveryTrackingLogFactory.create(delivery, subOrder, "WAREHOUSE");
 
         trackingRepository.save(delivery);
         trackingLogRepository.save(deliveryTrackingLog);
@@ -95,19 +96,19 @@ public class TrackingServiceImpl implements TrackingService {
         subOrderStateService.startShipping(subOrder);
         order.setOrderResult(orderResultCalculation.calculate(order.getSubOrders()));
 
-        DeliveryTrackingLog deliveryTrackingLog = deliveryTrackingLogFactory.create(delivery,subOrder,"WAREHOUSE");
+        DeliveryTrackingLog deliveryTrackingLog = deliveryTrackingLogFactory.create(delivery, subOrder, "WAREHOUSE");
 
         trackingRepository.save(delivery);
         trackingLogRepository.save(deliveryTrackingLog);
         SubOrderStatusEvent event = new SubOrderStatusEvent(
-                        order.getId(),
-                        order.getOrderCode(),
-                        subOrder.getId(),
-                        subOrder.getSuborderCode(),
-                        subOrder.getTrackingCode(),
-                        order.getCustomerName(),
-                        order.getCustomer().getEmail(),
-                        subOrder.getOrderStatus());
+                order.getId(),
+                order.getOrderCode(),
+                subOrder.getId(),
+                subOrder.getSuborderCode(),
+                subOrder.getTrackingCode(),
+                order.getCustomerName(),
+                order.getCustomer().getEmail(),
+                subOrder.getOrderStatus());
 
         kafkaProducerService.send(KafkaTopics.SUBORDER_STATUS, subOrder.getId(), event);
         return TrackingSubOrderResponse.builder()
@@ -130,7 +131,7 @@ public class TrackingServiceImpl implements TrackingService {
         order.setOrderResult(orderResultCalculation.calculate(order.getSubOrders()));
 
         delivery.setCompletedAt(Instant.now());
-        DeliveryTrackingLog deliveryTrackingLog = deliveryTrackingLogFactory.create(delivery,subOrder,delivery.getReceiverAddress());
+        DeliveryTrackingLog deliveryTrackingLog = deliveryTrackingLogFactory.create(delivery, subOrder, delivery.getReceiverAddress());
 
         trackingRepository.save(delivery);
         trackingLogRepository.save(deliveryTrackingLog);
@@ -165,7 +166,7 @@ public class TrackingServiceImpl implements TrackingService {
         subOrderStateService.reattempt(subOrder);
         order.setOrderResult(orderResultCalculation.calculate(order.getSubOrders()));
 
-        DeliveryTrackingLog deliveryTrackingLog = deliveryTrackingLogFactory.create(delivery,subOrder,delivery.getReceiverAddress());
+        DeliveryTrackingLog deliveryTrackingLog = deliveryTrackingLogFactory.create(delivery, subOrder, delivery.getReceiverAddress());
 
         trackingRepository.save(delivery);
         trackingLogRepository.save(deliveryTrackingLog);
@@ -188,7 +189,7 @@ public class TrackingServiceImpl implements TrackingService {
 
         DeliveryEntity delivery = trackingRepository.findBySubOrder_Id(subOrder.getId());
 
-        DeliveryTrackingLog deliveryTrackingLog = deliveryTrackingLogFactory.create(delivery,subOrder,delivery.getReceiverAddress());
+        DeliveryTrackingLog deliveryTrackingLog = deliveryTrackingLogFactory.create(delivery, subOrder, delivery.getReceiverAddress());
         deliveryTrackingLog.setMessage(message);
 
         trackingRepository.save(delivery);
@@ -213,7 +214,7 @@ public class TrackingServiceImpl implements TrackingService {
         subOrderStateService.firstReattempt(subOrder);
         order.setOrderResult(orderResultCalculation.calculate(order.getSubOrders()));
 
-        DeliveryTrackingLog deliveryTrackingLog = deliveryTrackingLogFactory.create(delivery,subOrder,delivery.getReceiverAddress());
+        DeliveryTrackingLog deliveryTrackingLog = deliveryTrackingLogFactory.create(delivery, subOrder, delivery.getReceiverAddress());
         deliveryTrackingLog.setMessage(message);
 
         trackingRepository.save(delivery);

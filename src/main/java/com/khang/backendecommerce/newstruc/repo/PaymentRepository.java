@@ -12,14 +12,14 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface PaymentRepository extends JpaRepository<PaymentEntity,String> {
+public interface PaymentRepository extends JpaRepository<PaymentEntity, String> {
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @EntityGraph(
             attributePaths = {
                     "order",
             }
     )
-    Optional<PaymentEntity> findByPaymentReferenceAndUser_Id(String paymentReference , String userId);
+    Optional<PaymentEntity> findByPaymentReferenceAndUser_Id(String paymentReference, String userId);
 
-    List<PaymentEntity> findByUser_IdAndOrder_Id(String userId , String orderId);
+    List<PaymentEntity> findByUser_IdAndOrder_Id(String userId, String orderId);
 }

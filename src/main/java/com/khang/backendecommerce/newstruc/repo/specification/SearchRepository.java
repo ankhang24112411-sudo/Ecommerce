@@ -134,466 +134,442 @@ public class SearchRepository {
 //    }
 //
 
-        public BaseResponse<?> searchProductByCriteriaWithJoin(Pageable pageable, String[] product, String[] store, String[] inventory) {
+    public BaseResponse<?> searchProductByCriteriaWithJoin(Pageable pageable, String[] product, String[] store, String[] inventory) {
 
-            log.info("-------------- searchProductByCriteriaWithJoin --------------");
+        log.info("-------------- searchProductByCriteriaWithJoin --------------");
 
-            CriteriaBuilder builder = entityManager.getCriteriaBuilder();
-            CriteriaQuery<ProductEntity> query = builder.createQuery(ProductEntity.class);
+        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<ProductEntity> query = builder.createQuery(ProductEntity.class);
 
-            Root<ProductEntity> productRoot = query.from(ProductEntity.class);
+        Root<ProductEntity> productRoot = query.from(ProductEntity.class);
 
-            Join<ProductEntity, StoreEntity> storeRoot = null;
-            Join<ProductEntity, InventoryEntity> inventoryRoot = null;
+        Join<ProductEntity, StoreEntity> storeRoot = null;
+        Join<ProductEntity, InventoryEntity> inventoryRoot = null;
 
-            if (store != null) {
-                storeRoot = productRoot.join("store");
-            }
+        if (store != null) {
+            storeRoot = productRoot.join("store");
+        }
 
-            if (inventory != null) {
-                inventoryRoot = productRoot.join("inventoryList");
-            }
-
-
-            Pattern pattern = Pattern.compile(SEARCH_SPEC_OPERATOR);
-            List<Predicate> finalPreList = new ArrayList<>();
-
-            if (product != null) {
-                List<Predicate> productPreList = new ArrayList<>();
-                for (String u : product) {
-                    Matcher matcher = pattern.matcher(u);
-                    if (matcher.find()) {
-                        SpecSearchCriteria searchCriteria = new SpecSearchCriteria(matcher.group(1), matcher.group(2), matcher.group(3), matcher.group(4), matcher.group(5));
-                        productPreList.add(toProductPredicate(productRoot, builder, searchCriteria));
-                    }
-                }
-
-                if (!productPreList.isEmpty()) {
-                    Predicate productPre = builder.or(productPreList.toArray(new Predicate[0]));
-                    finalPreList.add(productPre);
-                }
-            }
-
-            if (store != null) {
-                List<Predicate> storePreList = new ArrayList<>();
-                for (String a : store) {
-                    Matcher matcher = pattern.matcher(a);
-                    if (matcher.find()) {
-                        SpecSearchCriteria searchCriteria = new SpecSearchCriteria(matcher.group(1), matcher.group(2), matcher.group(3), matcher.group(4), matcher.group(5));
-                        storePreList.add(toStorePredicate(storeRoot, builder, searchCriteria));
-                    }
-                }
-
-                if (!storePreList.isEmpty()) {
-
-                    Predicate storePre =
-                            builder.or(
-                                    storePreList.toArray(new Predicate[0])
-                            );
-
-                    finalPreList.add(storePre);
-                }
-            }
-
-
-            if (inventory != null) {
-                List<Predicate> inventoryPreList = new ArrayList<>();
-                for (String i : inventory) {
-                    Matcher matcher = pattern.matcher(i);
-                    if (matcher.find()) {
-                        SpecSearchCriteria searchCriteria = new SpecSearchCriteria(matcher.group(1), matcher.group(2), matcher.group(3), matcher.group(4),matcher.group(5));
-                        inventoryPreList.add(toInventoryPredicate(inventoryRoot, builder, searchCriteria));
-                    }
-                }
-
-                if (!inventoryPreList.isEmpty()) {
-                    Predicate inventoryPre = builder.or(inventoryPreList.toArray(new Predicate[0]));
-                    finalPreList.add(inventoryPre);
-                }
-            }
-
-
-            Predicate finalPre = builder.and(finalPreList.toArray(new Predicate[0]));
-            query.where(finalPre);
-
-            if (inventory != null) {
-                query.distinct(true);
-            }
-
-            List<ProductEntity> products = entityManager.createQuery(query).setFirstResult(pageable.getPageNumber()).setMaxResults(pageable.getPageSize()).getResultList();
-
-            long count = countProductJoinStoreInventory(product, store, inventory);
-
-
-            return BaseResponse.ofSuccess(PageResponse.of(products, pageable, count));
+        if (inventory != null) {
+            inventoryRoot = productRoot.join("inventoryList");
         }
 
 
-        private Predicate toProductPredicate(
-                Root<ProductEntity> root,
-                CriteriaBuilder builder,
-                SpecSearchCriteria criteria) {
+        Pattern pattern = Pattern.compile(SEARCH_SPEC_OPERATOR);
+        List<Predicate> finalPreList = new ArrayList<>();
 
-            log.info("-------------- toProductPredicate --------------");
+        if (product != null) {
+            List<Predicate> productPreList = new ArrayList<>();
+            for (String u : product) {
+                Matcher matcher = pattern.matcher(u);
+                if (matcher.find()) {
+                    SpecSearchCriteria searchCriteria = new SpecSearchCriteria(matcher.group(1), matcher.group(2), matcher.group(3), matcher.group(4), matcher.group(5));
+                    productPreList.add(toProductPredicate(productRoot, builder, searchCriteria));
+                }
+            }
 
-            return switch (criteria.getOperation()) {
+            if (!productPreList.isEmpty()) {
+                Predicate productPre = builder.or(productPreList.toArray(new Predicate[0]));
+                finalPreList.add(productPre);
+            }
+        }
 
-                case EQUALITY ->
-                        builder.equal(
-                                root.get(criteria.getKey()),
-                                criteria.getValue()
+        if (store != null) {
+            List<Predicate> storePreList = new ArrayList<>();
+            for (String a : store) {
+                Matcher matcher = pattern.matcher(a);
+                if (matcher.find()) {
+                    SpecSearchCriteria searchCriteria = new SpecSearchCriteria(matcher.group(1), matcher.group(2), matcher.group(3), matcher.group(4), matcher.group(5));
+                    storePreList.add(toStorePredicate(storeRoot, builder, searchCriteria));
+                }
+            }
+
+            if (!storePreList.isEmpty()) {
+
+                Predicate storePre =
+                        builder.or(
+                                storePreList.toArray(new Predicate[0])
                         );
 
-                case NEGATION ->
-                        builder.notEqual(
-                                root.get(criteria.getKey()),
-                                criteria.getValue()
-                        );
-
-                case GREATER_THAN ->
-                        builder.greaterThan(
-                                root.get(criteria.getKey()),
-                                criteria.getValue().toString()
-                        );
-
-                case LESS_THAN ->
-                        builder.lessThan(
-                                root.get(criteria.getKey()),
-                                criteria.getValue().toString()
-                        );
-
-                case LIKE ->
-                        builder.like(
-                                root.get(criteria.getKey()),
-                                "%" + criteria.getValue().toString() + "%"
-                        );
-
-                case STARTS_WITH ->
-                        builder.like(
-                                root.get(criteria.getKey()),
-                                criteria.getValue() + "%"
-                        );
-
-                case ENDS_WITH ->
-                        builder.like(
-                                root.get(criteria.getKey()),
-                                "%" + criteria.getValue()
-                        );
-
-                case CONTAINS ->
-                        builder.like(
-                                root.get(criteria.getKey()),
-                                "%" + criteria.getValue() + "%"
-                        );
-            };
+                finalPreList.add(storePre);
+            }
         }
 
 
-        private Predicate toStorePredicate(
-                Join<ProductEntity, StoreEntity> root,
-                CriteriaBuilder builder,
-                SpecSearchCriteria criteria) {
+        if (inventory != null) {
+            List<Predicate> inventoryPreList = new ArrayList<>();
+            for (String i : inventory) {
+                Matcher matcher = pattern.matcher(i);
+                if (matcher.find()) {
+                    SpecSearchCriteria searchCriteria = new SpecSearchCriteria(matcher.group(1), matcher.group(2), matcher.group(3), matcher.group(4), matcher.group(5));
+                    inventoryPreList.add(toInventoryPredicate(inventoryRoot, builder, searchCriteria));
+                }
+            }
 
-            log.info("-------------- toStorePredicate --------------");
-
-            return switch (criteria.getOperation()) {
-
-                case EQUALITY ->
-                        builder.equal(
-                                root.get(criteria.getKey()),
-                                criteria.getValue()
-                        );
-
-                case NEGATION ->
-                        builder.notEqual(
-                                root.get(criteria.getKey()),
-                                criteria.getValue()
-                        );
-
-                case GREATER_THAN ->
-                        builder.greaterThan(
-                                root.get(criteria.getKey()),
-                                criteria.getValue().toString()
-                        );
-
-                case LESS_THAN ->
-                        builder.lessThan(
-                                root.get(criteria.getKey()),
-                                criteria.getValue().toString()
-                        );
-
-                case LIKE ->
-                        builder.like(
-                                root.get(criteria.getKey()),
-                                "%" + criteria.getValue().toString() + "%"
-                        );
-
-                case STARTS_WITH ->
-                        builder.like(
-                                root.get(criteria.getKey()),
-                                criteria.getValue() + "%"
-                        );
-
-                case ENDS_WITH ->
-                        builder.like(
-                                root.get(criteria.getKey()),
-                                "%" + criteria.getValue()
-                        );
-
-                case CONTAINS ->
-                        builder.like(
-                                root.get(criteria.getKey()),
-                                "%" + criteria.getValue() + "%"
-                        );
-            };
+            if (!inventoryPreList.isEmpty()) {
+                Predicate inventoryPre = builder.or(inventoryPreList.toArray(new Predicate[0]));
+                finalPreList.add(inventoryPre);
+            }
         }
 
 
-        private Predicate toInventoryPredicate(
-                Join<ProductEntity, InventoryEntity> root,
-                CriteriaBuilder builder,
-                SpecSearchCriteria criteria) {
+        Predicate finalPre = builder.and(finalPreList.toArray(new Predicate[0]));
+        query.where(finalPre);
 
-            log.info("-------------- toInventoryPredicate --------------");
-
-            return switch (criteria.getOperation()) {
-
-                case EQUALITY ->
-                        builder.equal(
-                                root.get(criteria.getKey()),
-                                criteria.getValue()
-                        );
-
-                case NEGATION ->
-                        builder.notEqual(
-                                root.get(criteria.getKey()),
-                                criteria.getValue()
-                        );
-
-                case GREATER_THAN ->
-                        builder.greaterThan(
-                                root.get(criteria.getKey()),
-                                criteria.getValue().toString()
-                        );
-
-                case LESS_THAN ->
-                        builder.lessThan(
-                                root.get(criteria.getKey()),
-                                criteria.getValue().toString()
-                        );
-
-                case LIKE ->
-                        builder.like(
-                                root.get(criteria.getKey()),
-                                "%" + criteria.getValue().toString() + "%"
-                        );
-
-                case STARTS_WITH ->
-                        builder.like(
-                                root.get(criteria.getKey()),
-                                criteria.getValue() + "%"
-                        );
-
-                case ENDS_WITH ->
-                        builder.like(
-                                root.get(criteria.getKey()),
-                                "%" + criteria.getValue()
-                        );
-
-                case CONTAINS ->
-                        builder.like(
-                                root.get(criteria.getKey()),
-                                "%" + criteria.getValue() + "%"
-                        );
-            };
+        if (inventory != null) {
+            query.distinct(true);
         }
 
+        List<ProductEntity> products = entityManager.createQuery(query).setFirstResult(pageable.getPageNumber()).setMaxResults(pageable.getPageSize()).getResultList();
 
-        private long countProductJoinStoreInventory(
-                String[] product,
-                String[] store,
-                String[] inventory) {
-
-            log.info("-------------- countProductJoinStoreInventory --------------");
-
-            CriteriaBuilder builder = entityManager.getCriteriaBuilder();
-
-            CriteriaQuery<Long> query =
-                    builder.createQuery(Long.class);
-
-            Root<ProductEntity> productRoot =
-                    query.from(ProductEntity.class);
+        long count = countProductJoinStoreInventory(product, store, inventory);
 
 
-            Join<ProductEntity, StoreEntity> storeRoot = null;
-            Join<ProductEntity, InventoryEntity> inventoryRoot = null;
+        return BaseResponse.ofSuccess(PageResponse.of(products, pageable, count));
+    }
 
 
-            if (store != null) {
-                storeRoot = productRoot.join("store");
-            }
+    private Predicate toProductPredicate(
+            Root<ProductEntity> root,
+            CriteriaBuilder builder,
+            SpecSearchCriteria criteria) {
 
-            if (inventory != null) {
-                inventoryRoot = productRoot.join("inventoryList");
-            }
+        log.info("-------------- toProductPredicate --------------");
 
+        return switch (criteria.getOperation()) {
 
-            Pattern pattern =
-                    Pattern.compile(SEARCH_SPEC_OPERATOR);
-
-            List<Predicate> finalPreList =
-                    new ArrayList<>();
-
-
-            // PRODUCT
-            if (product != null) {
-
-                List<Predicate> productPreList =
-                        new ArrayList<>();
-
-                for (String u : product) {
-
-                    Matcher matcher =
-                            pattern.matcher(u);
-
-                    if (matcher.find()) {
-
-                        SpecSearchCriteria searchCriteria =
-                                new SpecSearchCriteria(
-                                        matcher.group(1),
-                                        matcher.group(2),
-                                        matcher.group(3),
-                                        matcher.group(4),
-                                        matcher.group(5)
-                                );
-
-                        productPreList.add(
-                                toProductPredicate(
-                                        productRoot,
-                                        builder,
-                                        searchCriteria
-                                )
-                        );
-                    }
-                }
-
-                if (!productPreList.isEmpty()) {
-
-                    Predicate productPre =
-                            builder.or(
-                                    productPreList.toArray(new Predicate[0])
-                            );
-
-                    finalPreList.add(productPre);
-                }
-            }
-
-
-            // STORE
-            if (store != null) {
-
-                List<Predicate> storePreList =
-                        new ArrayList<>();
-
-                for (String a : store) {
-
-                    Matcher matcher =
-                            pattern.matcher(a);
-
-                    if (matcher.find()) {
-
-                        SpecSearchCriteria searchCriteria =
-                                new SpecSearchCriteria(
-                                        matcher.group(1),
-                                        matcher.group(2),
-                                        matcher.group(3),
-                                        matcher.group(4),
-                                        matcher.group(5)
-                                );
-
-                        storePreList.add(
-                                toStorePredicate(
-                                        storeRoot,
-                                        builder,
-                                        searchCriteria
-                                )
-                        );
-                    }
-                }
-
-                if (!storePreList.isEmpty()) {
-
-                    Predicate storePre =
-                            builder.or(
-                                    storePreList.toArray(new Predicate[0])
-                            );
-
-                    finalPreList.add(storePre);
-                }
-            }
-
-
-            // INVENTORY
-            if (inventory != null) {
-
-                List<Predicate> inventoryPreList =
-                        new ArrayList<>();
-
-                for (String i : inventory) {
-
-                    Matcher matcher =
-                            pattern.matcher(i);
-
-                    if (matcher.find()) {
-
-                        SpecSearchCriteria searchCriteria =
-                                new SpecSearchCriteria(
-                                        matcher.group(1),
-                                        matcher.group(2),
-                                        matcher.group(3),
-                                        matcher.group(4),
-                                        matcher.group(5)
-                                );
-
-                        inventoryPreList.add(
-                                toInventoryPredicate(
-                                        inventoryRoot,
-                                        builder,
-                                        searchCriteria
-                                )
-                        );
-                    }
-                }
-
-                if (!inventoryPreList.isEmpty()) {
-
-                    Predicate inventoryPre =
-                            builder.or(
-                                    inventoryPreList.toArray(new Predicate[0])
-                            );
-
-                    finalPreList.add(inventoryPre);
-                }
-            }
-
-
-            Predicate finalPre =
-                    builder.and(
-                            finalPreList.toArray(new Predicate[0])
-                    );
-
-
-            query.select(
-                    builder.countDistinct(productRoot)
+            case EQUALITY -> builder.equal(
+                    root.get(criteria.getKey()),
+                    criteria.getValue()
             );
 
-            query.where(finalPre);
+            case NEGATION -> builder.notEqual(
+                    root.get(criteria.getKey()),
+                    criteria.getValue()
+            );
 
+            case GREATER_THAN -> builder.greaterThan(
+                    root.get(criteria.getKey()),
+                    criteria.getValue().toString()
+            );
 
-            return entityManager
-                    .createQuery(query)
-                    .getSingleResult();
-        }
+            case LESS_THAN -> builder.lessThan(
+                    root.get(criteria.getKey()),
+                    criteria.getValue().toString()
+            );
+
+            case LIKE -> builder.like(
+                    root.get(criteria.getKey()),
+                    "%" + criteria.getValue().toString() + "%"
+            );
+
+            case STARTS_WITH -> builder.like(
+                    root.get(criteria.getKey()),
+                    criteria.getValue() + "%"
+            );
+
+            case ENDS_WITH -> builder.like(
+                    root.get(criteria.getKey()),
+                    "%" + criteria.getValue()
+            );
+
+            case CONTAINS -> builder.like(
+                    root.get(criteria.getKey()),
+                    "%" + criteria.getValue() + "%"
+            );
+        };
     }
+
+
+    private Predicate toStorePredicate(
+            Join<ProductEntity, StoreEntity> root,
+            CriteriaBuilder builder,
+            SpecSearchCriteria criteria) {
+
+        log.info("-------------- toStorePredicate --------------");
+
+        return switch (criteria.getOperation()) {
+
+            case EQUALITY -> builder.equal(
+                    root.get(criteria.getKey()),
+                    criteria.getValue()
+            );
+
+            case NEGATION -> builder.notEqual(
+                    root.get(criteria.getKey()),
+                    criteria.getValue()
+            );
+
+            case GREATER_THAN -> builder.greaterThan(
+                    root.get(criteria.getKey()),
+                    criteria.getValue().toString()
+            );
+
+            case LESS_THAN -> builder.lessThan(
+                    root.get(criteria.getKey()),
+                    criteria.getValue().toString()
+            );
+
+            case LIKE -> builder.like(
+                    root.get(criteria.getKey()),
+                    "%" + criteria.getValue().toString() + "%"
+            );
+
+            case STARTS_WITH -> builder.like(
+                    root.get(criteria.getKey()),
+                    criteria.getValue() + "%"
+            );
+
+            case ENDS_WITH -> builder.like(
+                    root.get(criteria.getKey()),
+                    "%" + criteria.getValue()
+            );
+
+            case CONTAINS -> builder.like(
+                    root.get(criteria.getKey()),
+                    "%" + criteria.getValue() + "%"
+            );
+        };
+    }
+
+
+    private Predicate toInventoryPredicate(
+            Join<ProductEntity, InventoryEntity> root,
+            CriteriaBuilder builder,
+            SpecSearchCriteria criteria) {
+
+        log.info("-------------- toInventoryPredicate --------------");
+
+        return switch (criteria.getOperation()) {
+
+            case EQUALITY -> builder.equal(
+                    root.get(criteria.getKey()),
+                    criteria.getValue()
+            );
+
+            case NEGATION -> builder.notEqual(
+                    root.get(criteria.getKey()),
+                    criteria.getValue()
+            );
+
+            case GREATER_THAN -> builder.greaterThan(
+                    root.get(criteria.getKey()),
+                    criteria.getValue().toString()
+            );
+
+            case LESS_THAN -> builder.lessThan(
+                    root.get(criteria.getKey()),
+                    criteria.getValue().toString()
+            );
+
+            case LIKE -> builder.like(
+                    root.get(criteria.getKey()),
+                    "%" + criteria.getValue().toString() + "%"
+            );
+
+            case STARTS_WITH -> builder.like(
+                    root.get(criteria.getKey()),
+                    criteria.getValue() + "%"
+            );
+
+            case ENDS_WITH -> builder.like(
+                    root.get(criteria.getKey()),
+                    "%" + criteria.getValue()
+            );
+
+            case CONTAINS -> builder.like(
+                    root.get(criteria.getKey()),
+                    "%" + criteria.getValue() + "%"
+            );
+        };
+    }
+
+
+    private long countProductJoinStoreInventory(
+            String[] product,
+            String[] store,
+            String[] inventory) {
+
+        log.info("-------------- countProductJoinStoreInventory --------------");
+
+        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+
+        CriteriaQuery<Long> query =
+                builder.createQuery(Long.class);
+
+        Root<ProductEntity> productRoot =
+                query.from(ProductEntity.class);
+
+
+        Join<ProductEntity, StoreEntity> storeRoot = null;
+        Join<ProductEntity, InventoryEntity> inventoryRoot = null;
+
+
+        if (store != null) {
+            storeRoot = productRoot.join("store");
+        }
+
+        if (inventory != null) {
+            inventoryRoot = productRoot.join("inventoryList");
+        }
+
+
+        Pattern pattern =
+                Pattern.compile(SEARCH_SPEC_OPERATOR);
+
+        List<Predicate> finalPreList =
+                new ArrayList<>();
+
+
+        // PRODUCT
+        if (product != null) {
+
+            List<Predicate> productPreList =
+                    new ArrayList<>();
+
+            for (String u : product) {
+
+                Matcher matcher =
+                        pattern.matcher(u);
+
+                if (matcher.find()) {
+
+                    SpecSearchCriteria searchCriteria =
+                            new SpecSearchCriteria(
+                                    matcher.group(1),
+                                    matcher.group(2),
+                                    matcher.group(3),
+                                    matcher.group(4),
+                                    matcher.group(5)
+                            );
+
+                    productPreList.add(
+                            toProductPredicate(
+                                    productRoot,
+                                    builder,
+                                    searchCriteria
+                            )
+                    );
+                }
+            }
+
+            if (!productPreList.isEmpty()) {
+
+                Predicate productPre =
+                        builder.or(
+                                productPreList.toArray(new Predicate[0])
+                        );
+
+                finalPreList.add(productPre);
+            }
+        }
+
+
+        // STORE
+        if (store != null) {
+
+            List<Predicate> storePreList =
+                    new ArrayList<>();
+
+            for (String a : store) {
+
+                Matcher matcher =
+                        pattern.matcher(a);
+
+                if (matcher.find()) {
+
+                    SpecSearchCriteria searchCriteria =
+                            new SpecSearchCriteria(
+                                    matcher.group(1),
+                                    matcher.group(2),
+                                    matcher.group(3),
+                                    matcher.group(4),
+                                    matcher.group(5)
+                            );
+
+                    storePreList.add(
+                            toStorePredicate(
+                                    storeRoot,
+                                    builder,
+                                    searchCriteria
+                            )
+                    );
+                }
+            }
+
+            if (!storePreList.isEmpty()) {
+
+                Predicate storePre =
+                        builder.or(
+                                storePreList.toArray(new Predicate[0])
+                        );
+
+                finalPreList.add(storePre);
+            }
+        }
+
+
+        // INVENTORY
+        if (inventory != null) {
+
+            List<Predicate> inventoryPreList =
+                    new ArrayList<>();
+
+            for (String i : inventory) {
+
+                Matcher matcher =
+                        pattern.matcher(i);
+
+                if (matcher.find()) {
+
+                    SpecSearchCriteria searchCriteria =
+                            new SpecSearchCriteria(
+                                    matcher.group(1),
+                                    matcher.group(2),
+                                    matcher.group(3),
+                                    matcher.group(4),
+                                    matcher.group(5)
+                            );
+
+                    inventoryPreList.add(
+                            toInventoryPredicate(
+                                    inventoryRoot,
+                                    builder,
+                                    searchCriteria
+                            )
+                    );
+                }
+            }
+
+            if (!inventoryPreList.isEmpty()) {
+
+                Predicate inventoryPre =
+                        builder.or(
+                                inventoryPreList.toArray(new Predicate[0])
+                        );
+
+                finalPreList.add(inventoryPre);
+            }
+        }
+
+
+        Predicate finalPre =
+                builder.and(
+                        finalPreList.toArray(new Predicate[0])
+                );
+
+
+        query.select(
+                builder.countDistinct(productRoot)
+        );
+
+        query.where(finalPre);
+
+
+        return entityManager
+                .createQuery(query)
+                .getSingleResult();
+    }
+}
 
 

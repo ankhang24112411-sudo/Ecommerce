@@ -9,15 +9,15 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface CategoryRepository extends JpaRepository<CategoryEntity,String> {
+public interface CategoryRepository extends JpaRepository<CategoryEntity, String> {
     @Query("""
-select c
-from OrderItem oi
-join oi.product p
-join p.category c
-group by c.id
-order by sum(oi.unitPrice*oi.quantity) DESC
-
-""")
+            select c
+            from OrderItem oi
+            join oi.product p
+            join p.category c
+            group by c.id
+            order by sum(oi.unitPrice*oi.quantity) DESC
+            
+            """)
     List<CategoryEntity> getFeaturedCategory(Pageable pageable);
 }

@@ -7,8 +7,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class ReattemptState implements SubOrderState {
     @Override
-    public void reattempt(SubOrderEntity subOrder){
-        if(subOrder.getAttemptCount() >= 3){
+    public void reattempt(SubOrderEntity subOrder) {
+        if (subOrder.getAttemptCount() >= 3) {
             subOrder.setOrderStatus(OrderStatus.FAILED);
         }
         subOrder.setOrderStatus(OrderStatus.REATTEMPT);

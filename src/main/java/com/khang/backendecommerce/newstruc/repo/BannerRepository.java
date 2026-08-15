@@ -7,13 +7,14 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+
 @Repository
-public interface BannerRepository extends JpaRepository<BannerEntity,String> {
+public interface BannerRepository extends JpaRepository<BannerEntity, String> {
     @Query("""
-select b
-from BannerEntity b
-where b.isActive is true
-order by displayOrder asc
-""")
+            select b
+            from BannerEntity b
+            where b.isActive is true
+            order by displayOrder asc
+            """)
     List<BannerEntity> getBanner(Pageable pageable);
 }

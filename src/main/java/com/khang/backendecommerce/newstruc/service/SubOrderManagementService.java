@@ -10,7 +10,7 @@ import org.springframework.data.domain.Pageable;
 public interface SubOrderManagementService {
     BaseResponse<?> getAllPendingSuborders(Pageable pageable);
 
-    SubOrderStatusResponse confirmSubOrdersStatus( String subOrderId);
+    SubOrderStatusResponse confirmSubOrdersStatus(String subOrderId);
 
     SubOrderStatusResponse rejectSubOrders(String subOrderId);
 

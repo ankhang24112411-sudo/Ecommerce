@@ -20,20 +20,20 @@ import java.io.Serializable;
 @Entity
 @SuperBuilder
 
-@Table(name ="tbl_return")
+@Table(name = "tbl_return")
 public class ReturnEntity extends AbstractEntity<String> implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id")
-    private OrderEntity order ;
+    private OrderEntity order;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private UserEntity user ;
+    private UserEntity user;
 
-    @Column(name ="customer_name")
+    @Column(name = "customer_name")
     private String customerName;
 
-    @Column(name ="tracking_code")
+    @Column(name = "tracking_code")
     private String trackingCode;
 
     @Enumerated(EnumType.STRING)

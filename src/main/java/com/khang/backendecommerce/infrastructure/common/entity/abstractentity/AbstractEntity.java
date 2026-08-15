@@ -26,15 +26,15 @@ public class AbstractEntity<T> {
     @Column(name = "id", nullable = false, updatable = false, length = 36)
     private String id;
 
-    @Column(name = "created_at", updatable = false , nullable = false)
+    @Column(name = "created_at", updatable = false, nullable = false)
     @CreationTimestamp
     private Instant createdAt;
 
-    @Column(name = "updated_at",  nullable = false)
+    @Column(name = "updated_at", nullable = false)
     @UpdateTimestamp
     private Instant updatedAt;
 
-    @Column(name = "deleted" )
+    @Column(name = "deleted")
     private Short deleted;
 
     @CreatedBy
@@ -44,7 +44,6 @@ public class AbstractEntity<T> {
     @LastModifiedBy
     @Column(name = "updated_by")
     private String updatedBy;
-
 
 
 }

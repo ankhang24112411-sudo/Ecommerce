@@ -30,9 +30,10 @@ public class ProductServiceImpl implements ProductService {
     private final ProductImageRepository productImageRepo;
     private final CategoryRepository categoryRepo;
     private final BannerRepository bannerRepo;
+
     @Override
     public void isProductActive(ProductEntity product) {
-        if(product.getDeleted() == 1){
+        if (product.getDeleted() == 1) {
             throw ApplicationErrors.PRODUCT_INACTIVE;
         }
     }
@@ -49,8 +50,8 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public List<FeaturedProductResponse> getFeaturedProduct() {
-        List<String> productIds = productRepo.getFeaturedProduct(PageRequest.of(0,5));
-        Map<String, ProductImageEntity>  productImageEntityByProductId = productImageRepo
+        List<String> productIds = productRepo.getFeaturedProduct(PageRequest.of(0, 5));
+        Map<String, ProductImageEntity> productImageEntityByProductId = productImageRepo
                 .getFeaturedProductImage(productIds).stream()
                 .filter(productImageEntity -> productImageEntity.getPrimary() == 1)
                 .collect(Collectors
@@ -58,23 +59,23 @@ public class ProductServiceImpl implements ProductService {
 
 
         return productImageEntityByProductId.entrySet().stream()
-                .map( productImageEntityById -> {
+                .map(productImageEntityById -> {
                     ProductImageEntity productImage = productImageEntityById.getValue();
 
                     ProductEntity product = productRepo.findById(productImageEntityById.getKey()).orElseThrow(() -> ApplicationErrors.PRODUCT_NOT_FOUND);
-                           return FeaturedProductResponse.builder()
+                    return FeaturedProductResponse.builder()
                             .id(productImageEntityById.getKey())
-                                   .name(productImage.getProduct().getName())
-                                   .primaryImageURL(productImage.getImage())
-                                   .unitPrice(product.getPrice())
+                            .name(productImage.getProduct().getName())
+                            .primaryImageURL(productImage.getImage())
+                            .unitPrice(product.getPrice())
                             .build();
-                       }).toList();
+                }).toList();
 
     }
 
     @Override
     public List<FeaturedCategoryResponse> getFeaturedCategory() {
-        List<CategoryEntity> featureCategory = categoryRepo.getFeaturedCategory(PageRequest.of(0,5));
+        List<CategoryEntity> featureCategory = categoryRepo.getFeaturedCategory(PageRequest.of(0, 5));
         return featureCategory.stream()
                 .map(categoryEntity -> FeaturedCategoryResponse.builder()
                         .id(categoryEntity.getId())
@@ -85,7 +86,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public List<BannerResponse> getBanner() {
-        return bannerRepo.getBanner(PageRequest.of(0,5))
+        return bannerRepo.getBanner(PageRequest.of(0, 5))
                 .stream()
                 .map(banner -> BannerResponse.builder()
                         .id(banner.getId())

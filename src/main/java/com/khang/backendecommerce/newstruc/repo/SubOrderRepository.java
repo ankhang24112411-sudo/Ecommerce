@@ -15,58 +15,59 @@ import org.springframework.stereotype.Repository;
 import java.time.Instant;
 
 @Repository
-public interface SubOrderRepository extends JpaRepository<SubOrderEntity , String> {
+public interface SubOrderRepository extends JpaRepository<SubOrderEntity, String> {
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    @EntityGraph (
+    @EntityGraph(
             attributePaths = {
-                    "order" , "orderItems.inventory"
+                    "order", "orderItems.inventory"
             }
     )
     @Query("""
-    SELECT so
-    FROM SubOrderEntity so
-    JOIN so.store s
-    JOIN s.owner o
-    WHERE o.id = :sellerId
-      AND so.orderStatus = 'PENDING'
-""")
+                SELECT so
+                FROM SubOrderEntity so
+                JOIN so.store s
+                JOIN s.owner o
+                WHERE o.id = :sellerId
+                  AND so.orderStatus = 'PENDING'
+            """)
     Page<SubOrderEntity> findPendingBySellerId(@Param("sellerId") String sellerId, Pageable pageable);
 
     boolean existsByIdAndStore_Owner_Id(String subOrderId, String sellerId);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    @EntityGraph (
+    @EntityGraph(
             attributePaths = {
-                    "order" , "orderItems.inventory"
+                    "order", "orderItems.inventory"
             }
     )
-        @Query("""
-    SELECT so
-    FROM SubOrderEntity so
-    JOIN so.store s
-    JOIN s.owner o
-    WHERE o.id = :sellerId
-      AND so.id = :subOrderId
-""")
-        SubOrderEntity findSubOrder(@Param("sellerId") String sellerId, @Param("subOrderId") String subOrderId);
+    @Query("""
+                SELECT so
+                FROM SubOrderEntity so
+                JOIN so.store s
+                JOIN s.owner o
+                WHERE o.id = :sellerId
+                  AND so.id = :subOrderId
+            """)
+    SubOrderEntity findSubOrder(@Param("sellerId") String sellerId, @Param("subOrderId") String subOrderId);
 
     @Query("""
-  select
-  count(so) as totalSubOrder,
-  sum ( case when so.orderStatus = 'CONFIRMED' then 1 else 0 end) as confirmSubOrder,
-    sum ( case when so.orderStatus = 'PENDING' then 1 else 0 end) as pendingSubOrder
-    from SubOrderEntity so
-    JOIN so.store s
-    JOIN s.owner o
-    WHERE o.id = :sellerId
-    AND so.createdAt >= :fromDate
-    AND so.createdAt < :toDate
-    
+              select
+              count(so) as totalSubOrder,
+              sum ( case when so.orderStatus = 'CONFIRMED' then 1 else 0 end) as confirmSubOrder,
+                sum ( case when so.orderStatus = 'PENDING' then 1 else 0 end) as pendingSubOrder
+                from SubOrderEntity so
+                JOIN so.store s
+                JOIN s.owner o
+                WHERE o.id = :sellerId
+                AND so.createdAt >= :fromDate
+                AND so.createdAt < :toDate
+            
+            
+            
+            """)
+    TotalSubOrderDailyDashboard getTodayDashboard(String sellerId, Instant fromDate, Instant toDate);
 
-           
-""")
-    TotalSubOrderDailyDashboard getTodayDashboard(String sellerId,  Instant fromDate,Instant toDate);
-    @EntityGraph (
+    @EntityGraph(
             attributePaths = {
                     "order"
             }

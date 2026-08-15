@@ -23,33 +23,32 @@ import java.time.Instant;
 @Entity
 @SuperBuilder
 
-@Table(name ="tbl_discount")
+@Table(name = "tbl_discount")
 public class DiscountEntity extends AbstractEntity<String> implements Serializable {
-    @Column(name ="discount_name")
+    @Column(name = "discount_name")
     private String discountName;
 
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
-    @Column(name = "discount_type", columnDefinition = "discount_type" )
+    @Column(name = "discount_type", columnDefinition = "discount_type")
     private DiscountType discountType;
 
-    @Column(name ="valid_from")
+    @Column(name = "valid_from")
     private Instant validFrom;
 
-    @Column(name ="valid_to")
+    @Column(name = "valid_to")
     private Instant validTo;
 
-    @Column(name ="discount_value")
+    @Column(name = "discount_value")
     private BigDecimal discountValue = BigDecimal.ZERO;
 
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
-    @Column(name = "discount_status", columnDefinition = "discount_status" )
+    @Column(name = "discount_status", columnDefinition = "discount_status")
     private DiscountStatus discountStatus;
 
-    @Column(name ="description")
+    @Column(name = "description")
     private String description;
-
 
 
 }

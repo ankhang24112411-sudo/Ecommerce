@@ -19,15 +19,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/user")
 @Validated
 @Slf4j
-@Tag(name ="User Controller")
+@Tag(name = "User Controller")
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
 
-    @Operation(method = "POST" , summary = "Add new user" )
+    @Operation(method = "POST", summary = "Add new user")
     @PostMapping("/")
-    public ResponseEntity<BaseResponse<String>> addUser(@RequestBody UserCreationRequest request){
-        log.info("Request add user {} {}" , request.getUsername(), request.getEmail());
-        return ResponseEntity.status(HttpStatus.CREATED).body(new BaseResponse<>(userService.addUser(request) , "success"));
+    public ResponseEntity<BaseResponse<String>> addUser(@RequestBody UserCreationRequest request) {
+        log.info("Request add user {} {}", request.getUsername(), request.getEmail());
+        return ResponseEntity.status(HttpStatus.CREATED).body(new BaseResponse<>(userService.addUser(request), "success"));
     }
 }

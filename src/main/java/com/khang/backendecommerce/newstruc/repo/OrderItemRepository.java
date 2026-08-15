@@ -11,18 +11,18 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface OrderItemRepository extends JpaRepository<OrderItem,String> {
+public interface OrderItemRepository extends JpaRepository<OrderItem, String> {
     @EntityGraph(
             attributePaths = {
-                    "product" , "inventory"
+                    "product", "inventory"
             }, type = EntityGraph.EntityGraphType.FETCH
     )
     @Query("""
-select oi
-from OrderEntity oe
-join oe.subOrders so
-join  so.orderItems oi
-where oe.id =:orderId
-""")
+            select oi
+            from OrderEntity oe
+            join oe.subOrders so
+            join  so.orderItems oi
+            where oe.id =:orderId
+            """)
     List<OrderItem> getAllOrderItemsByOrderId(@Param("orderId") String orderId);
 }

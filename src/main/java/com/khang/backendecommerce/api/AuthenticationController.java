@@ -18,36 +18,40 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/auth")
 @Validated
 @Slf4j
-@Tag(name ="Authentication Controller")
+@Tag(name = "Authentication Controller")
 @RequiredArgsConstructor
 public class AuthenticationController {
     private final UserRepository userRepo;
     private final AuthenticationService authenticationService;
+
     @PostMapping("/access")
-    public ResponseEntity<TokenResponse> login (@RequestBody SignInRequest request){
-        return new ResponseEntity<>( authenticationService.authenticate(request), HttpStatus.OK);
+    public ResponseEntity<TokenResponse> login(@RequestBody SignInRequest request) {
+        return new ResponseEntity<>(authenticationService.authenticate(request), HttpStatus.OK);
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<TokenResponse> refresh (HttpServletRequest request){
-        return new ResponseEntity<>( authenticationService.refresh(request), HttpStatus.OK);
+    public ResponseEntity<TokenResponse> refresh(HttpServletRequest request) {
+        return new ResponseEntity<>(authenticationService.refresh(request), HttpStatus.OK);
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<String> logout (HttpServletRequest request){
-        return new ResponseEntity<>( authenticationService.logout(request), HttpStatus.OK);
+    public ResponseEntity<String> logout(HttpServletRequest request) {
+        return new ResponseEntity<>(authenticationService.logout(request), HttpStatus.OK);
     }
+
     //TODO call API
     @PostMapping("/forgot-password")
-    public ResponseEntity<String> forgotPassword(@RequestBody String email){
+    public ResponseEntity<String> forgotPassword(@RequestBody String email) {
         return new ResponseEntity<>(authenticationService.forgotPassword(email), HttpStatus.OK);
     }
+
     @PostMapping("/reset-password")
-    public ResponseEntity<String> resetPassword(@RequestBody String secretKey){
+    public ResponseEntity<String> resetPassword(@RequestBody String secretKey) {
         return new ResponseEntity<>(authenticationService.resetPassword(secretKey), HttpStatus.OK);
     }
+
     @PostMapping("/change-password")
-    public ResponseEntity<String> changePassword(@RequestBody ResetPasswordDTO request){
+    public ResponseEntity<String> changePassword(@RequestBody ResetPasswordDTO request) {
         return new ResponseEntity<>(authenticationService.changePassword(request), HttpStatus.OK);
     }
 

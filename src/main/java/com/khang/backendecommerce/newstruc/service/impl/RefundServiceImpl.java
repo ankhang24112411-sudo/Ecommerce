@@ -20,13 +20,14 @@ import java.util.Optional;
 public class RefundServiceImpl implements RefundService {
     private final PaymentRepository paymentRepository;
     private final RefundRepository refundRepo;
+
     @Override
     public void handleRefundWhenSubOrderReject(SubOrderEntity subOrder, OrderEntity order, UserEntity user, BigDecimal refundAmount) {
 
-        Optional<PaymentEntity> payment = paymentRepository.findByUser_IdAndOrder_Id(user.getId(),order.getId()).stream()
+        Optional<PaymentEntity> payment = paymentRepository.findByUser_IdAndOrder_Id(user.getId(), order.getId()).stream()
                 .filter(paymentEntity -> paymentEntity.getPaymentStatus().equals(PaymentStatus.PAID))
                 .findFirst();
-        if(payment.isEmpty()){
+        if (payment.isEmpty()) {
             return;
         }
         RefundEntity refundEntity = RefundEntity.builder()

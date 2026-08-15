@@ -7,6 +7,7 @@ public interface SubOrderState {
     default void confirm(SubOrderEntity subOrder) {
         throw invalidActioning(subOrder, "CONFIRM");
     }
+
     default void startPicking(SubOrderEntity subOrder) {
         throw invalidActioning(subOrder, "START_PICKING");
     }
@@ -26,21 +27,24 @@ public interface SubOrderState {
     default void returning(SubOrderEntity subOrder) {
         throw invalidActioning(subOrder, "RETURNING");
     }
-    default void firstReattempt(SubOrderEntity subOrder){
+
+    default void firstReattempt(SubOrderEntity subOrder) {
 
     }
+
     default void reattempt(SubOrderEntity subOrder) {
         throw invalidActioning(subOrder, "REATTEMPT");
     }
 
 
-
-    default void reject(SubOrderEntity subOrder){
+    default void reject(SubOrderEntity subOrder) {
 
     }
+
     OrderStatus getCurrentState(SubOrderEntity subOrder);
+
     private RuntimeException invalidActioning(SubOrderEntity subOrder, String action) {
-        return new IllegalStateException("Action " + action+" is not allowed when SubOrder status is"+ subOrder.getOrderStatus());
+        return new IllegalStateException("Action " + action + " is not allowed when SubOrder status is" + subOrder.getOrderStatus());
     }
 }
 

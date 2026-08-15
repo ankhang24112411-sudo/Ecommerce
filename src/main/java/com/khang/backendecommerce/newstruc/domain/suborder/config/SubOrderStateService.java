@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class SubOrderStateService {
     private final SubOrderStateContext stateContext;
+
     @Transactional
     public void confirm(SubOrderEntity subOrder) {
         SubOrderState state = stateContext.getState(subOrder);
@@ -27,16 +28,19 @@ public class SubOrderStateService {
         SubOrderState state = stateContext.getState(subOrder);
         state.startShipping(subOrder);
     }
+
     @Transactional
     public void delivered(SubOrderEntity subOrder) {
         SubOrderState state = stateContext.getState(subOrder);
         state.delivered(subOrder);
     }
+
     @Transactional
     public void deliveryFailed(SubOrderEntity subOrder) {
         SubOrderState state = stateContext.getState(subOrder);
         state.failed(subOrder);
     }
+
     @Transactional
     public void returning(SubOrderEntity subOrder) {
         SubOrderState state = stateContext.getState(subOrder);
@@ -48,13 +52,15 @@ public class SubOrderStateService {
         SubOrderState state = stateContext.getState(subOrder);
         state.reattempt(subOrder);
     }
+
     @Transactional
     public void firstReattempt(SubOrderEntity subOrder) {
         SubOrderState state = stateContext.getState(subOrder);
         state.firstReattempt(subOrder);
     }
+
     @Transactional
-    public void reject(SubOrderEntity subOrder){
+    public void reject(SubOrderEntity subOrder) {
         SubOrderState state = stateContext.getState(subOrder);
         state.reject(subOrder);
     }

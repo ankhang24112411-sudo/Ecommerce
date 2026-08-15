@@ -5,6 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface TrackingRepository extends JpaRepository<DeliveryEntity,String> {
+public interface TrackingRepository extends JpaRepository<DeliveryEntity, String> {
     DeliveryEntity findBySubOrder_Id(String subOrderId);
 }

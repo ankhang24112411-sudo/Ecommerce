@@ -9,4 +9,4 @@ public enum OrderStatus {
     FAILED,
     RETURNING,
     REATTEMPT
-    }
+}

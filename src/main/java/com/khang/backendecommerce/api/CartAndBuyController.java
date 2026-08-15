@@ -18,12 +18,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("v1/checking-out")
 @Validated
 @Slf4j
-@Tag(name ="CART- AND - BUY - CONTROLLER")
+@Tag(name = "CART- AND - BUY - CONTROLLER")
 @RequiredArgsConstructor
 public class CartAndBuyController {
     private final OrderSummaryService orderSummaryService;
+
     @PostMapping("/")
-    public ResponseEntity<OrderSummaryResponse> createOrderSummaryRequest(@RequestBody OrderSummaryRequest orderSummaryRequest){
-        return new ResponseEntity<>(orderSummaryService.createOrderSummaryRequest(orderSummaryRequest) , HttpStatus.CREATED);
+    public ResponseEntity<OrderSummaryResponse> createOrderSummaryRequest(@RequestBody OrderSummaryRequest orderSummaryRequest) {
+        return new ResponseEntity<>(orderSummaryService.createOrderSummaryRequest(orderSummaryRequest), HttpStatus.CREATED);
     }
 }

@@ -18,20 +18,20 @@ import java.math.BigDecimal;
 @Entity
 @SuperBuilder
 
-@Table(name ="tbl_discount_customer")
+@Table(name = "tbl_discount_customer")
 public class DiscountCustomerEntity extends AbstractEntity<String> implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_id")
-    private UserEntity customer ;
+    private UserEntity customer;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "discount_id")
-    private DiscountEntity discount ;
+    private DiscountEntity discount;
 
-    @Column(name ="discount_quantity")
+    @Column(name = "discount_quantity")
     private Integer discountQuantity;
 
-    @Column(name ="discount_value" ,  precision = 12 , scale = 2)
+    @Column(name = "discount_value", precision = 12, scale = 2)
     private BigDecimal discountValue = BigDecimal.ZERO;
 
 

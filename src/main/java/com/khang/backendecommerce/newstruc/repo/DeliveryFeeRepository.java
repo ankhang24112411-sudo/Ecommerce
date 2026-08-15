@@ -13,21 +13,21 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface DeliveryFeeRepository extends JpaRepository<DeliveryFeeEntity,String> {
+public interface DeliveryFeeRepository extends JpaRepository<DeliveryFeeEntity, String> {
     Optional<DeliveryFeeEntity> findByDeliveryRoute_Id(String id);
 
 
-//    Optional<DeliveryFeeEntity> findAllForCheckout(@Param("warehouseIds") Collection<String> warehouseIds);
-@EntityGraph(
-        attributePaths = {
-                "deliveryRoute.stateFrom"
-        }, type = EntityGraph.EntityGraphType.FETCH
-)
-@Query("""
-select deliveryFee
-from DeliveryFeeEntity deliveryFee
-where deliveryFee.deliveryRoute.stateFrom.id in :warehouseStateIds
-and deliveryFee.deliveryRoute.stateTo.id = :userStateId
-""")
-List<DeliveryFeeEntity> findAllForCheckOut(@Param("warehouseStateIds") Collection<String> warehouseStateIds , @Param("userStateId") String userStateId);
+    //    Optional<DeliveryFeeEntity> findAllForCheckout(@Param("warehouseIds") Collection<String> warehouseIds);
+    @EntityGraph(
+            attributePaths = {
+                    "deliveryRoute.stateFrom"
+            }, type = EntityGraph.EntityGraphType.FETCH
+    )
+    @Query("""
+            select deliveryFee
+            from DeliveryFeeEntity deliveryFee
+            where deliveryFee.deliveryRoute.stateFrom.id in :warehouseStateIds
+            and deliveryFee.deliveryRoute.stateTo.id = :userStateId
+            """)
+    List<DeliveryFeeEntity> findAllForCheckOut(@Param("warehouseStateIds") Collection<String> warehouseStateIds, @Param("userStateId") String userStateId);
 }

@@ -18,7 +18,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @Entity
 @SuperBuilder
-@Table(name ="tbl_category")
+@Table(name = "tbl_category")
 public class CategoryEntity extends AbstractEntity<String> implements Serializable {
     @Column(name = "category_name")
     private String name;

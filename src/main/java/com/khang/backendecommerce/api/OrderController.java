@@ -21,15 +21,16 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/v1/order")
 @Validated
 @Slf4j
-@Tag(name ="Order Controller")
+@Tag(name = "Order Controller")
 @RequiredArgsConstructor
 public class OrderController {
     private final CurrentUserProvider currentUserProvider;
     private final OrderService orderService;
-    @PostMapping("/place-order")
-    public ResponseEntity<BaseResponse<OrderResponse>> placeOrder (@RequestBody OrderRequest request){
-         log.info("DA VAO ORDER CONTROLLER");
- return  ResponseEntity.status(HttpStatus.CREATED).body(new BaseResponse<>( orderService.placeOrder(request), "success"));
 
+    @PostMapping("/place-order")
+    public ResponseEntity<BaseResponse<OrderResponse>> placeOrder(@RequestBody OrderRequest request) {
+        log.info("DA VAO ORDER CONTROLLER");
+        return ResponseEntity.status(HttpStatus.CREATED).body(new BaseResponse<>(orderService.placeOrder(request), "success"));
+
+    }
 }
-      }

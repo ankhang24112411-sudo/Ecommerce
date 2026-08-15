@@ -10,14 +10,14 @@ import java.time.Instant;
 public record TrackingSubOrderResponse(
 
         String orderCode,
-         String trackingCode,
-OrderStatus status,
+        String trackingCode,
+        OrderStatus status,
 
- Instant updatedAt,
+        Instant updatedAt,
 
- String message,
+        String message,
 
- String location
+        String location
 
 ) {
 }

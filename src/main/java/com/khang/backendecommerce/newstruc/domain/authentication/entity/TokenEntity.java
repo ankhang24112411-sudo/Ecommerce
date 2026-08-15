@@ -11,7 +11,7 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name= "tbl_token")
+@Table(name = "tbl_token")
 public class TokenEntity extends AbstractEntity<String> {
     @Column(name = "username", unique = true)
     private String username;

@@ -5,9 +5,9 @@ import lombok.Builder;
 import java.math.BigDecimal;
 
 @Builder
-public record SubOrderSummaryResponse (
-        BigDecimal deliveryFee ,
+public record SubOrderSummaryResponse(
+        BigDecimal deliveryFee,
         BigDecimal subtotal
-){
+) {
 }
 

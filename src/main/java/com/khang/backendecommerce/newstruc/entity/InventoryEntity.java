@@ -21,12 +21,12 @@ import java.io.Serializable;
 @AllArgsConstructor
 @Entity
 
-@Table(name ="tbl_inventory")
+@Table(name = "tbl_inventory")
 public class InventoryEntity extends AbstractEntity<String> implements Serializable {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
-    private ProductEntity product ;
+    private ProductEntity product;
 
     @Column(name = "sku")
     private String sku;
@@ -36,7 +36,7 @@ public class InventoryEntity extends AbstractEntity<String> implements Serializa
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "warehouse_id")
-    private WarehouseEntity warehouse ;
+    private WarehouseEntity warehouse;
 
     @Column(name = "available_quantity", nullable = false)
     private Integer availableQuantity;
@@ -46,25 +46,28 @@ public class InventoryEntity extends AbstractEntity<String> implements Serializa
 
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
-    @Column(name = "inventory_status", columnDefinition = "inventory_status" )
+    @Column(name = "inventory_status", columnDefinition = "inventory_status")
     private InventoryStatus inventoryStatus;
 
-    public  void updateReservedQuantityAndAvailableQuantity(int orderQuantity){
-        if(availableQuantity - orderQuantity < 0){
+    public void updateReservedQuantityAndAvailableQuantity(int orderQuantity) {
+        if (availableQuantity - orderQuantity < 0) {
             throw ApplicationErrors.INVENTORY_NOT_ENOUGH;
         }
         availableQuantity -= orderQuantity;
-        reservedQuantity+= orderQuantity;
+        reservedQuantity += orderQuantity;
     }
-    public void updateQuantityWhenPaymentFailed(int orderQuantity){
+
+    public void updateQuantityWhenPaymentFailed(int orderQuantity) {
         availableQuantity += orderQuantity;
         reservedQuantity -= orderQuantity;
     }
-    public void updateQuantityWhenPaymentSuccessOrCOD(int orderQuantity){
-        reservedQuantity -=orderQuantity;
+
+    public void updateQuantityWhenPaymentSuccessOrCOD(int orderQuantity) {
+        reservedQuantity -= orderQuantity;
     }
-    public void updateQuantityWhenSubOrderRejectOrRefund(int orderQuantity){
-        availableQuantity +=orderQuantity;
+
+    public void updateQuantityWhenSubOrderRejectOrRefund(int orderQuantity) {
+        availableQuantity += orderQuantity;
     }
 
 }

@@ -19,26 +19,25 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name ="tbl_product")
+@Table(name = "tbl_product")
 public class ProductEntity extends AbstractEntity<String> implements Serializable {
     @Column(name = "name")
-    private String name ;
+    private String name;
 
     @Column(name = "price")
-    private BigDecimal price ;
+    private BigDecimal price;
 
     @Column(name = "sku")
-    private String sku ;
+    private String sku;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "store_id")
-    private StoreEntity store ;
-
+    private StoreEntity store;
 
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
-    private CategoryEntity category ;
+    private CategoryEntity category;
 
     @Column(name = "description")
     private String description;
@@ -46,7 +45,7 @@ public class ProductEntity extends AbstractEntity<String> implements Serializabl
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
     private List<InventoryEntity> inventoryList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "product" ,fetch = FetchType.LAZY,orphanRemoval = false)
+    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY, orphanRemoval = false)
     private List<ProductImageEntity> productImageList = new ArrayList<>();
 
 }

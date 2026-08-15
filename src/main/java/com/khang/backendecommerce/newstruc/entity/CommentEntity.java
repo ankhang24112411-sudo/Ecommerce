@@ -18,25 +18,25 @@ import java.math.BigDecimal;
 @Entity
 @SuperBuilder
 
-@Table(name ="tbl_comment")
+@Table(name = "tbl_comment")
 public class CommentEntity extends AbstractEntity<String> implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private UserEntity user ;
+    private UserEntity user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
-    private ProductEntity product ;
+    private ProductEntity product;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_item_id")
-    private OrderItem orderItem ;
+    private OrderItem orderItem;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "store_id")
-    private StoreEntity store ;
+    private StoreEntity store;
 
-    @Column(name ="star")
+    @Column(name = "star")
     private BigDecimal star;
 
 

@@ -9,44 +9,48 @@ import org.springframework.stereotype.Repository;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+
 @Repository
-public interface CartItemRepository extends JpaRepository<CartItemEntity,String> {
+public interface CartItemRepository extends JpaRepository<CartItemEntity, String> {
 
 
-    Optional<CartItemEntity> findByIdAndCart_User_Id(String cartItemId , String userId);
+    Optional<CartItemEntity> findByIdAndCart_User_Id(String cartItemId, String userId);
 
-     boolean existsByIdAndCart_Id(String cartItemId , String cartId);
+    boolean existsByIdAndCart_Id(String cartItemId, String cartId);
 
-@Lock(LockModeType.PESSIMISTIC_WRITE)
-@EntityGraph(
-        type = EntityGraph.EntityGraphType.FETCH,
-        attributePaths = {
-                "product",
-                "product.store"
-        }
-)
-@Query("""
-        select cartItem
-        from CartItemEntity cartItem
-        where cartItem.cart.id = :cartId
-        order by cartItem.id
-        """)
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @EntityGraph(
+            type = EntityGraph.EntityGraphType.FETCH,
+            attributePaths = {
+                    "product",
+                    "product.store"
+            }
+    )
+    @Query("""
+            select cartItem
+            from CartItemEntity cartItem
+            where cartItem.cart.id = :cartId
+            order by cartItem.id
+            """)
     List<CartItemEntity> findAllForCheckout(@Param("cartId") String cartId);
 
     @Modifying(flushAutomatically = true)
     @Query("""
-delete from CartItemEntity cartItem
-where cartItem.cart.id = :cartId
-""")
-    int deletePurchasedItems(@Param("cartId") String cartId );
+            delete from CartItemEntity cartItem
+            where cartItem.cart.id = :cartId
+            """)
+    int deletePurchasedItems(@Param("cartId") String cartId);
+
     void deleteAllByCart_Id(String cartId);
+
     @Query("""
-        select cartItem
-        from CartItemEntity cartItem
-        where cartItem.cart.id = :cartId
-        order by cartItem.id
-        """)
+            select cartItem
+            from CartItemEntity cartItem
+            where cartItem.cart.id = :cartId
+            order by cartItem.id
+            """)
     List<CartItemEntity> findAllCartItem(@Param("cartId") String cartId);
+
     @EntityGraph(
             type = EntityGraph.EntityGraphType.FETCH,
             attributePaths = {
@@ -54,10 +58,10 @@ where cartItem.cart.id = :cartId
             }
     )
     @Query("""
-        select cartItem
-        from CartItemEntity cartItem
-        where cartItem.cart.id = :cartId
-        order by cartItem.id
-        """)
+            select cartItem
+            from CartItemEntity cartItem
+            where cartItem.cart.id = :cartId
+            order by cartItem.id
+            """)
     List<CartItemEntity> findAllCartItemInGetAllWithProduct(@Param("cartId") String cartId);
 }

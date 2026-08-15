@@ -11,4 +11,5 @@ public record SubOrderStatusResponse(
         OrderStatus orderStatus,
         Instant confirmedAt,
         Instant rejectedAt
-) {}
+) {
+}

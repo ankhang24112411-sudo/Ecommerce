@@ -29,12 +29,13 @@ import java.util.regex.Pattern;
 import static com.khang.backendecommerce.infrastructure.util.AppConst.SEARCH_SPEC_OPERATOR;
 
 @Service
-@Slf4j(topic= "STORE-FRONT-SERVICE")
+@Slf4j(topic = "STORE-FRONT-SERVICE")
 @RequiredArgsConstructor
 public class StoreFrontServiceImpl implements StoreFrontService {
     private final ProductService productService;
     private final ProductRepository productRepo;
     private final SearchRepository searchRepository;
+
     @Override
     public StoreFrontHomeResponse getStoreFront(OrderSummaryRequest orderSummaryRequest) {
         List<FeaturedProductResponse> product = productService.getFeaturedProduct();
@@ -75,12 +76,12 @@ public class StoreFrontServiceImpl implements StoreFrontService {
         return BaseResponse.ofSuccess(PageResponse.of(products.getContent(), pageable, products.getTotalElements()));
     }
 
-    public BaseResponse<?> advanceSearchWithSpecificationsProduct(Pageable pageable, String[] product, String [] store) {
-        if(product != null && store != null){
+    public BaseResponse<?> advanceSearchWithSpecificationsProduct(Pageable pageable, String[] product, String[] store) {
+        if (product != null && store != null) {
 //            return searchRepository.searchProductByCriteriaWithJoin(pageable, product, store);
 
         }
-        if(product != null){
+        if (product != null) {
             ProductSpecificationsBuilder builder = new ProductSpecificationsBuilder();
 
             Pattern pattern = Pattern.compile(SEARCH_SPEC_OPERATOR);

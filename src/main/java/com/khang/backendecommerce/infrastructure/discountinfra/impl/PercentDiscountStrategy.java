@@ -6,6 +6,7 @@ import com.khang.backendecommerce.newstruc.entity.DiscountEntity;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+
 @Component
 public class PercentDiscountStrategy implements DiscountStrategy {
     @Override

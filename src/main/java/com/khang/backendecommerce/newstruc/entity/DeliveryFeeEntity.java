@@ -18,20 +18,20 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name ="tbl_delivery_fee")
+@Table(name = "tbl_delivery_fee")
 public class DeliveryFeeEntity extends AbstractEntity<String> implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "company_id")
-    private DeliveryCompanyEntity companyId ;
+    private DeliveryCompanyEntity companyId;
 
     @Column(name = "base_fee")
-    private BigDecimal baseFee ;
+    private BigDecimal baseFee;
 
     @Column(name = "delivery_time")
-    private Integer deliveryTime ;
+    private Integer deliveryTime;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "delivery_route_id")
-    private DeliveryRouteEntity deliveryRoute ;
+    private DeliveryRouteEntity deliveryRoute;
 
 }

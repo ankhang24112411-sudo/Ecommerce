@@ -9,6 +9,7 @@ import lombok.Getter;
 
 import java.math.BigDecimal;
 import java.util.Objects;
+
 @Builder
 public record AllocatedItem(CartItemEntity cartItem,
                             ProductEntity product,

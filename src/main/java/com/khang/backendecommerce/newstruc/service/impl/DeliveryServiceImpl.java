@@ -30,50 +30,52 @@ public class DeliveryServiceImpl implements DeliveryService {
     private final DeliveryRouteRepository deliveryRouteRepo;
     private final DeliveryFeeRepository deliveryFeeRepo;
     private final InventoryRepository inventoryRepo;
-//TODO code chua toi uu , N + 1
-@Override
-public BigDecimal calculateProductDeliveryAmount(UserEntity user, InventoryEntity inventory) {
 
-
-    String userStateId = user.getState().getId();
-    String warehouseStateId = inventory.getWarehouse().getState().getId();
-    if(userStateId.equals(warehouseStateId)){
-        return BigDecimal.ZERO;
-    }
-    log.info("warehouse state id :{}  " , warehouseStateId );
-    log.info("User state id :{} ", userStateId );
-
-
-    DeliveryRouteEntity route = deliveryRouteRepo.findByStateFrom_IdAndStateTo_Id(warehouseStateId, userStateId)
-            .orElseThrow(() -> ApplicationErrors.DELIVERY_ROUTE_NOT_FOUND);
-    log.info("Delivery {} route is from {} to {}" ,route.getId(), route.getStateFromName() ,route.getStateToName());
-
-
-    DeliveryFeeEntity deliveryFee =deliveryFeeRepo.findByDeliveryRoute_Id(route.getId())
-            .orElseThrow(() ->  ApplicationErrors.INVALID_DELIVERY_FEE);
-    log.info("Delivery fee is : {} and company {}" , deliveryFee.getDeliveryRoute().getId() , deliveryFee.getCompanyId());
-
-    return deliveryFee.getBaseFee();
-}
+    //TODO code chua toi uu , N + 1
     @Override
-    public BigDecimal calculateCartDeliveryAmount(UserEntity user ,CartEntity cart){
+    public BigDecimal calculateProductDeliveryAmount(UserEntity user, InventoryEntity inventory) {
+
+
+        String userStateId = user.getState().getId();
+        String warehouseStateId = inventory.getWarehouse().getState().getId();
+        if (userStateId.equals(warehouseStateId)) {
+            return BigDecimal.ZERO;
+        }
+        log.info("warehouse state id :{}  ", warehouseStateId);
+        log.info("User state id :{} ", userStateId);
+
+
+        DeliveryRouteEntity route = deliveryRouteRepo.findByStateFrom_IdAndStateTo_Id(warehouseStateId, userStateId)
+                .orElseThrow(() -> ApplicationErrors.DELIVERY_ROUTE_NOT_FOUND);
+        log.info("Delivery {} route is from {} to {}", route.getId(), route.getStateFromName(), route.getStateToName());
+
+
+        DeliveryFeeEntity deliveryFee = deliveryFeeRepo.findByDeliveryRoute_Id(route.getId())
+                .orElseThrow(() -> ApplicationErrors.INVALID_DELIVERY_FEE);
+        log.info("Delivery fee is : {} and company {}", deliveryFee.getDeliveryRoute().getId(), deliveryFee.getCompanyId());
+
+        return deliveryFee.getBaseFee();
+    }
+
+    @Override
+    public BigDecimal calculateCartDeliveryAmount(UserEntity user, CartEntity cart) {
         List<String> productIds = cart.getCartItemList().stream()
                 .map(CartItemEntity::getProduct)
                 .map(ProductEntity::getId).toList();
-        List<InventoryEntity> inventories = inventoryRepo.findAllByProduct_IdIn( productIds);
+        List<InventoryEntity> inventories = inventoryRepo.findAllByProduct_IdIn(productIds);
         return inventories.stream()
-                .map( inventoryEntity -> calculateProductDeliveryAmount(user, inventoryEntity))
-                .reduce(BigDecimal.ZERO,BigDecimal::add);
+                .map(inventoryEntity -> calculateProductDeliveryAmount(user, inventoryEntity))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     @Override
-    public Map<String, DeliveryFeeEntity> deliveryFeeEntityByWarehousesStateId(Set<String> warehouseStateIds,String userStateId) {
+    public Map<String, DeliveryFeeEntity> deliveryFeeEntityByWarehousesStateId(Set<String> warehouseStateIds, String userStateId) {
         List<DeliveryFeeEntity> findAllDeliveriesFee = deliveryFeeRepo.findAllForCheckOut(warehouseStateIds, userStateId);
 
 
         return findAllDeliveriesFee.stream()
                 .collect(Collectors.toMap(deliveryFeeEntity ->
-                        deliveryFeeEntity.getDeliveryRoute().getStateFrom().getId(),
+                                deliveryFeeEntity.getDeliveryRoute().getStateFrom().getId(),
                         Function.identity()));
     }
 
@@ -81,11 +83,11 @@ public BigDecimal calculateProductDeliveryAmount(UserEntity user, InventoryEntit
     public BigDecimal calculateDeliveryFee(InventoryEntity inventory,
                                            String userStateId,
                                            Map<String, DeliveryFeeEntity> deliveryFeeByWarehouseState) {
-     String wareHouseStateId = inventory.getWarehouse().getState().getId();
-     if(wareHouseStateId.equals(userStateId)){
-         return BigDecimal.ZERO;
-     }
-     DeliveryFeeEntity deliveryFee = deliveryFeeByWarehouseState.get(wareHouseStateId);
+        String wareHouseStateId = inventory.getWarehouse().getState().getId();
+        if (wareHouseStateId.equals(userStateId)) {
+            return BigDecimal.ZERO;
+        }
+        DeliveryFeeEntity deliveryFee = deliveryFeeByWarehouseState.get(wareHouseStateId);
 
         return deliveryFee.getBaseFee();
     }

@@ -12,26 +12,25 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Builder
-public record SubOrderPendingResponse (
+public record SubOrderPendingResponse(
 
 
-    String orderId,
-    String orderCode,
+        String orderId,
+        String orderCode,
 
-    Instant createdAt,
+        Instant createdAt,
 
-    String customerName,
+        String customerName,
 
-    List<OrderItemInSubOrderResponse> items,
+        List<OrderItemInSubOrderResponse> items,
 
-    String shippingAddress,
+        String shippingAddress,
 
 
-    BigDecimal totalAmount,
+        BigDecimal totalAmount,
 
-    PaymentMethod paymentMethod,
-    PaymentStatus paymentStatus
+        PaymentMethod paymentMethod,
+        PaymentStatus paymentStatus
 
-    )
-{
+) {
 }

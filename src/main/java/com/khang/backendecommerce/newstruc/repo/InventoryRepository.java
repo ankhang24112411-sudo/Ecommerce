@@ -13,7 +13,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-public interface InventoryRepository extends JpaRepository<InventoryEntity,String> {
+public interface InventoryRepository extends JpaRepository<InventoryEntity, String> {
 
     Optional<InventoryEntity> findByProduct_Id(String productId);
 
@@ -21,10 +21,10 @@ public interface InventoryRepository extends JpaRepository<InventoryEntity,Strin
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("""
-    select inventory
-    from InventoryEntity inventory
-    where inventory.product.id in :productIds
-""")
+                select inventory
+                from InventoryEntity inventory
+                where inventory.product.id in :productIds
+            """)
     List<InventoryEntity> findAllByProductIdsForUpdate(@Param("productIds") Collection<String> productIds);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
@@ -35,10 +35,10 @@ public interface InventoryRepository extends JpaRepository<InventoryEntity,Strin
             }
     )
     @Query("""
-   select inventory
-   from InventoryEntity inventory
-   where inventory.product.id in :productIds
-""")
+               select inventory
+               from InventoryEntity inventory
+               where inventory.product.id in :productIds
+            """)
     List<InventoryEntity> findAllInventoryCandidates(@Param("productIds") Collection<String> productIds);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
@@ -49,10 +49,10 @@ public interface InventoryRepository extends JpaRepository<InventoryEntity,Strin
             }
     )
     @Query("""
-   select inventory
-   from InventoryEntity inventory
-   where inventory.product.id in :productIds
-""")
+               select inventory
+               from InventoryEntity inventory
+               where inventory.product.id in :productIds
+            """)
     List<InventoryEntity> findAllInventoryCandidatesWithoutLock(@Param("productIds") Collection<String> productIds);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
@@ -63,12 +63,12 @@ public interface InventoryRepository extends JpaRepository<InventoryEntity,Strin
             }
     )
     @Query("""
-   select inventory
-   from InventoryEntity inventory
-   where inventory.product.id = :productId
-   and inventory.availableQuantity -  inventory.reservedQuantity >= :quantity
-""")
-    List<InventoryEntity> findAllInventoryCandidatesWithEnoughStock(@Param("productId") String productId,@Param("quantity") int quantity);
+               select inventory
+               from InventoryEntity inventory
+               where inventory.product.id = :productId
+               and inventory.availableQuantity -  inventory.reservedQuantity >= :quantity
+            """)
+    List<InventoryEntity> findAllInventoryCandidatesWithEnoughStock(@Param("productId") String productId, @Param("quantity") int quantity);
 }
 
 

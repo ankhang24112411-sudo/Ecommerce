@@ -16,7 +16,7 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @Entity
 @SuperBuilder
-@Table(name ="banner")
+@Table(name = "banner")
 public class BannerEntity extends AbstractEntity<String> implements Serializable {
     @Column(name = "title")
     private String title;

@@ -8,30 +8,31 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.data.domain.Pageable;
+
 import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface ProductRepository extends JpaRepository<ProductEntity,String>, JpaSpecificationExecutor<ProductEntity> {
+public interface ProductRepository extends JpaRepository<ProductEntity, String>, JpaSpecificationExecutor<ProductEntity> {
     @EntityGraph(
             attributePaths = {"store"},
             type = EntityGraph.EntityGraphType.FETCH
     )
     @Query("""
-select product
-from ProductEntity product
-where product.id =:productId
-""")
+            select product
+            from ProductEntity product
+            where product.id =:productId
+            """)
     Optional<ProductEntity> findProductAndShopByProductId(@Param("productId") String productId);
 
 
     @Query("""
-select p.id
-from OrderItem i
-join i.product p
-group by p.id
-order by sum(i.quantity) desc
-""")
+            select p.id
+            from OrderItem i
+            join i.product p
+            group by p.id
+            order by sum(i.quantity) desc
+            """)
     List<String> getFeaturedProduct(Pageable pageable);
 //
 //    @Query("""

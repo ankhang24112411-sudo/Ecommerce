@@ -43,7 +43,6 @@ public class MailService {
     private String templateId;
 
 
-
     @Value("${sendgrid.order-status-template-id}")
     private String orderStatusTemplateId;
 
@@ -169,6 +168,6 @@ public class MailService {
             throw new RuntimeException(e);
         }
     }
-    }
+}
 
 

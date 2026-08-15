@@ -17,20 +17,20 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name ="tbl_return_delivery")
+@Table(name = "tbl_return_delivery")
 public class DeliveryReturnEntity extends AbstractEntity<String> implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "return_id")
-    private ReturnEntity returnEntity ;
+    private ReturnEntity returnEntity;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "warehouse_id")
-    private WarehouseEntity warehouse ;
+    private WarehouseEntity warehouse;
 
-    @Column(name ="warehouse_name")
+    @Column(name = "warehouse_name")
     private String warehouseName;
 
-    @Column(name ="tracking_code")
+    @Column(name = "tracking_code")
     private String trackingCode;
 
 

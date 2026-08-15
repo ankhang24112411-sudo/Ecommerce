@@ -10,10 +10,11 @@ import java.math.BigDecimal;
 
 public class CartItemResponse {
     private String image;
-    private String name ;
+    private String name;
     private BigDecimal unitPrice;
     private Integer quantity;
     private InventoryStatus inventoryStatus;
+
     @Builder
     public CartItemResponse(String image, String name, BigDecimal unitPrice, Integer quantity, InventoryStatus inventoryStatus) {
         this.image = image;
@@ -22,7 +23,6 @@ public class CartItemResponse {
         this.quantity = quantity;
         this.inventoryStatus = inventoryStatus;
     }
-
 
 
 }

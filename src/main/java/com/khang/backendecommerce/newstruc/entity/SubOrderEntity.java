@@ -19,51 +19,52 @@ import java.util.List;
 @Entity
 @SuperBuilder
 @NoArgsConstructor
-@Table(name ="tbl_sub_order")
+@Table(name = "tbl_sub_order")
 public class SubOrderEntity extends AbstractEntity<String> implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id")
-    private OrderEntity order ;
+    private OrderEntity order;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "store_id")
-    private StoreEntity store ;
+    private StoreEntity store;
 
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     @Column(name = "order_status", columnDefinition = "order_status")
     private OrderStatus orderStatus;
 
-    @Column(name ="store_name")
+    @Column(name = "store_name")
     private String storeName;
 
-    @Column(name ="sub_total")
+    @Column(name = "sub_total")
     private BigDecimal subTotal;
 
-    @Column(name ="confirmed_at")
+    @Column(name = "confirmed_at")
     private Instant confirmedAt;
 
-    @Column(name ="rejected_at")
+    @Column(name = "rejected_at")
     private Instant rejectedAt;
 
-    @Column(name ="rejection_reason")
+    @Column(name = "rejection_reason")
     private String rejectionReason;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name= "delivery_route_id")
+    @JoinColumn(name = "delivery_route_id")
     private DeliveryRouteEntity deliveryRoute;
 
-    @Column(name ="delivery_fee")
+    @Column(name = "delivery_fee")
     private BigDecimal deliveryFee;
 
     @Builder.Default
     @OneToMany(mappedBy = "subOrder", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItem> orderItems = new ArrayList<>();
 
-    public void addOrderItems(OrderItem orderItem){
+    public void addOrderItems(OrderItem orderItem) {
         orderItems.add(orderItem);
         orderItem.setSubOrder(this);
     }
+
     @Column(name = "tracking_code")
     private String trackingCode;
 

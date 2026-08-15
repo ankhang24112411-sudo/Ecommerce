@@ -31,39 +31,40 @@ public class PaymentServiceImpl implements PaymentService {
     private final OrderRepository orderRepo;
     private final OrderService orderService;
     private final RefundRepository refundRepos;
+
     @Override
     public String mockWebhooks(MockPaymentWebhookRequest request) {
-        String paymentReference = null  ;
+        String paymentReference = null;
         UserEntity user = currentUserProvider.getCurrentUser();
         PaymentEntity payment = paymentRepo.findByPaymentReferenceAndUser_Id(request.paymentReference(), request.userId())
                 .orElseThrow(() -> ApplicationErrors.PAYMENT_REFERENCE_CODE_NOT_FOUND);
 //        if(payment.)
         OrderEntity order = payment.getOrder();
-        switch (request.paymentStatus()){
-            case FAILED ->  {
-                             order.setPaymentStatus(PaymentStatus.AWAITING_PAYMENT);
-                             payment.setPaymentStatus(PaymentStatus.FAILED);
-                             payment.setFailedAt(Instant.now());
-                paymentReference    = AppConst.paymentReference;
-                     PaymentEntity newPayment = PaymentEntity.builder()
-                             .user(user)
-                             .order(order)
-                             .paymentReference(paymentReference)
-                             .paymentStatus(PaymentStatus.AWAITING_PAYMENT)
-                             .build();
-                     paymentRepo.save(newPayment);
+        switch (request.paymentStatus()) {
+            case FAILED -> {
+                order.setPaymentStatus(PaymentStatus.AWAITING_PAYMENT);
+                payment.setPaymentStatus(PaymentStatus.FAILED);
+                payment.setFailedAt(Instant.now());
+                paymentReference = AppConst.paymentReference;
+                PaymentEntity newPayment = PaymentEntity.builder()
+                        .user(user)
+                        .order(order)
+                        .paymentReference(paymentReference)
+                        .paymentStatus(PaymentStatus.AWAITING_PAYMENT)
+                        .build();
+                paymentRepo.save(newPayment);
             }
-            case PAID ->   {
+            case PAID -> {
 
-                             order.setPaymentStatus(PaymentStatus.PAID);
-                             order.setOrderStatus(OrderStatus.PENDING);
-                             payment.setPaymentStatus(PaymentStatus.PAID);
-                             orderService.deleteCartAndUpdateInventoryAfterPaymentSuccess(user,order,payment);
+                order.setPaymentStatus(PaymentStatus.PAID);
+                order.setOrderStatus(OrderStatus.PENDING);
+                payment.setPaymentStatus(PaymentStatus.PAID);
+                orderService.deleteCartAndUpdateInventoryAfterPaymentSuccess(user, order, payment);
             }
         }
         orderRepo.save(order);
         paymentRepo.save(payment);
-        if(paymentReference != null){
+        if (paymentReference != null) {
             return "Payment failed , new PaymentReference : " + paymentReference;
         }
         return "Payment progress success";
