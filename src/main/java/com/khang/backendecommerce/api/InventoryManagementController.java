@@ -1,11 +1,13 @@
 package com.khang.backendecommerce.api;
 
 import com.khang.backendecommerce.infrastructure.common.dto.response.BaseResponse;
+import com.khang.backendecommerce.newstruc.csv2.ExportExcelService;
 import com.khang.backendecommerce.newstruc.domain.csv.ProductExportJobService;
 import com.khang.backendecommerce.newstruc.domain.csv.dto.ExportResult;
 import com.khang.backendecommerce.newstruc.dto.response.store.CreateProductRequest;
 import com.khang.backendecommerce.newstruc.service.InventoryService;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -13,6 +15,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
 
 @RestController
 @RequestMapping("v1/seller/inventory-management")
@@ -23,6 +27,7 @@ import org.springframework.web.bind.annotation.*;
 public class InventoryManagementController {
     private final InventoryService inventoryService;
     private final ProductExportJobService exportService;
+    private final ExportExcelService exportExcelService;
 
     @GetMapping("/")
     public ResponseEntity<BaseResponse<?>> createNewProduct(@RequestBody CreateProductRequest request) {
@@ -34,5 +39,9 @@ public class InventoryManagementController {
 
         return ResponseEntity.accepted()
                 .body(new BaseResponse<>(exportService.export(), "ok"));
+    }
+    @GetMapping("/export")
+    public void exportData(HttpServletResponse response) throws IOException {
+        exportExcelService.exportData(response);
     }
 }
